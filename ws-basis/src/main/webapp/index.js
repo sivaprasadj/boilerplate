@@ -108,27 +108,6 @@ window.addEventListener('load', function() {
     }, 500);
   }();
 
-  var createButton = function(label, action) {
-    var button = document.createElement('button');
-    button.textContent = label;
-    button.addEventListener('click', function(event) {
-      action();
-    });
-    document.body.appendChild(button);
-  };
-
-  createButton(' data ', function() {
-    app.ajax({ url : 'clb' }).done(function(data){
-      console.log(data);
-    });
-  });
-  createButton(' broadcast ', function() {
-    app.send({ action : 'broadcast', data : { msg : 'BROADCAST' } });
-  });
-  createButton(' putData ', function() {
-    app.send({ action : 'putData', data : { msg : 'PUTDATA' } });
-  });
-
   var util = {
     extend : function() {
       var o = arguments[0];
@@ -168,8 +147,13 @@ window.addEventListener('load', function() {
     };
   };
 
+  var elm = function(tagName, attrs) {
+    return $(document.createElement(tagName) );
+  };
+
   var svgElm = function(tagName, attrs) {
-    return $(document.createElementNS('http://www.w3.org/2000/svg', tagName) );
+    return $(document.createElementNS(
+        'http://www.w3.org/2000/svg', tagName) );
   };
 
   var $ = function(elm) {
@@ -275,10 +259,43 @@ window.addEventListener('load', function() {
     return model;
   }();
 
+  var ctrls = elm('div').style({ position : 'absolute',
+    right : '4px', bottom : '4px', padding : '4px',
+    backgroundColor : 'rgba(0,0,0,0.05)' });
+  document.body.appendChild(ctrls.$el);
+
+  var createButton = function(label, clickHandler) {
+    var button = document.createElement('button');
+    button.textContent = label;
+    button.addEventListener('click', clickHandler);
+    ctrls.$el.appendChild(button);
+  };
+
+  createButton(' reset ', function() {
+    if (confirm('reset database?') ) {
+      location.href = 'admin';
+    }
+  });
+  createButton(' data ', function() {
+    app.ajax({ url : 'clb' }).done(function(data){
+      console.log(data);
+    });
+  });
+  createButton(' broadcast ', function() {
+    app.send({ action : 'broadcast', data : { msg : 'BROADCAST' } });
+  });
+  createButton(' putData ', function() {
+    app.send({ action : 'putData', data : { msg : 'PUTDATA' } });
+  });
+
   var log = document.createElement('pre');
-  document.body.appendChild(log);
+  ctrls.$el.appendChild(log);
 
   // start timers...
   heartbeat.start();
   observeWindowSize.start();
+
+  $(document.body).style({
+    overflow : 'hidden', padding : '0px', margin : '0px' })
+
 });
