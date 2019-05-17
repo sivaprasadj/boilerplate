@@ -16,11 +16,14 @@ window.addEventListener('load', function() {
   });
 
   app.actions.login = function(data) {
-    console.log('login-act', data);
+    console.log(data);
   };
 
   app.actions.broadcast = function(data) {
-    console.log('ja,', data);
+    var client = model.clients[data.sid] || (model.clients[data.sid] = {});
+    client.sid = data.sid;
+    client.date = data.date;
+    log.textContent = JSON.stringify(model.clients, null, 2);
   };
 
   var createButton = function(label, action) {
@@ -32,13 +35,25 @@ window.addEventListener('load', function() {
     document.body.appendChild(button);
   };
 
+  var model = {
+    left : 0,
+    top : 0,
+    getGeom : function() {
+      return {
+        type : 'geom',
+        left : this.left,
+        top : this.top,
+        width : window.innerWidth,
+        height : window.innerHeight,
+      }
+    },
+    clients : {}
+  };
+
   var heartbeat = function() {
     try {
       if (app.isAlive() ) {
-        app.send({ action : 'broadcast', data : {
-          type : 'heartbeat',
-          w : window.innerWidth,
-          h : window.innerHeight } });
+        app.send({ action : 'broadcast', data : model.getGeom() });
       }
     } finally {
       window.setTimeout(heartbeat, 10000);
@@ -57,5 +72,8 @@ window.addEventListener('load', function() {
   createButton(' putData ', function() {
     app.send({ action : 'putData', data : { msg : 'PUTDATA' } });
   });
+
+  var log = document.createElement('pre');
+  document.body.appendChild(log);
 
 });
