@@ -202,7 +202,7 @@ window.addEventListener('load', function() {
     };
 
     var bgRect = svgElm('rect').
-    attrs({ x : 0, y : 0, stroke : 'none', fill : 'rgba(0,0,0,0.05)' });
+      attrs({ x : 0, y : 0, stroke : 'none', fill : 'rgba(0,0,0,0.05)' });
     var svg = svgElm('svg').style({
       position : 'absolute', left : '0px', top : '0px' }).append(bgRect).
       on('mousedown', function(event) {
