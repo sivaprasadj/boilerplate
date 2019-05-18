@@ -190,7 +190,47 @@ window.addEventListener('load', function() {
     };
   };
 
+  var mainView = function() {
+
+    var model = util.extend(createEventTarget(), {
+      
+    });
+
+    var setSize = function(size) {
+      svg.attrs(size);
+      bgRect.attrs(size);
+    };
+
+    var bgRect = svgElm('rect').
+    attrs({ x : 0, y : 0, stroke : 'none', fill : 'rgba(0,0,0,0.05)' });
+    var svg = svgElm('svg').style({
+      position : 'absolute', left : '0px', top : '0px' }).append(bgRect).
+      on('mousedown', function(event) {
+        var mousemoveHandler = function(event) {
+
+        };
+        var mouseupHandler = function(event) {
+
+          $(document).off('mousemove', mousemoveHandler).
+            off('mouseup', mouseupHandler)
+        };
+
+        event.preventDefault();
+        var dragPoint = { x : event.pageX, y : event.pageY };
+        console.log(dragPoint);
+        $(document).on('mousemove', mousemoveHandler).
+          on('mouseup', mouseupHandler)
+      });
+
+    document.body.appendChild(svg.$el);
+
+    setSize({ width : 400, height : 400 });
+
+    return model;
+  }();
+
   var miniView = function() {
+
     var model = util.extend(createEventTarget(), {
       width : 100,
       height : 70,
@@ -251,7 +291,9 @@ window.addEventListener('load', function() {
       attrs({ x : 0, y : 0, stroke : 'none', fill : 'rgba(0,0,0,0.05)' });
     var g1 = svgElm('g');
     var g2 = svgElm('g');
-    var svg = svgElm('svg').append(bgRect).append(g1).append(g2);
+    var svg = svgElm('svg').style({
+      position : 'absolute', left : '0px', top : '0px' }).
+      append(bgRect).append(g1).append(g2);
     document.body.appendChild(svg.$el);
 
     setSize({ width : model.width, height : model.height });
@@ -291,11 +333,11 @@ window.addEventListener('load', function() {
   var log = document.createElement('pre');
   ctrls.$el.appendChild(log);
 
+  $(document.body).style({
+    overflow : 'hidden', padding : '0px', margin : '0px' })
+
   // start timers...
   heartbeat.start();
   observeWindowSize.start();
-
-  $(document.body).style({
-    overflow : 'hidden', padding : '0px', margin : '0px' })
 
 });
