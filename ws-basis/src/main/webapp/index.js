@@ -248,7 +248,7 @@ window.addEventListener('load', function() {
     };
 
     var bgRect = svgElm('rect').
-      attrs({ x : 0, y : 0, stroke : 'none', fill : '#eee' });
+      attrs({ x : 0, y : 0, stroke : 'none', fill : 'rgba(0,0,0,0.05)' });
     var g1 = svgElm('g');
     var g2 = svgElm('g');
     var svg = svgElm('svg').append(bgRect).append(g1).append(g2);
