@@ -21,51 +21,37 @@ window.addEventListener('load', function() {
   });
 
   app.actions.login = function(data) {
-    model.sid = data.sid;
+    mainView.sid = data.sid;
     sendGeom();
   };
 
   app.actions.broadcast = function(data) {
     if (data.geom) {
 
-      var client = model.clients[data.sid] || (model.clients[data.sid] = {});
+      var client = mainView.clients[data.sid] ||
+        (mainView.clients[data.sid] = {});
       client.sid = data.sid;
       client.date = data.date;
       client.geom = data.geom;
 
       var clients = {};
-      for (var sid in model.clients) {
-        var client = model.clients[sid];
+      for (var sid in mainView.clients) {
+        var client = mainView.clients[sid];
         if (data.date - client.date < opts.OFFLINE_TIMEOUT) {
           clients[sid] = client;
         } else {
           console.log('timeout:' + sid);
         }
       }
-      model.clients = clients;
+      mainView.clients = clients;
 
-      log.textContent = JSON.stringify(model.clients, null, 2);
-      miniView.trigger('update', model);
-    }
-  };
-
-  var model = {
-    sid : null,
-    clients : {},
-    left : 0,
-    top : 0,
-    getGeom : function() {
-      return {
-        left : this.left,
-        top : this.top,
-        width : window.innerWidth,
-        height : window.innerHeight,
-      }
+      log.textContent = JSON.stringify(mainView.clients, null, 2);
+      miniView.trigger('update', mainView);
     }
   };
 
   var sendGeom = function() {
-    app.send({ action : 'broadcast', geom : model.getGeom() });
+    app.send({ action : 'broadcast', geom : mainView.getGeom() });
   };
 
   var timer = function(task, timeout) {
@@ -95,11 +81,13 @@ window.addEventListener('load', function() {
 
   var heartbeat = timer(sendGeom, opts.HEARTBEAT_TIMEOUT);
 
-  var observeWindowSize = function() {
-    var lastSize = { width : 0, height : 0 };
+  var observeWindowRect = function() {
+    var lastSize = null;
     return timer(function() {
-      var geom = model.getGeom();
+      var geom = mainView.getGeom();
       if (lastSize == null ||
+          geom.left != lastSize.left ||
+          geom.top != lastSize.top ||
           geom.width != lastSize.width ||
           geom.height != lastSize.height) {
         lastSize = geom;
@@ -193,7 +181,18 @@ window.addEventListener('load', function() {
   var mainView = function() {
 
     var model = util.extend(createEventTarget(), {
-      
+      sid : null,
+      clients : {},
+      left : 0,
+      top : 0,
+      getGeom : function() {
+        return {
+          left : this.left,
+          top : this.top,
+          width : window.innerWidth,
+          height : window.innerHeight,
+        }
+      }
     });
 
     var setSize = function(size) {
@@ -210,16 +209,20 @@ window.addEventListener('load', function() {
 
         };
         var mouseupHandler = function(event) {
-
           $(document).off('mousemove', mousemoveHandler).
-            off('mouseup', mouseupHandler)
+            off('mouseup', mouseupHandler);
+
+          var dx = event.pageX - dragPoint.x;
+          var dy = event.pageY - dragPoint.y;
+          model.left += dx;
+          model.top += dy;
         };
 
         event.preventDefault();
+        $(document).on('mousemove', mousemoveHandler).
+          on('mouseup', mouseupHandler);
         var dragPoint = { x : event.pageX, y : event.pageY };
         console.log(dragPoint);
-        $(document).on('mousemove', mousemoveHandler).
-          on('mouseup', mouseupHandler)
       });
 
     document.body.appendChild(svg.$el);
@@ -338,6 +341,6 @@ window.addEventListener('load', function() {
 
   // start timers...
   heartbeat.start();
-  observeWindowSize.start();
+  observeWindowRect.start();
 
 });
