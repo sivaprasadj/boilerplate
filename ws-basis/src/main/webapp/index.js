@@ -228,10 +228,12 @@ window.addEventListener('load', function() {
         };
 
         event.preventDefault();
-        $(document).on('mousemove', mousemoveHandler).
-          on('mouseup', mouseupHandler);
-        var dragPoint = { x : event.pageX, y : event.pageY };
-        console.log(dragPoint);
+        if (event.altKey) {
+          $(document).on('mousemove', mousemoveHandler).
+            on('mouseup', mouseupHandler);
+          var dragPoint = { x : event.pageX, y : event.pageY };
+          console.log(dragPoint);
+        }
       });
 
     for (var r = 0; r < 100; r += 1) {
@@ -316,7 +318,8 @@ window.addEventListener('load', function() {
     };
 
     var bgRect = svgElm('rect').
-      attrs({ x : 0, y : 0, stroke : 'none', fill : 'rgba(0,0,0,0.05)' });
+      attrs({ x : 0, y : 0, stroke : 'none',
+        fill : 'rgba(255,255,255,0.5)' });
     var g1 = svgElm('g');
     var g2 = svgElm('g');
     var svg = svgElm('svg').style({
