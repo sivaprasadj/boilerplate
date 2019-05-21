@@ -197,15 +197,21 @@ window.addEventListener('load', function() {
 
     var setSize = function(size) {
       svg.attrs(size);
-      bgRect.attrs(size);
+      bgRect.attrs({ width : 10000, height : 7000 });
     };
 
     var bgRect = svgElm('rect').
       attrs({ x : 0, y : 0, stroke : 'none', fill : 'rgba(0,0,0,0.05)' });
-    var svg = svgElm('svg').style({
-      position : 'absolute', left : '0px', top : '0px' }).append(bgRect).
+    var svg = svgElm('svg').
+      style({ position : 'absolute', left : '0px', top : '0px' }).
+      append(bgRect).
       on('mousedown', function(event) {
         var mousemoveHandler = function(event) {
+          var dx = event.pageX - dragPoint.x;
+          var dy = event.pageY - dragPoint.y;
+          svg.attrs({ viewBox :
+            (model.left - dx) + ' ' +
+            (model.top - dy) + ' 400 400' });
 
         };
         var mouseupHandler = function(event) {
@@ -214,8 +220,11 @@ window.addEventListener('load', function() {
 
           var dx = event.pageX - dragPoint.x;
           var dy = event.pageY - dragPoint.y;
-          model.left += dx;
-          model.top += dy;
+          model.left -= dx;
+          model.top -= dy;
+          svg.attrs({ viewBox :
+            model.left + ' ' +
+            model.top + ' 400 400' });
         };
 
         event.preventDefault();
@@ -224,6 +233,22 @@ window.addEventListener('load', function() {
         var dragPoint = { x : event.pageX, y : event.pageY };
         console.log(dragPoint);
       });
+
+    for (var r = 0; r < 100; r += 1) {
+      for (var c = 0; c < 100; c += 1) {
+        var circle = svgElm('circle').attrs({
+          cx : r * 100, cy : c * 100, r : 50,
+          fill : 'rgba(0,0,0,0.2)', stroke : 'none' });
+        svg.append(circle);
+        var text = svgElm('text').attrs({
+          x : r * 100, y : c * 100,
+          fill : 'rgba(0,0,0,0.2)', stroke : 'none' }).
+          props({textContent : r + ',' + c });
+        svg.append(text);
+      }
+    }
+
+    svg.attrs({ viewBox : '0 0 400 400' });
 
     document.body.appendChild(svg.$el);
 
