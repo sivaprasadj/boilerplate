@@ -91,6 +91,7 @@ window.addEventListener('load', function() {
           geom.width != lastSize.width ||
           geom.height != lastSize.height) {
         lastSize = geom;
+        mainView.trigger('resize', geom);
         sendGeom();
       }
     }, 500);
@@ -185,6 +186,8 @@ window.addEventListener('load', function() {
       clients : {},
       left : 0,
       top : 0,
+      width : 0,
+      height : 0,
       getGeom : function() {
         return {
           left : this.left,
@@ -193,15 +196,23 @@ window.addEventListener('load', function() {
           height : window.innerHeight,
         }
       }
+    }).on('resize', function(event, detail) {
+      model.width = detail.width;
+      model.height = detail.height;
+      svg.attrs({ width : model.width, height : model.height });
+      model.trigger('viewbox', model);
+    }).on('viewbox', function(event, detail) {
+      svg.attrs({ viewBox :
+        detail.left + ' ' +
+        detail.top + ' ' +
+        detail.width + ' ' +
+        detail.height });
     });
 
-    var setSize = function(size) {
-      svg.attrs(size);
-      bgRect.attrs({ width : 10000, height : 7000 });
-    };
-
     var bgRect = svgElm('rect').
-      attrs({ x : 0, y : 0, stroke : 'none', fill : 'rgba(0,0,0,0.05)' });
+      attrs({ x : 0, y : 0, stroke : 'none', fill : 'rgba(0,0,0,0.05)',
+        width : 10000, height : 7000 });
+
     var svg = svgElm('svg').
       style({ position : 'absolute', left : '0px', top : '0px' }).
       append(bgRect).
@@ -209,10 +220,11 @@ window.addEventListener('load', function() {
         var mousemoveHandler = function(event) {
           var dx = event.pageX - dragPoint.x;
           var dy = event.pageY - dragPoint.y;
-          svg.attrs({ viewBox :
-            (model.left - dx) + ' ' +
-            (model.top - dy) + ' 400 400' });
-
+          model.trigger('viewbox', {
+            left : model.left - dx,
+            top : model.top - dy,
+            width : model.width,
+            height : model.height });
         };
         var mouseupHandler = function(event) {
           $(document).off('mousemove', mousemoveHandler).
@@ -222,39 +234,38 @@ window.addEventListener('load', function() {
           var dy = event.pageY - dragPoint.y;
           model.left -= dx;
           model.top -= dy;
-          svg.attrs({ viewBox :
-            model.left + ' ' +
-            model.top + ' 400 400' });
+          model.trigger('viewbox', model);
         };
 
         event.preventDefault();
+
+        var dragPoint = null;
+
         if (event.altKey) {
           $(document).on('mousemove', mousemoveHandler).
             on('mouseup', mouseupHandler);
-          var dragPoint = { x : event.pageX, y : event.pageY };
-          console.log(dragPoint);
+          dragPoint = { x : event.pageX, y : event.pageY };
         }
       });
 
-    for (var r = 0; r < 100; r += 1) {
-      for (var c = 0; c < 100; c += 1) {
-        var circle = svgElm('circle').attrs({
-          cx : r * 100, cy : c * 100, r : 50,
-          fill : 'rgba(0,0,0,0.2)', stroke : 'none' });
-        svg.append(circle);
-        var text = svgElm('text').attrs({
-          x : r * 100, y : c * 100,
-          fill : 'rgba(0,0,0,0.2)', stroke : 'none' }).
-          props({textContent : r + ',' + c });
-        svg.append(text);
+    !function() {
+      var sw = 10;
+      for (var r = 0; r < sw; r += 1) {
+        for (var c = 0; c < sw; c += 1) {
+          var circle = svgElm('circle').attrs({
+            cx : r * 10000 / sw, cy : c * 10000 / sw, r : 5000 / sw,
+            fill : 'rgba(0,0,0,0.2)', stroke : 'none' });
+          svg.append(circle);
+          var text = svgElm('text').attrs({
+            x : r * 10000 / sw, y : c * 10000 / sw,
+            fill : 'rgba(0,0,0,0.2)', stroke : 'none' }).
+            props({textContent : r + ',' + c });
+          svg.append(text);
+        }
       }
-    }
-
-    svg.attrs({ viewBox : '0 0 400 400' });
+    }();
 
     document.body.appendChild(svg.$el);
-
-    setSize({ width : 400, height : 400 });
 
     return model;
   }();
