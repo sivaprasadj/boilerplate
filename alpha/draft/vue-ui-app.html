@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+  <link rel="stylesheet" href="assets/vue-ui.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="assets/vue-ui.js"></script>
+  <!-- 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:vu="urn:vue-ui"
+    xsi:schemaLocation="urn:vue-ui ./assets/vue-ui.xsd"
+   -->
+</head>
+<body>
+<div id="app" xmlns:vu="urn:vue-ui">
+  hi, vue-ui
+
+  <mycomp></mycomp>
+  <number-input v-model="val1" x="re" ></number-input>
+  <number-input v-model="val2"></number-input>
+  {{val1}} + {{val2}} = {{val1 + val2}}
+</div>
+<script>
+
+new Vue({
+  el: '#app',
+  data: {
+    val1: null,
+    val2: null
+  }
+});
+
+
+</script>
+</body>
+</html>
