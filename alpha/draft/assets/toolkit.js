@@ -46,9 +46,9 @@ var toolkit = function() {
     };
   };
 
-  var createElement = function(tagName) {
+  var wrapObject = function(elm) {
     return {
-      $el: document.createElement(tagName),
+      $el: elm,
       $attrs: function(o) {
         for (var k in o) {
           this.$el.setAttribute(k, o[k]);
@@ -116,10 +116,21 @@ var toolkit = function() {
     };
   };
 
+  var createElement = function(tagName) {
+    return wrapObject(document.createElement(tagName) );
+  };
+
+  var createSVGElement = function(tagName) {
+    return wrapObject(document.createElementNS(
+        'http://www.w3.org/2000/svg', tagName) );
+  };
+
   return {
     assertEquals: assertEquals,
     extend: extend,
     createEventTarget: createEventTarget,
-    createElement: createElement
+    wrapObject: wrapObject,
+    createElement: createElement,
+    createSVGElement: createSVGElement
   };
 }();
