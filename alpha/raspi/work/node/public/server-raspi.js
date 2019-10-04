@@ -9,18 +9,23 @@ var fs = require('fs');
 var Gpio = require('onoff').Gpio;
 var led = new Gpio(20, 'out');
 var button = new Gpio(21, 'in', 'both');
+var buzz = new Gpio(16, 'out');
 button.watch( (err, value) => {
   if (err) {
     throw err;
   }
-  led.writeSync(value);
+  led.writeSync(value? 0 : 1);
+  buzz.writeSync(value);
 });
 process.on('SIGINT', _ => {
   led.unexport();
   button.unexport();
+  buzz.unexport();
   // https://github.com/fivdi/onoff/issues/110
   process.exit(0);
 });
+led.writeSync(0);
+buzz.writeSync(1);
 console.log('gpio setuped.');
 
 //

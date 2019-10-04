@@ -48,7 +48,9 @@
 
     <sshexec trust="true" failonerror="false"
       host="${host}" username="${user}" password="${pass}"
-      command="tar --exclude=work/node_led/node_modules
+      command="tar
+        --exclude=*/node_modules
+        --exclude=*/WiringPi
         -cvzf ${tarfile} work"
       resultproperty="result" outputproperty="out"
       />
