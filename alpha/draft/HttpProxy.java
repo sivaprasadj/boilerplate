@@ -55,8 +55,10 @@ public class HttpProxy {
     console.log("server started at port " + port);
 
     final List<String> hosts =
-        Arrays.asList(props.getProperty("hosts").split("[,;\\s]+") );
-    console.log("accept hosts:" + hosts);
+        Arrays.asList(props.getProperty("hosts", "").split("[,;\\s]+") );
+    console.log("accept hosts: " + hosts);
+    final String proxy = props.getProperty("proxy");
+    console.log("proxy: " + (proxy != null? proxy : "none") );
 
     // emulate slow network.
     final NetworkEmulator emu = new NetworkEmulator();
@@ -69,7 +71,11 @@ public class HttpProxy {
 
       @Override
       public String getProxy(final String host) {
-        return hosts.contains(host)? DIRECT : "192.168.1.37:8080";
+        if (proxy == null) {
+          return DIRECT;
+        } else {
+          return hosts.contains(host)? DIRECT : proxy;
+        }
       }
 
       @Override
@@ -115,10 +121,13 @@ public class HttpProxy {
   }
 
   protected Properties loadProperties() throws Exception {
+    final Properties props = new Properties();
     final InputStream in =
         getClass().getResourceAsStream("HttpProxy.properties");
+    if (in == null) {
+      return props;
+    }
     try {
-      final Properties props = new Properties();
       props.load(in);
       return props;
     } finally {
@@ -283,30 +292,28 @@ public class HttpProxy {
           svrStream.out.flush();
         }
 
+        final HttpHeader resHeader;
         if (isTargetProxy() ) {
-
-          final HttpHeader resHeader = HttpHeader.readFrom(svrStream.in);
-          console.log(resHeader.getStartLine() );
-          if (!resHeader.getHeaders().isEmpty() ) {
-            console.log(resHeader.getHeaders().toString() );
-          }
-
-          cltStream.out.println(resHeader.getStartLine() );
-          for (Entry<String, List<String>> header :
-              resHeader.getHeaders().entrySet() ) {
-            for (final String value : header.getValue() ) {
-              cltStream.out.println(header.getKey() + ": " + value);
-            }
-          }
-          cltStream.out.println();
-          cltStream.out.flush();
-
+          resHeader = HttpHeader.readFrom(svrStream.in);
         } else{
-
-          cltStream.out.println("HTTP/1.1 200 Connection established");
-          cltStream.out.println();
-          cltStream.out.flush();
+          resHeader = new HttpHeader();
+          resHeader.setStartLine("HTTP/1.1 200 Connection established");
         }
+
+        console.log(resHeader.getStartLine() );
+        if (!resHeader.getHeaders().isEmpty() ) {
+          console.log(resHeader.getHeaders().toString() );
+        }
+
+        cltStream.out.println(resHeader.getStartLine() );
+        for (Entry<String, List<String>> header :
+            resHeader.getHeaders().entrySet() ) {
+          for (final String value : header.getValue() ) {
+            cltStream.out.println(header.getKey() + ": " + value);
+          }
+        }
+        cltStream.out.println();
+        cltStream.out.flush();
 
         final Future<Integer> reqCon = connect(cltStream.in, svrStream.out);
         final Future<Integer> resCon = connect(svrStream.in, cltStream.out);
@@ -746,11 +753,12 @@ public class HttpProxy {
     return readLen;
   }
 
-  protected static final Console console = new Console();
-  protected static class Console {
+  protected static final Console console = new Console() {
+    @Override
     public void log(final String msg) {
       out("INFO ", msg);
     }
+    @Override
     public void error(final String msg) {
       out("ERROR", msg);
     }
@@ -760,5 +768,9 @@ public class HttpProxy {
       System.out.println(timestamp + " [" + level +
           "] [" + Thread.currentThread().getName() +  "] - " + msg);
     }
+  };
+  protected interface Console {
+    void log(String msg);
+    void error(String msg);
   }
 }
