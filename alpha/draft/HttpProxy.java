@@ -2,8 +2,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
-import java.io.FilterInputStream;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -62,8 +60,8 @@ public class HttpProxy {
 
     // emulate slow network.
     final NetworkEmulator emu = new NetworkEmulator();
-    emu.setBps(5L * 1024 * 1024);
-    //emu.setBps(10L * 1024 * 1024);
+//    emu.setBps(5L * 1024 * 1024);
+    emu.setBps(10L * 1024 * 1024);
 //    emu.setBps(100L * 1024 * 1024);
     emu.start();
 
@@ -361,6 +359,7 @@ public class HttpProxy {
                 out.flush();
                 readLen += 1;
               } catch(SocketException e) {
+                console.error(e);
                 break;
               }
             }
@@ -415,8 +414,8 @@ public class HttpProxy {
       for (Entry<String, List<String>> header :
           reqHeader.getHeaders().entrySet() ) {
         final String key = header.getKey().toLowerCase();
-        if (!isTargetProxy() && key.contains("proxy") ) {
-          console.log("skip header:" + key);
+        if (!isTargetProxy() && key.startsWith("proxy-") ) {
+          console.log("skip header: " + key);
           continue;
         }
         for (final String value : header.getValue() ) {
@@ -592,9 +591,9 @@ public class HttpProxy {
       } catch(RuntimeException e) {
         throw e;
       } catch(SocketException e) {
-        // ignore
+        console.error(e);
       } catch(EOFException e) {
-        // ignore
+        console.error(e);
       } catch(Exception e) {
         throw new RuntimeException(e);
       }
@@ -731,7 +730,7 @@ public class HttpProxy {
     while (readLen < length) {
       final int b = in.read();
       if (b == -1) {
-        throw new EOFException();
+        throw new EOFException("unexpected end of file.");
       }
       out.write(b);
       readLen += 1;
@@ -762,15 +761,20 @@ public class HttpProxy {
     public void error(final String msg) {
       out("ERROR", msg);
     }
+    public void error(final Throwable t) {
+      error(t.getMessage() );
+      t.printStackTrace(System.out);
+    }
     protected void out(final String level, final String msg) {
       final String timestamp =
           new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS").format(new Date() );
-      System.out.println(timestamp + " [" + level +
-          "] [" + Thread.currentThread().getName() +  "] - " + msg);
+      System.out.println(timestamp + " " + level +
+          " " + Thread.currentThread().getName() +  " - " + msg);
     }
   };
   protected interface Console {
     void log(String msg);
     void error(String msg);
+    void error(Throwable t);
   }
 }
