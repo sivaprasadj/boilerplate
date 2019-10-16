@@ -8,9 +8,7 @@ public class IOUtil {
   private IOUtil() {
   }
 
-  public static int copyFully(
-      final ByteInput in,
-      final ByteOutput out, final int length) throws IOException {
+  public static int copyFully(final ByteInput in, final ByteOutput out, final int length) throws IOException {
     int readLen = 0;
     while (readLen < length) {
       final int b = in.read();
@@ -23,9 +21,7 @@ public class IOUtil {
     return readLen;
   }
 
-  public static int copyFully(
-      final ByteInput in,
-      final ByteOutput out) throws IOException {
+  public static int copyFully(final ByteInput in, final ByteOutput out) throws IOException {
     int readLen = 0;
     while (true) {
       final int b = in.read();

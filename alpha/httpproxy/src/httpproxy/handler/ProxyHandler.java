@@ -160,4 +160,3 @@ public class ProxyHandler extends AbstractProxyHandler {
     console.log(buf.toString() );
   }
 }
-
