@@ -5,7 +5,7 @@ var console = {
 };
 
 var init = function(config) {
-//setup config
+  //setup config
   for (var k in config) {
     $config.put(k, config[k]);
   }
