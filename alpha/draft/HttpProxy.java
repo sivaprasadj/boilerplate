@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -149,24 +148,25 @@ public class HttpProxy {
     se.put("$eventTarget", eventTarget);
     se.put("$config", config);
     eval(se, "HttpProxy.config.0.js");
-    eval(se, "HttpProxy.config.js");
+    eval(se, "/HttpProxy.config.js");
     return config;
   }
   protected Object eval(final ScriptEngine se,
       final String scriptPath) throws Exception {
-    InputStream in = getClass().getResourceAsStream(scriptPath);
-    if (in == null) {
-      in = getClass().getClassLoader().getResourceAsStream(scriptPath);
+    URL url = getClass().getResource(scriptPath);
+    if (url == null) {
+      url = getClass().getClassLoader().getResource(scriptPath);
     }
-    if (in == null) {
-      in = ClassLoader.getSystemResourceAsStream(scriptPath);
+    if (url == null) {
+      url = ClassLoader.getSystemResource(scriptPath);
     }
-    if (in == null) {
+    if (url == null) {
       return null;
     }
-    final Reader reader = new InputStreamReader(in, "UTF-8");
+    final Reader reader = new InputStreamReader(url.openStream(), "UTF-8");
     try {
-      se.put(ScriptEngine.FILENAME, scriptPath);
+      console.log("eval: " + url);
+      se.put(ScriptEngine.FILENAME, url.toString() );
       return se.eval(reader);
     } finally {
       reader.close();
@@ -484,12 +484,12 @@ public class HttpProxy {
       int reqContentLength = -1;
       for (String key : requestHeader.getHeaderNames() ) {
         final String lcKey = key.toLowerCase();
-        if (!isTargetProxy() && lcKey.startsWith("proxy-") ) {
+        if (!isTargetProxy() && lcKey.equals(Constants.PROXY_CONNECTION) ) {
           console.log("skip header: " + key);
           continue;
         }
         for (final String value : requestHeader.getHeaderValues(key) ) {
-          if (lcKey.equals(CONTENT_LENGTH) ) {
+          if (lcKey.equals(Constants.CONTENT_LENGTH) ) {
             reqContentLength = Integer.parseInt(value);
           }
           svrStream.out.println(key + ": " + value);
@@ -517,6 +517,7 @@ public class HttpProxy {
             responseHeader.getStartLine().substring(0, i1) );
         responseHeader.setAttribute("status",
             Integer.valueOf(responseHeader.getStartLine().substring(i1 + 1, i2) ) );
+        responseHeader.setHeader(Constants.PROXY_CONNECTION, "close");
       }
 
       context.getEventTarget().trigger("beforeresponse",
@@ -533,10 +534,10 @@ public class HttpProxy {
         for (final String key : responseHeader.getHeaderNames() ) {
           final String lcKey = key.toLowerCase();
           for (final String value : responseHeader.getHeaderValues(key) ) {
-            if (lcKey.equals(CONTENT_LENGTH) ) {
+            if (lcKey.equals(Constants.CONTENT_LENGTH) ) {
               resContentLength = Integer.parseInt(value);
-            } else if (lcKey.equals(TRANSFER_ENCODING) ) {
-              chunked = value.equals(CHUNKED);
+            } else if (lcKey.equals(Constants.TRANSFER_ENCODING) ) {
+              chunked = value.equals(Constants.CHUNKED);
             }
             cltStream.out.println(key + ": " + value);
           }
@@ -833,13 +834,15 @@ public class HttpProxy {
     }
   }
 
-  protected static final String CONTENT_LENGTH = "content-length";
-  protected static final String TRANSFER_ENCODING = "transfer-encoding";
-  protected static final String CHUNKED = "chunked";
-
-  protected static final String US_ASCII = "ISO-8859-1";
-  protected static final int CR = '\r';
-  protected static final int LF = '\n';
+  protected interface Constants {
+    String CONTENT_LENGTH = "content-length";
+    String TRANSFER_ENCODING = "transfer-encoding";
+    String CHUNKED = "chunked";
+    String PROXY_CONNECTION = "proxy-connection";
+    String US_ASCII = "ISO-8859-1";
+    int CR = '\r';
+    int LF = '\n';
+  }
 
   protected interface ByteInput {
     int read() throws IOException;
@@ -864,9 +867,9 @@ public class HttpProxy {
       try {
         int b;
         while ( (b = read() ) != -1) {
-          if (b == CR) {
+          if (b == Constants.CR) {
             b = in.read();
-            if (b != LF) {
+            if (b != Constants.LF) {
               throw new IOException("unexpected eol:" + b);
             }
             // <CR><LF>
@@ -877,7 +880,7 @@ public class HttpProxy {
       } finally {
         bout.close();
       }
-      return new String(bout.toByteArray(), US_ASCII);
+      return new String(bout.toByteArray(), Constants.US_ASCII);
     }
   }
 
@@ -887,13 +890,13 @@ public class HttpProxy {
       this.out = out;
     }
     public void print(final String line) throws IOException {
-      for (byte b : line.getBytes(US_ASCII) ) {
+      for (byte b : line.getBytes(Constants.US_ASCII) ) {
         write(b);
       }
     }
     public void println() throws IOException {
-      write(CR);
-      write(LF);
+      write(Constants.CR);
+      write(Constants.LF);
     }
     public void println(final String line) throws IOException {
       print(line);
