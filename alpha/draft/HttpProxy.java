@@ -4,7 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -14,10 +16,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -29,8 +31,18 @@ import java.util.regex.Pattern;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 
 public class HttpProxy {
+
+  public interface HttpContext {
+    String DIRECT = "DIRECT";
+    String getProxy(String host);
+    HttpStream createStream(Socket socket) throws IOException;
+    EventTarget getEventTarget();
+  }
 
   public static void main(final String[] args) throws Exception {
     new HttpProxy().start();
@@ -38,6 +50,7 @@ public class HttpProxy {
 
   private ServerSocket serverSocket;
   private ExecutorService es;
+  private EventTarget eventTarget;
 
   public HttpProxy() {
   }
@@ -46,33 +59,45 @@ public class HttpProxy {
 
     console.log("starting http-proxy...");
 
-    final Properties props = loadProperties();
-    final int port = Integer.parseInt(props.getProperty("port", "8080") );
+    eventTarget = new EventTarget();
 
+    // load script config
+    final Map<?,?> config = loadConfig();
+
+    final int port = ((Number)config.get("port") ).intValue();
     serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);
     console.log("server started at port " + port);
 
-    final List<String> hosts =
-        Arrays.asList(props.getProperty("hosts", "").split("[,;\\s]+") );
-    console.log("accept hosts: " + hosts);
-    final String proxy = props.getProperty("proxy");
+    final String directHosts = (String)config.get("directHosts");
+    console.log("direct hosts: " + directHosts);
+
+    final List<Pattern> directHostPats = parseHosts(directHosts);
+    final String proxy = (String)config.get("proxy");
     console.log("proxy: " + (proxy != null? proxy : "none") );
 
     // emulate slow network.
     final NetworkEmulator emu = new NetworkEmulator();
-//    emu.setBps(5L * 1024 * 1024);
-    emu.setBps(10L * 1024 * 1024);
-//    emu.setBps(100L * 1024 * 1024);
+    emu.setBps(( (Number)config.get("bps") ).longValue() );
     emu.start();
 
     final HttpContext context = new HttpContext() {
+
+      @Override
+      public EventTarget getEventTarget() {
+        return eventTarget;
+      }
 
       @Override
       public String getProxy(final String host) {
         if (proxy == null) {
           return DIRECT;
         } else {
-          return hosts.contains(host)? DIRECT : proxy;
+          for (final Pattern pat : directHostPats) {
+            if (pat.matcher(host).matches() ) {
+              return DIRECT;
+            }
+          }
+          return proxy;
         }
       }
 
@@ -117,20 +142,53 @@ public class HttpProxy {
       es.execute(new HttpSession(context, serverSocket.accept() ) );
     }
   }
-
-  protected Properties loadProperties() throws Exception {
-    final Properties props = new Properties();
-    final InputStream in =
-        getClass().getResourceAsStream("HttpProxy.properties");
+  protected Map<?,?> loadConfig() throws Exception {
+    final ScriptEngine se = new ScriptEngineManager().getEngineByName("javascript");
+    final Map<?,?> config = new LinkedHashMap<Object, Object>();
+    se.put("$console", console);
+    se.put("$eventTarget", eventTarget);
+    se.put("$config", config);
+    eval(se, "HttpProxy.config.0.js");
+    eval(se, "HttpProxy.config.js");
+    return config;
+  }
+  protected Object eval(final ScriptEngine se,
+      final String scriptPath) throws Exception {
+    InputStream in = getClass().getResourceAsStream(scriptPath);
     if (in == null) {
-      return props;
+      in = getClass().getClassLoader().getResourceAsStream(scriptPath);
     }
+    if (in == null) {
+      in = ClassLoader.getSystemResourceAsStream(scriptPath);
+    }
+    if (in == null) {
+      return null;
+    }
+    final Reader reader = new InputStreamReader(in, "UTF-8");
     try {
-      props.load(in);
-      return props;
+      se.put(ScriptEngine.FILENAME, scriptPath);
+      return se.eval(reader);
     } finally {
-      in.close();
+      reader.close();
     }
+  }
+  protected static List<Pattern> parseHosts(final String hosts) {
+    final List<Pattern> hostPats = new ArrayList<Pattern>();
+    for (String host : Arrays.asList(hosts.split("[,;\\s]+") ) ) {
+      final StringBuilder buf = new StringBuilder();
+      buf.append('^');
+      int start = 0;
+      int index;
+      while ( (index = host.indexOf('*', start) ) != -1) {
+        buf.append(Pattern.quote(host.substring(start, index) ) );
+        buf.append(".+");
+        start = index + 1;
+      }
+      buf.append(Pattern.quote(host.substring(start) ) );
+      buf.append('$');
+      hostPats.add(Pattern.compile(buf.toString() ) );
+    }
+    return hostPats;
   }
 
   protected static class NetworkEmulator {
@@ -172,7 +230,7 @@ public class HttpProxy {
           }
         }
       });
-      console.log("timer started.");
+      console.log("network emulator started.");
     }
     protected void doTimer() throws Exception {
       long lastTime = System.currentTimeMillis();
@@ -223,15 +281,9 @@ public class HttpProxy {
     }
   }
 
-  public interface HttpContext {
-    String DIRECT = "DIRECT";
-    String getProxy(String host);
-    HttpStream createStream(Socket socket) throws IOException;
-  }
-
   public interface HttpHandler {
     void handle(HttpContext context,
-        HttpStream cltStream, HttpHeader reqHeader) throws Exception;
+        HttpStream cltStream, HttpHeader requestHeader) throws Exception;
   }
 
   protected static abstract class AbstractProxyHandler
@@ -267,7 +319,7 @@ public class HttpProxy {
     public void handle(
         final HttpContext context,
         final HttpStream cltStream,
-        final HttpHeader reqHeader) throws Exception {
+        final HttpHeader requestHeader) throws Exception {
 
       final long startTime = System.currentTimeMillis();
 
@@ -279,42 +331,42 @@ public class HttpProxy {
 
         if (isTargetProxy() ) {
 
-          svrStream.out.println(reqHeader.getStartLine() );
-          for (Entry<String, List<String>> header :
-              reqHeader.getHeaders().entrySet() ) {
-            for (final String value : header.getValue() ) {
-              svrStream.out.println(header.getKey() + ": " + value);
+          svrStream.out.println(requestHeader.getStartLine() );
+          for (final String key : requestHeader.getHeaderNames() ) {
+            for (final String value : requestHeader.getHeaderValues(key) ) {
+              svrStream.out.println(key + ": " + value);
             }
           }
           svrStream.out.println();
           svrStream.out.flush();
         }
 
-        final HttpHeader resHeader;
+        final HttpHeader responseHeader;
         if (isTargetProxy() ) {
-          resHeader = HttpHeader.readFrom(svrStream.in);
+          responseHeader = HttpHeader.readFrom(svrStream.in);
         } else{
-          resHeader = new HttpHeader();
-          resHeader.setStartLine("HTTP/1.1 200 Connection established");
+          responseHeader = new HttpHeader();
+          responseHeader.setStartLine("HTTP/1.1 200 Connection established");
         }
 
-        console.log(resHeader.getStartLine() );
-        if (!resHeader.getHeaders().isEmpty() ) {
-          console.log(resHeader.getHeaders().toString() );
+        console.log(responseHeader.getStartLine() );
+        if (responseHeader.getHeaderNames().iterator().hasNext() ) {
+          console.log(responseHeader.getHeadersAsString() );
         }
 
-        cltStream.out.println(resHeader.getStartLine() );
-        for (Entry<String, List<String>> header :
-            resHeader.getHeaders().entrySet() ) {
-          for (final String value : header.getValue() ) {
-            cltStream.out.println(header.getKey() + ": " + value);
+        cltStream.out.println(responseHeader.getStartLine() );
+        for (final String key : responseHeader.getHeaderNames() ) {
+          for (final String value : responseHeader.getHeaderValues(key) ) {
+            cltStream.out.println(key + ": " + value);
           }
         }
         cltStream.out.println();
         cltStream.out.flush();
 
-        final Future<Integer> reqCon = connect(cltStream.in, svrStream.out);
-        final Future<Integer> resCon = connect(svrStream.in, cltStream.out);
+        final Future<Integer> reqCon =
+            connect(cltStream.in, svrStream.out, false);
+        final Future<Integer> resCon =
+            connect(svrStream.in, cltStream.out, true);
 
         final int reqLen = reqCon.get().intValue();
         final int resLen = resCon.get().intValue();
@@ -322,9 +374,13 @@ public class HttpProxy {
         final long time = System.currentTimeMillis() - startTime;
         final StringBuilder buf = new StringBuilder();
         buf.append("done");
-        buf.append("/req-length: " + reqLen);
-        buf.append("/res-length: " + resLen);
-        buf.append("/" + time + "ms");
+        buf.append("/req-length: ");
+        buf.append(reqLen);
+        buf.append("/res-length: ");
+        buf.append(resLen);
+        buf.append("/");
+        buf.append(time);
+        buf.append("ms");
         console.log(buf.toString() );
 
       } finally {
@@ -332,7 +388,7 @@ public class HttpProxy {
       }
     }
 
-    private static int connId = 1;;
+    private static int connId = 1;
     private static final ExecutorService connectorService =
         Executors.newCachedThreadPool(new ThreadFactory() {
           @Override
@@ -344,7 +400,7 @@ public class HttpProxy {
         });
 
     protected static Future<Integer> connect(
-        final ByteInput in, final ByteOutput out) {
+        final ByteInput in, final ByteOutput out, final boolean response) {
       return connectorService.submit(new Callable<Integer>() {
         @Override
         public Integer call() throws Exception {
@@ -355,8 +411,17 @@ public class HttpProxy {
                 if (b == -1) {
                   break;
                 }
-                out.write(b);
-                out.flush();
+                try {
+                  out.write(b);
+                  out.flush();
+                } catch(SocketException e) {
+                  if (response) {
+                    console.log("response aborted.");
+                    break;
+                  } else {
+                    throw e;
+                  }
+                }
                 readLen += 1;
               } catch(SocketException e) {
                 console.error(e);
@@ -372,10 +437,10 @@ public class HttpProxy {
   protected static class ProxyHandler extends AbstractProxyHandler {
 
     private HttpStream cltStream;
-    private HttpHeader reqHeader;
+    private HttpHeader requestHeader;
 
     private HttpStream svrStream;
-    private HttpHeader resHeader;
+    private HttpHeader responseHeader;
 
     private long startTime;
 
@@ -386,12 +451,12 @@ public class HttpProxy {
     public void handle(
         final HttpContext context,
         final HttpStream cltStream,
-        final HttpHeader reqHeader) throws Exception {
+        final HttpHeader requestHeader) throws Exception {
 
       startTime = System.currentTimeMillis();
 
       this.cltStream = cltStream;
-      this.reqHeader = reqHeader;
+      this.requestHeader = requestHeader;
 
       final Socket svrSocket = SocketFactory.getDefault().
           createSocket(getTargetHost(), getTargetPort() );
@@ -399,30 +464,35 @@ public class HttpProxy {
 
         svrStream = context.createStream(svrSocket);
 
-        doRequest();
-        doResponse();
+        doRequest(context);
+        doResponse(context);
 
       } finally {
         svrSocket.close();
       }
     }
 
-    protected void doRequest() throws Exception {
+    protected void doRequest(final HttpContext context) throws Exception {
 
-      svrStream.out.println(reqHeader.getStartLine() );
+      context.getEventTarget().trigger("beforerequest",
+          map("targetHost", getTargetHost(),
+              "targetPort", Integer.valueOf(getTargetPort() ),
+              "targetProxy", Boolean.valueOf(isTargetProxy() ),
+              "requestHeader", requestHeader) );
+
+      svrStream.out.println(requestHeader.getStartLine() );
       int reqContentLength = -1;
-      for (Entry<String, List<String>> header :
-          reqHeader.getHeaders().entrySet() ) {
-        final String key = header.getKey().toLowerCase();
-        if (!isTargetProxy() && key.startsWith("proxy-") ) {
+      for (String key : requestHeader.getHeaderNames() ) {
+        final String lcKey = key.toLowerCase();
+        if (!isTargetProxy() && lcKey.startsWith("proxy-") ) {
           console.log("skip header: " + key);
           continue;
         }
-        for (final String value : header.getValue() ) {
-          if (key.equals(CONTENT_LENGTH) ) {
+        for (final String value : requestHeader.getHeaderValues(key) ) {
+          if (lcKey.equals(CONTENT_LENGTH) ) {
             reqContentLength = Integer.parseInt(value);
           }
-          svrStream.out.println(header.getKey() + ": " + value);
+          svrStream.out.println(key + ": " + value);
         }
       }
       svrStream.out.println();
@@ -433,33 +503,56 @@ public class HttpProxy {
       svrStream.out.flush();
     }
 
-    protected void doResponse() throws Exception {
+    protected void doResponse(final HttpContext context) throws Exception {
 
-      resHeader = HttpHeader.readFrom(svrStream.in);
-      console.log(resHeader.getStartLine() );
-      console.log(resHeader.getHeaders().toString() );
+      responseHeader = HttpHeader.readFrom(svrStream.in);
 
-      cltStream.out.println(resHeader.getStartLine() );
+      {
+        final int i1 = responseHeader.getStartLine().indexOf('\u0020');
+        final int i2 = responseHeader.getStartLine().indexOf('\u0020', i1 + 1);
+        if (i1 == -1 || i2 == -1) {
+          console.error("bad res start line:" + responseHeader.getStartLine() );
+        }
+        responseHeader.setAttribute("version",
+            responseHeader.getStartLine().substring(0, i1) );
+        responseHeader.setAttribute("status",
+            Integer.valueOf(responseHeader.getStartLine().substring(i1 + 1, i2) ) );
+      }
+
+      context.getEventTarget().trigger("beforeresponse",
+          map("responseHeader", responseHeader) );
+
+      console.log(responseHeader.getStartLine() );
+      console.log(responseHeader.getHeadersAsString() );
+
       int resContentLength = -1;
       boolean chunked = false;
-      for (Entry<String, List<String>> header :
-          resHeader.getHeaders().entrySet() ) {
-        final String key = header.getKey().toLowerCase();
-        for (final String value : header.getValue() ) {
-          if (key.equals(CONTENT_LENGTH) ) {
-            resContentLength = Integer.parseInt(value);
-          } else if (key.equals(TRANSFER_ENCODING) ) {
-            chunked = value.equals(CHUNKED);
+
+      try {
+        cltStream.out.println(responseHeader.getStartLine() );
+        for (final String key : responseHeader.getHeaderNames() ) {
+          final String lcKey = key.toLowerCase();
+          for (final String value : responseHeader.getHeaderValues(key) ) {
+            if (lcKey.equals(CONTENT_LENGTH) ) {
+              resContentLength = Integer.parseInt(value);
+            } else if (lcKey.equals(TRANSFER_ENCODING) ) {
+              chunked = value.equals(CHUNKED);
+            }
+            cltStream.out.println(key + ": " + value);
           }
-          cltStream.out.println(header.getKey() + ": " + value);
         }
+        cltStream.out.println();
+        cltStream.out.flush();
+      } catch(SocketException e) {
+        // ignore
+        console.log("response aborted.");
+        return;
       }
-      cltStream.out.println();
-      cltStream.out.flush();
 
       int contentLength = 0;
       if (resContentLength != -1) {
-        contentLength += copyFully(svrStream.in, cltStream.out, resContentLength);
+        contentLength += copyFully(
+            svrStream.in, cltStream.out, resContentLength);
       } else if (chunked) {
         while (true) {
           final String chunk = svrStream.in.readLine();
@@ -480,8 +573,11 @@ public class HttpProxy {
       final long time = System.currentTimeMillis() - startTime;
       final StringBuilder buf = new StringBuilder();
       buf.append("done");
-      buf.append("/content-length: " + contentLength);
-      buf.append("/" + time + "ms");
+      buf.append("/content-length: ");
+      buf.append(contentLength);
+      buf.append("/");
+      buf.append(time);
+      buf.append("ms");
       console.log(buf.toString() );
     }
   }
@@ -502,17 +598,21 @@ public class HttpProxy {
       try {
 
         final HttpStream cltStream = context.createStream(cltSocket);
-        final HttpHeader reqHeader = HttpHeader.readFrom(cltStream.in);
-        console.log(reqHeader.getStartLine() );
-        console.log(reqHeader.getHeaders().toString() );
+        final HttpHeader requestHeader = HttpHeader.readFrom(cltStream.in);
+        console.log(requestHeader.getStartLine() );
+        console.log(requestHeader.getHeadersAsString() );
 
-        final String[] reqTokens = STR_PAT.split(reqHeader.getStartLine() );
+        final String[] reqTokens = STR_PAT.split(requestHeader.getStartLine() );
         if (reqTokens.length != 3) {
-          throw new IOException("bad start line:" + reqHeader.getStartLine() );
+          throw new IOException("bad req start line:" + requestHeader.getStartLine() );
         }
         final String method = reqTokens[0];
         final String path = reqTokens[1];
         final String version = reqTokens[2];
+
+        requestHeader.setAttribute("method", method);
+        requestHeader.setAttribute("path", path);
+        requestHeader.setAttribute("version", version);
 
         if (method.equalsIgnoreCase("CONNECT") ) {
 
@@ -531,14 +631,14 @@ public class HttpProxy {
             handler.setTargetHost(host);
             handler.setTargetPort(port);
             handler.setTargetProxy(false);
-            handler.handle(context, cltStream, reqHeader);
+            handler.handle(context, cltStream, requestHeader);
 
           } else if (proxy != null) {
 
             final ConnectorHandler handler = new ConnectorHandler();
             setTarget(handler, proxy);
             handler.setTargetProxy(true);
-            handler.handle(context, cltStream, reqHeader);
+            handler.handle(context, cltStream, requestHeader);
 
           } else {
             console.error("bad host:" + host);
@@ -552,20 +652,20 @@ public class HttpProxy {
           if (HttpContext.DIRECT.equals(proxy) ) {
 
             // rewrite start line.
-            reqHeader.setStartLine(method + " " +
+            requestHeader.setStartLine(method + " " +
                 url.getFile() + " " + version);
             final ProxyHandler handler = new ProxyHandler();
             handler.setTargetHost(url.getHost() );
             handler.setTargetPort(url.getPort() != -1? url.getPort(): 80);
             handler.setTargetProxy(false);
-            handler.handle(context, cltStream, reqHeader);
+            handler.handle(context, cltStream, requestHeader);
 
           } else if (proxy != null) {
 
             final ProxyHandler handler = new ProxyHandler();
             setTarget(handler, proxy);
             handler.setTargetProxy(true);
-            handler.handle(context, cltStream, reqHeader);
+            handler.handle(context, cltStream, requestHeader);
 
           } else {
             console.error("bad host:" + url.getHost() );
@@ -576,7 +676,9 @@ public class HttpProxy {
         cltSocket.close();
       }
     }
-    protected void setTarget(AbstractProxyHandler handler, String proxy) {
+
+    protected static void setTarget(
+        final AbstractProxyHandler handler, final String proxy) {
       final int index = proxy.indexOf(':');
       final String host = index != -1? proxy.substring(0, index) : proxy;
       final int port = index != -1?
@@ -584,6 +686,7 @@ public class HttpProxy {
       handler.setTargetHost(host);
       handler.setTargetPort(port);
     }
+
     @Override
     public void run() {
       try {
@@ -599,23 +702,106 @@ public class HttpProxy {
       }
     }
   }
+
   protected static class HttpHeader {
-    private String startLine;
-    private Map<String, List<String>> headers =
-        new LinkedHashMap<String, List<String>>();
+    private static final String[] EMPTY_VALUES = new String[0];
+    private static final String START_LINE = "startLine";
+    private static final String HEADERS = "headers";
+    private Map<String, Object> attrs =
+        new LinkedHashMap<String, Object>();
     public HttpHeader() {
     }
+    @Override
+    public String toString() {
+      return attrs.toString();
+    }
+    public void setAttribute(final String name, final Object value) {
+      attrs.put(name, value);
+    }
+    public Object getAttribute(final String name) {
+      return attrs.get(name);
+    }
     public String getStartLine() {
-      return startLine;
+      return (String)getAttribute(START_LINE);
     }
     public void setStartLine(String startLine) {
-      this.startLine = startLine;
+      setAttribute(START_LINE, startLine);
     }
-    public Map<String, List<String>> getHeaders() {
+    protected static class Key {
+      private final String key;
+      private final String lcKey;
+      private Key(final String key) {
+        this.key = key.intern();
+        this.lcKey = key.toLowerCase().intern();
+      }
+      public String getOriginalKey() {
+        return key;
+      }
+      @Override
+      public int hashCode() {
+        return lcKey.hashCode();
+      }
+      @Override
+      public boolean equals(final Object obj) {
+        if (obj == null) {
+          return false;
+        } else if (obj instanceof Key) {
+          return ((Key)obj).lcKey.equals(lcKey);
+        }
+        throw new IllegalArgumentException(obj.toString() );
+      }
+      @Override
+      public String toString() {
+        return key;
+      }
+      public static Key valueOf(String key) {
+        return new Key(key);
+      }
+    }
+    protected Map<Key, List<String>> getHeaders() {
+      @SuppressWarnings("unchecked")
+      Map<Key, List<String>> headers =
+        (Map<Key, List<String>>)getAttribute(HEADERS);
+      if (headers == null) {
+        headers = new LinkedHashMap<Key, List<String>>();
+        setAttribute(HEADERS, headers);
+      }
       return headers;
     }
-    public void setHeaders(Map<String, List<String>> headers) {
-      this.headers = headers;
+    public Iterable<String> getHeaderNames() {
+      final List<String> keys = new ArrayList<String>();
+      for (Key key : getHeaders().keySet() ) {
+        keys.add(key.getOriginalKey() );
+      }
+      return keys;
+    }
+    public String[] getHeaderValues(final String name) {
+      final List<String> values = getHeaders().get(Key.valueOf(name) );
+      return values != null?
+          values.toArray(new String[values.size()]) : EMPTY_VALUES;
+    }
+    public String getHeader(final String name) {
+      final String[] values = getHeaderValues(name);
+      return values.length > 0? values[0] : null;
+    }
+    public void addHeader(final String name, final String value) {
+      final Key key = Key.valueOf(name);
+      List<String> values = getHeaders().get(key);
+      if (values == null) {
+        values = new ArrayList<String>(1);
+        getHeaders().put(key, values);
+      }
+      values.add(value);
+    }
+    public void removeHeader(final String name) {
+      getHeaders().remove(Key.valueOf(name) );
+    }
+    public String getHeadersAsString() {
+      return getHeaders().toString();
+    }
+    public void setHeader(final String name, final String value) {
+      removeHeader(name);
+      addHeader(name, value);
     }
     public static HttpHeader readFrom(PlainInputStream in)
     throws IOException {
@@ -632,16 +818,12 @@ public class HttpProxy {
         }
         final String k = line.substring(0, index).trim();
         final String v = line.substring(index + 1).trim();
-        List<String> values = header.getHeaders().get(k);
-        if (values == null) {
-          values = new ArrayList<String>(1);
-          header.getHeaders().put(k, values);
-        }
-        values.add(v);
+        header.addHeader(k, v);
       }
       return header;
     }
   }
+
   public static class HttpStream {
     public final PlainInputStream in;
     public final PlainOutputStream out;
@@ -650,6 +832,7 @@ public class HttpProxy {
       this.out = new PlainOutputStream(out);
     }
   }
+
   protected static final String CONTENT_LENGTH = "content-length";
   protected static final String TRANSFER_ENCODING = "transfer-encoding";
   protected static final String CHUNKED = "chunked";
@@ -661,6 +844,7 @@ public class HttpProxy {
   protected interface ByteInput {
     int read() throws IOException;
   }
+
   protected interface ByteOutput {
     void write(int b) throws IOException;
     void flush() throws IOException;
@@ -696,6 +880,7 @@ public class HttpProxy {
       return new String(bout.toByteArray(), US_ASCII);
     }
   }
+
   protected static class PlainOutputStream implements ByteOutput {
     private final ByteOutput out;
     public PlainOutputStream(final ByteOutput out) {
@@ -723,6 +908,7 @@ public class HttpProxy {
       out.flush();
     }
   }
+
   public static int copyFully(
       final ByteInput in,
       final ByteOutput out, final int length) throws IOException {
@@ -737,6 +923,7 @@ public class HttpProxy {
     }
     return readLen;
   }
+
   public static int copyFully(
       final ByteInput in,
       final ByteOutput out) throws IOException {
@@ -752,6 +939,94 @@ public class HttpProxy {
     return readLen;
   }
 
+  public static class EventTarget {
+    private final Map<String,List<EventListener>> map =
+        new HashMap<String, List<EventListener>>();
+    public EventTarget() {
+    }
+    protected List<EventListener> getListeners(final String type) {
+      List<EventListener> listeners = map.get(type);
+      if (listeners == null) {
+        listeners = new ArrayList<HttpProxy.EventListener>(1);
+        map.put(type, listeners);
+      }
+      return listeners;
+    }
+    public EventTarget trigger(final String type, final Object detail)
+    throws Exception {
+      final EventObject e = new EventObject(type, this, detail);
+      for (EventListener l : getListeners(type) ) {
+        l.handle(e);
+      }
+      return this;
+    }
+    public EventTarget on(final String type, final EventListener l) {
+      getListeners(type).add(l);
+      return this;
+    }
+    public EventTarget off(final String type, final EventListener l) {
+      getListeners(type).remove(l);
+      return this;
+    }
+  }
+
+  public static class EventObject {
+    private final String type;
+    private final Object target;
+    private final Object detail;
+    private boolean defaultPrevented;
+    public EventObject(final String type,
+        final Object target, final Object detail) {
+      this.type = type;
+      this.target = target;
+      this.detail = detail;
+      this.defaultPrevented = false;
+    }
+    public String getType() {
+      return type;
+    }
+    public Object getTarget() {
+      return target;
+    }
+    public Object getDetail() {
+      return detail;
+    }
+    public void preventDefault() {
+      defaultPrevented = true;
+    }
+    public boolean isDefaultPrevented() {
+      return defaultPrevented;
+    }
+    @Override
+    public String toString() {
+      final StringBuilder buf = new StringBuilder();
+      buf.append(getClass().getSimpleName() );
+      buf.append('(');
+      buf.append("type=");
+      buf.append(getType() );
+      buf.append(",target=");
+      buf.append(getTarget() );
+      buf.append(",detail=");
+      buf.append(getDetail() );
+      buf.append(",defaultPrevented=");
+      buf.append(isDefaultPrevented() );
+      buf.append(')');
+      return buf.toString();
+    }
+  }
+
+  public interface EventListener {
+    void handle(EventObject e) throws Exception;
+  }
+
+  protected static final Map<?,?> map(final Object... o) {
+    final Map<Object,Object> map = new LinkedHashMap<Object, Object>();
+    for (int i = 0; i < o.length; i += 2) {
+      map.put(o[i], o[i + 1]);
+    }
+    return map;
+  }
+
   protected static final Console console = new Console() {
     @Override
     public void log(final String msg) {
@@ -765,13 +1040,14 @@ public class HttpProxy {
       error(t.getMessage() );
       t.printStackTrace(System.out);
     }
-    protected void out(final String level, final String msg) {
+    protected void out(final String level, final Object msg) {
       final String timestamp =
           new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS").format(new Date() );
       System.out.println(timestamp + " " + level +
           " " + Thread.currentThread().getName() +  " - " + msg);
     }
   };
+
   protected interface Console {
     void log(String msg);
     void error(String msg);
