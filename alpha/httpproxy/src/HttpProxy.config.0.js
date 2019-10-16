@@ -20,14 +20,8 @@ var init = function(config) {
 };
 
 init({
-  // [required]
-
   // service port
   port: 8080,
   // bps for slow network emulation
-  bps: 1 * 1024 * 1024,
-  // direct connect
-  directHosts: '*',
-  // proxy server
-  proxy: 'proxy.local:8080'
+  bps: 1 * 1024 * 1024
 });

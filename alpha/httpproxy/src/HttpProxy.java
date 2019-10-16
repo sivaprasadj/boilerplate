@@ -14,7 +14,6 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -37,8 +36,6 @@ import javax.script.ScriptEngineManager;
 public class HttpProxy {
 
   public interface HttpContext {
-    String DIRECT = "DIRECT";
-    String getProxy(String host);
     HttpStream createStream(Socket socket) throws IOException;
     EventTarget getEventTarget();
   }
@@ -67,13 +64,6 @@ public class HttpProxy {
     serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);
     console.log("server started at port " + port);
 
-    final String directHosts = (String)config.get("directHosts");
-    console.log("direct hosts: " + directHosts);
-
-    final List<Pattern> directHostPats = parseHosts(directHosts);
-    final String proxy = (String)config.get("proxy");
-    console.log("proxy: " + (proxy != null? proxy : "none") );
-
     // emulate slow network.
     final NetworkEmulator emu = new NetworkEmulator();
     emu.setBps(( (Number)config.get("bps") ).longValue() );
@@ -84,20 +74,6 @@ public class HttpProxy {
       @Override
       public EventTarget getEventTarget() {
         return eventTarget;
-      }
-
-      @Override
-      public String getProxy(final String host) {
-        if (proxy == null) {
-          return DIRECT;
-        } else {
-          for (final Pattern pat : directHostPats) {
-            if (pat.matcher(host).matches() ) {
-              return DIRECT;
-            }
-          }
-          return proxy;
-        }
       }
 
       @Override
@@ -171,24 +147,6 @@ public class HttpProxy {
     } finally {
       reader.close();
     }
-  }
-  protected static List<Pattern> parseHosts(final String hosts) {
-    final List<Pattern> hostPats = new ArrayList<Pattern>();
-    for (String host : Arrays.asList(hosts.split("[,;\\s]+") ) ) {
-      final StringBuilder buf = new StringBuilder();
-      buf.append('^');
-      int start = 0;
-      int index;
-      while ( (index = host.indexOf('*', start) ) != -1) {
-        buf.append(Pattern.quote(host.substring(start, index) ) );
-        buf.append(".+");
-        start = index + 1;
-      }
-      buf.append(Pattern.quote(host.substring(start) ) );
-      buf.append('$');
-      hostPats.add(Pattern.compile(buf.toString() ) );
-    }
-    return hostPats;
   }
 
   protected static class NetworkEmulator {
@@ -624,9 +582,14 @@ public class HttpProxy {
           }
           final String host = path.substring(0, index);
           final int port = Integer.parseInt(path.substring(index + 1) );
-          final String proxy = context.getProxy(host);
+          final Map<?,?> proxyInfo = map(
+              "host", host,
+              "port", Integer.valueOf(port),
+              "proxy", Constants.DIRECT);
+          context.getEventTarget().trigger("getproxy", proxyInfo);
+          final String proxy = (String)proxyInfo.get("proxy");
 
-          if (HttpContext.DIRECT.equals(proxy) ) {
+          if (Constants.DIRECT.equals(proxy) ) {
 
             final ConnectorHandler handler = new ConnectorHandler();
             handler.setTargetHost(host);
@@ -648,9 +611,14 @@ public class HttpProxy {
         } else {
 
           final URL url = new URL(path);
-          final String proxy = context.getProxy(url.getHost() );
+          final Map<?,?> proxyInfo = map(
+              "host", url.getHost(),
+              "port", Integer.valueOf(url.getPort() ),
+              "proxy", Constants.DIRECT);
+          context.getEventTarget().trigger("getproxy", proxyInfo);
+          final String proxy = (String)proxyInfo.get("proxy");
 
-          if (HttpContext.DIRECT.equals(proxy) ) {
+          if (Constants.DIRECT.equals(proxy) ) {
 
             // rewrite start line.
             requestHeader.setStartLine(method + " " +
@@ -835,6 +803,7 @@ public class HttpProxy {
   }
 
   protected interface Constants {
+    String DIRECT = "DIRECT";
     String CONTENT_LENGTH = "content-length";
     String TRANSFER_ENCODING = "transfer-encoding";
     String CHUNKED = "chunked";
