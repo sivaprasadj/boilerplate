@@ -14,7 +14,8 @@
   <target name="dist" depends="init">
     <mkdir dir="${build.java}" />
     <javac srcdir="${src}" destdir="${build.java}" 
-      target="1.6" debug="true" />
+      target="1.6" source="1.6" debug="true"
+      includeantruntime="false" />
     <jar destfile="${dist}/httpproxy.jar" manifest="${src}/HttpProxy.MF">
       <zipfileset dir="${build.java}">
         <include name="HttpProxy*.class" />
