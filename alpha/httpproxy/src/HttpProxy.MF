@@ -1,2 +1,2 @@
 Class-Path: .
-Main-Class: HttpProxy
+Main-Class: httpproxy.core.Main

@@ -1,9 +1,11 @@
 <project default="dist" basedir="../">
-  <property name="src" location="src" />
+
+	<property name="src" location="src" />
   <property name="build" location="build" />
   <property name="build.java" location="${build}/classes" />
   <property name="dist" location="dist" />
-  <target name="init">
+
+	<target name="init">
     <mkdir dir="${build}" />
     <mkdir dir="${dist}" />
   </target>
@@ -16,11 +18,17 @@
     <javac srcdir="${src}" destdir="${build.java}" 
       target="1.6" source="1.6" debug="true"
       includeantruntime="false" />
+    <copy todir="${build.java}">
+      <fileset dir="${src}">
+        <include name="**/*.js" />
+      </fileset>
+    </copy>
     <jar destfile="${dist}/httpproxy.jar" manifest="${src}/HttpProxy.MF">
       <zipfileset dir="${build.java}">
-        <include name="HttpProxy*.class" />
-        <include name="HttpProxy.config.0.js" />
+        <include name="httpproxy/**/*.class" />
+        <include name="httpproxy/**/*.js" />
       </zipfileset>
     </jar>
   </target>
+
 </project>
