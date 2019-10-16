@@ -517,7 +517,6 @@ public class HttpProxy {
             responseHeader.getStartLine().substring(0, i1) );
         responseHeader.setAttribute("status",
             Integer.valueOf(responseHeader.getStartLine().substring(i1 + 1, i2) ) );
-        responseHeader.setHeader(Constants.PROXY_CONNECTION, "close");
       }
 
       context.getEventTarget().trigger("beforeresponse",
@@ -525,6 +524,8 @@ public class HttpProxy {
 
       console.log(responseHeader.getStartLine() );
       console.log(responseHeader.getHeadersAsString() );
+
+      responseHeader.setHeader(Constants.PROXY_CONNECTION, "close");
 
       int resContentLength = -1;
       boolean chunked = false;
