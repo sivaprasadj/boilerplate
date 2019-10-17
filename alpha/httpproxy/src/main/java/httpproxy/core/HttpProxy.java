@@ -107,8 +107,8 @@ public class HttpProxy extends HttpObject {
     se.put("$console", console);
     se.put("$eventTarget", eventTarget);
     se.put("$config", config);
-    eval(se, "HttpProxy.js");
-    eval(se, "/HttpProxy.config.js");
+    eval(se, "config.js");
+    eval(se, "/httpproxy.config.js");
     return config;
   }
   protected Object eval(final ScriptEngine se,

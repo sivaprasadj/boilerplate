@@ -5,6 +5,9 @@ var console = {
 };
 
 var init = function(config) {
+
+  var EventListener = Packages.httpproxy.event.EventListener;
+
   //setup config
   for (var k in config) {
     $config.put(k, config[k]);
@@ -12,7 +15,7 @@ var init = function(config) {
   // setup events
   if (config.on) {
     for (var k in config.on) {
-      $eventTarget.on(k, new Packages.HttpProxy.EventListener({
+      $eventTarget.on(k, new EventListener({
         handle : config.on[k]
       }));
     }
