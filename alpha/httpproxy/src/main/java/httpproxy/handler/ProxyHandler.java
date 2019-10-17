@@ -95,7 +95,10 @@ public class ProxyHandler extends AbstractProxyHandler {
           responseHeader.getStartLine().substring(0, i1) );
       responseHeader.setAttribute("status",
           Integer.valueOf(responseHeader.getStartLine().substring(i1 + 1, i2) ) );
-      responseHeader.setHeader(Constants.PROXY_CONNECTION, "close");
+
+      if (!isTargetProxy() ) {
+        responseHeader.setHeader(Constants.PROXY_CONNECTION, "close");
+      }
     }
 
     context.getEventTarget().trigger("beforeresponse",

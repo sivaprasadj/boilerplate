@@ -23,6 +23,7 @@
     <copy todir="${build.java}">
       <fileset dir="${src}/main/resources">
         <include name="**/*.js" />
+        <include name="**/*.properties" />
       </fileset>
     </copy>
     <jar destfile="${dist}/httpproxy.jar"

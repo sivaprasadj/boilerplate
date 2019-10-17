@@ -1,27 +1,21 @@
 package httpproxy.core;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HttpObject {
+  private static final Logger logger = Logger.getLogger("httpproxy");
   protected static final Console console = new Console() {
     @Override
     public void log(final String msg) {
-      out("INFO ", msg);
+      logger.info(msg);
     }
     @Override
     public void error(final String msg) {
-      out("ERROR", msg);
+      logger.severe(msg);
     }
     public void error(final Throwable t) {
-      error(t.getMessage() );
-      t.printStackTrace(System.out);
-    }
-    protected void out(final String level, final Object msg) {
-      final String timestamp =
-          new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS").format(new Date() );
-      System.out.println(timestamp + " " + level +
-          " " + Thread.currentThread().getName() +  " - " + msg);
+      logger.log(Level.SEVERE, t.getMessage(), t);
     }
   };
 }

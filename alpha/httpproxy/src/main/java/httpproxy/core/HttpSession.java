@@ -15,6 +15,8 @@ import httpproxy.io.PlainStream;
 
 public class HttpSession extends HttpObject implements Runnable {
 
+  private static final String DIRECT = "DIRECT";
+
   private static final Pattern STR_PAT = Pattern.compile("\\u0020");
 
   private final HttpContext context;
@@ -56,12 +58,11 @@ public class HttpSession extends HttpObject implements Runnable {
         final int port = Integer.parseInt(path.substring(index + 1) );
         final Map<?,?> proxyInfo = Util.map(
             "host", host,
-            "port", Integer.valueOf(port),
-            "proxy", Constants.DIRECT);
+            "port", Integer.valueOf(port) );
         context.getEventTarget().trigger("getproxy", proxyInfo);
         final String proxy = (String)proxyInfo.get("proxy");
 
-        if (Constants.DIRECT.equals(proxy) ) {
+        if (DIRECT.equals(proxy) ) {
 
           final ConnectorHandler handler = new ConnectorHandler();
           handler.setTargetHost(host);
@@ -85,12 +86,11 @@ public class HttpSession extends HttpObject implements Runnable {
         final URL url = new URL(path);
         final Map<?,?> proxyInfo = Util.map(
             "host", url.getHost(),
-            "port", Integer.valueOf(url.getPort() ),
-            "proxy", Constants.DIRECT);
+            "port", Integer.valueOf(url.getPort() ) );
         context.getEventTarget().trigger("getproxy", proxyInfo);
         final String proxy = (String)proxyInfo.get("proxy");
 
-        if (Constants.DIRECT.equals(proxy) ) {
+        if (DIRECT.equals(proxy) ) {
 
           // rewrite start line.
           requestHeader.setStartLine(method + " " +
