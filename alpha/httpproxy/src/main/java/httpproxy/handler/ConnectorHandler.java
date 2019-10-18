@@ -19,16 +19,12 @@ import httpproxy.io.PlainStream;
 
 public class ConnectorHandler extends AbstractProxyHandler {
 
-  private Console console;
-
   @Override
   public void handle(
       final HttpContext context,
       final Console console,
       final PlainStream cltStream,
       final HttpHeader requestHeader) throws Exception {
-
-    this.console = console;
 
     final long startTime = System.currentTimeMillis();
 
@@ -72,10 +68,8 @@ public class ConnectorHandler extends AbstractProxyHandler {
       cltStream.out.println();
       cltStream.out.flush();
 
-      final Future<Integer> reqCon =
-          connect(cltStream.in, svrStream.out, false);
-      final Future<Integer> resCon =
-          connect(svrStream.in, cltStream.out, true);
+      final Future<Integer> reqCon = connect(cltStream.in, svrStream.out);
+      final Future<Integer> resCon = connect(svrStream.in, cltStream.out);
 
       final int reqLen = reqCon.get().intValue();
       final int resLen = resCon.get().intValue();
@@ -109,7 +103,7 @@ public class ConnectorHandler extends AbstractProxyHandler {
       });
 
   protected Future<Integer> connect(
-      final ByteInput in, final ByteOutput out, final boolean response) {
+      final ByteInput in, final ByteOutput out) {
     return connectorService.submit(new Callable<Integer>() {
       @Override
       public Integer call() throws Exception {
@@ -120,20 +114,10 @@ public class ConnectorHandler extends AbstractProxyHandler {
             if (b == -1) {
               break;
             }
-            try {
-              out.write(b);
-              out.flush();
-            } catch(SocketException e) {
-              if (response) {
-                console.log("response aborted.");
-                break;
-              } else {
-                throw e;
-              }
-            }
+            out.write(b);
+            out.flush();
             readLen += 1;
           } catch(SocketException e) {
-            console.error(e);
             break;
           }
         }

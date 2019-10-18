@@ -43,7 +43,13 @@ public class HttpSession implements Runnable {
     try {
 
       cltStream = context.createStream(cltSocket);
-      requestHeader = HttpHeader.readFrom(cltStream.in);
+
+      try {
+        requestHeader = HttpHeader.readFrom(cltStream.in);
+      } catch(SocketException e) {
+        return;
+      }
+
       final Map<?,?> detail = Util.map("requestHeader", requestHeader);
 
       context.getEventTarget().trigger("beginsession", detail);

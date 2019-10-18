@@ -1,5 +1,6 @@
 package httpproxy.handler;
 
+import java.io.EOFException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Map;
@@ -89,7 +90,12 @@ public class ProxyHandler extends AbstractProxyHandler {
     svrStream.out.println();
     svrStream.out.flush();
     if (reqContentLength != -1) {
-      IOUtil.copyFully(cltStream.in, svrStream.out, reqContentLength);
+      try {
+        IOUtil.copyFully(cltStream.in, svrStream.out, reqContentLength);
+      }catch(EOFException e) {
+        console.error(e.getMessage() );
+        return;
+      }
     }
     svrStream.out.flush();
   }
