@@ -23,7 +23,6 @@
     <copy todir="${build.java}">
       <fileset dir="${src}/main/resources">
         <include name="**/*.js" />
-        <include name="**/*.properties" />
       </fileset>
     </copy>
     <jar destfile="${dist}/httpproxy.jar"
@@ -33,6 +32,11 @@
         <include name="**/*.js" />
       </zipfileset>
     </jar>
+    <copy todir="${dist}">
+      <fileset dir="${src}/main/resources">
+        <include name="logging.properties" />
+      </fileset>
+    </copy>
   </target>
 
 </project>

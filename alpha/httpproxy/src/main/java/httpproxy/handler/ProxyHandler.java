@@ -2,6 +2,7 @@ package httpproxy.handler;
 
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Map;
 
 import javax.net.SocketFactory;
 
@@ -50,13 +51,16 @@ public class ProxyHandler extends AbstractProxyHandler {
     }
   }
 
+  protected Map<?, ?> createDetail(final String name, final Object value) {
+    return Util.map("targetHost", getTargetHost(),
+        "targetPort", Integer.valueOf(getTargetPort() ),
+        "targetProxy", Boolean.valueOf(isTargetProxy() ),
+        name, value);
+  }
   protected void doRequest(final HttpContext context) throws Exception {
 
     context.getEventTarget().trigger("beforerequest",
-        Util.map("targetHost", getTargetHost(),
-            "targetPort", Integer.valueOf(getTargetPort() ),
-            "targetProxy", Boolean.valueOf(isTargetProxy() ),
-            "requestHeader", requestHeader) );
+        createDetail("requestHeader", requestHeader) );
 
     svrStream.out.println(requestHeader.getStartLine() );
     int reqContentLength = -1;
@@ -102,7 +106,7 @@ public class ProxyHandler extends AbstractProxyHandler {
     }
 
     context.getEventTarget().trigger("beforeresponse",
-        Util.map("responseHeader", responseHeader) );
+        createDetail("responseHeader", responseHeader) );
 
     console.log(responseHeader.getStartLine() );
     console.log(responseHeader.getHeadersAsString() );

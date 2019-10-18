@@ -26,7 +26,7 @@ init({
   // service port
   port: 8080,
   // bps for slow network emulation
-  bps: 1 * 1024 * 1024,
+  bps: 100 * 1024 * 1024,
   on: {
     getproxy: function(e) {
       var detail = e.getDetail();
