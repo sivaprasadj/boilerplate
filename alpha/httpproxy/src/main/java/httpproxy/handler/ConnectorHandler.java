@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.net.SocketFactory;
 
+import httpproxy.core.Console;
 import httpproxy.core.HttpContext;
 import httpproxy.core.HttpHeader;
 import httpproxy.io.ByteInput;
@@ -18,11 +19,16 @@ import httpproxy.io.PlainStream;
 
 public class ConnectorHandler extends AbstractProxyHandler {
 
+  private Console console;
+
   @Override
   public void handle(
       final HttpContext context,
+      final Console console,
       final PlainStream cltStream,
       final HttpHeader requestHeader) throws Exception {
+
+    this.console = console;
 
     final long startTime = System.currentTimeMillis();
 
@@ -102,7 +108,7 @@ public class ConnectorHandler extends AbstractProxyHandler {
         }
       });
 
-  protected static Future<Integer> connect(
+  protected Future<Integer> connect(
       final ByteInput in, final ByteOutput out, final boolean response) {
     return connectorService.submit(new Callable<Integer>() {
       @Override

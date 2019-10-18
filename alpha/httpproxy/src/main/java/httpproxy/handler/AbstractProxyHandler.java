@@ -1,9 +1,8 @@
 package httpproxy.handler;
 
 import httpproxy.core.HttpHandler;
-import httpproxy.core.HttpObject;
 
-public abstract class AbstractProxyHandler extends HttpObject implements HttpHandler {
+public abstract class AbstractProxyHandler implements HttpHandler {
   private String targetHost;
   private int targetPort;
   private boolean targetProxy;

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.net.SocketFactory;
 
+import httpproxy.core.Console;
 import httpproxy.core.Constants;
 import httpproxy.core.HttpContext;
 import httpproxy.core.HttpHeader;
@@ -14,6 +15,9 @@ import httpproxy.io.IOUtil;
 import httpproxy.io.PlainStream;
 
 public class ProxyHandler extends AbstractProxyHandler {
+
+  private HttpContext context;
+  private Console console;
 
   private PlainStream cltStream;
   private HttpHeader requestHeader;
@@ -29,8 +33,11 @@ public class ProxyHandler extends AbstractProxyHandler {
   @Override
   public void handle(
       final HttpContext context,
+      final Console console,
       final PlainStream cltStream,
       final HttpHeader requestHeader) throws Exception {
+    this.context = context;
+    this.console = console;
 
     startTime = System.currentTimeMillis();
 
@@ -43,8 +50,8 @@ public class ProxyHandler extends AbstractProxyHandler {
 
       svrStream = context.createStream(svrSocket);
 
-      doRequest(context);
-      doResponse(context);
+      doRequest();
+      doResponse();
 
     } finally {
       svrSocket.close();
@@ -55,9 +62,11 @@ public class ProxyHandler extends AbstractProxyHandler {
     return Util.map("targetHost", getTargetHost(),
         "targetPort", Integer.valueOf(getTargetPort() ),
         "targetProxy", Boolean.valueOf(isTargetProxy() ),
+        "console", console,
         name, value);
   }
-  protected void doRequest(final HttpContext context) throws Exception {
+
+  protected void doRequest() throws Exception {
 
     context.getEventTarget().trigger("beforerequest",
         createDetail("requestHeader", requestHeader) );
@@ -67,7 +76,7 @@ public class ProxyHandler extends AbstractProxyHandler {
     for (String key : requestHeader.getHeaderNames() ) {
       final String lcKey = key.toLowerCase();
       if (!isTargetProxy() && lcKey.equals(Constants.PROXY_CONNECTION) ) {
-        console.log("skip header: " + key);
+        // skip proxy-connection
         continue;
       }
       for (final String value : requestHeader.getHeaderValues(key) ) {
@@ -85,7 +94,7 @@ public class ProxyHandler extends AbstractProxyHandler {
     svrStream.out.flush();
   }
 
-  protected void doResponse(final HttpContext context) throws Exception {
+  protected void doResponse() throws Exception {
 
     responseHeader = HttpHeader.readFrom(svrStream.in);
 

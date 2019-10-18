@@ -9,7 +9,8 @@ import java.util.concurrent.ThreadFactory;
 import httpproxy.io.ByteInput;
 import httpproxy.io.ByteOutput;
 
-public class NetworkEmulator extends HttpObject {
+public class NetworkEmulator {
+  protected static final Console console = Console.global;
   private static final long FEED_INTERVAL_IN_MILLIS = 50L;
   private final Object lock = new Object();
   private Executor es;

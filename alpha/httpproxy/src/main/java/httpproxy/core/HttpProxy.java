@@ -26,7 +26,9 @@ import httpproxy.io.ByteOutput;
 import httpproxy.io.PlainStream;
 
 
-public class HttpProxy extends HttpObject {
+public class HttpProxy {
+
+  protected static final Console console = Console.global;
 
   private ServerSocket serverSocket;
   private ExecutorService es;

@@ -24,6 +24,8 @@ public class SimpleFormatter extends Formatter{
 //    buf.append(record.getThreadID() );
     buf.append(Thread.currentThread().getName() );
     buf.append(SEPARATOR);
+    buf.append(record.getLoggerName() );
+    buf.append(SEPARATOR);
     buf.append(record.getMessage() );
     buf.append(EOL);
     if(record.getThrown() != null) {

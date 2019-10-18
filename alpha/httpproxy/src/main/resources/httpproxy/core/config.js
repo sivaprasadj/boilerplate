@@ -28,13 +28,17 @@ init({
   // bps for slow network emulation
   bps: 100 * 1024 * 1024,
   on: {
-    getproxy: function(e) {
-      var detail = e.getDetail();
+    beginsession: function(event) {
+      var detail = event.getDetail();
+      detail.put('enableLog', true);
+    },
+    getproxy: function(event) {
+      var detail = event.getDetail();
       detail.put('proxy', 'DIRECT');
     },
-    beforerequest: function(e) {
+    beforerequest: function(event) {
     },
-    beforeresponse: function(e) {
+    beforeresponse: function(event) {
     }
   }
 });

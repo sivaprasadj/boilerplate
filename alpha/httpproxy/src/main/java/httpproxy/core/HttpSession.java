@@ -13,104 +13,72 @@ import httpproxy.handler.ConnectorHandler;
 import httpproxy.handler.ProxyHandler;
 import httpproxy.io.PlainStream;
 
-public class HttpSession extends HttpObject implements Runnable {
+public class HttpSession implements Runnable {
 
   private static final String DIRECT = "DIRECT";
-
   private static final Pattern STR_PAT = Pattern.compile("\\u0020");
 
   private final HttpContext context;
   private final Socket cltSocket;
+
+  private Console console;
+  private PlainStream cltStream;
+  private HttpHeader requestHeader;
+  private String method;
+  private String path;
+  private String version;
 
   public HttpSession(final HttpContext context, final Socket cltSocket) {
     this.context = context;
     this.cltSocket = cltSocket;
   }
 
+  protected Map<?, ?> createProxyInfo(final Console console,
+      final String host, final int port) {
+    return Util.map("console", console,
+        "host", host, "port", Integer.valueOf(port) );
+  }
+
   protected void doSession() throws Exception {
     try {
 
-      final PlainStream cltStream = context.createStream(cltSocket);
-      final HttpHeader requestHeader = HttpHeader.readFrom(cltStream.in);
+      cltStream = context.createStream(cltSocket);
+      requestHeader = HttpHeader.readFrom(cltStream.in);
+      final Map<?,?> detail = Util.map("requestHeader", requestHeader);
+
+      context.getEventTarget().trigger("beginsession", detail);
+
+      final Object enableLog = detail.get("enableLog");
+      console = Boolean.TRUE.equals(enableLog)? Console.global : nullLog;
+
       console.log(requestHeader.getStartLine() );
       console.log(requestHeader.getHeadersAsString() );
 
       final String[] reqTokens = STR_PAT.split(requestHeader.getStartLine() );
       if (reqTokens.length != 3) {
-        throw new IOException("bad req start line:" + requestHeader.getStartLine() );
+        throw new IOException("bad req start line:" +requestHeader.getStartLine() );
       }
-      final String method = reqTokens[0];
-      final String path = reqTokens[1];
-      final String version = reqTokens[2];
+
+      method = reqTokens[0];
+      path = reqTokens[1];
+      version = reqTokens[2];
 
       requestHeader.setAttribute("method", method);
       requestHeader.setAttribute("path", path);
       requestHeader.setAttribute("version", version);
 
-      if (method.equalsIgnoreCase("CONNECT") ) {
+      if (path.startsWith("/") ) {
 
-        int index = path.indexOf(':');
-        if (index == -1) {
-          console.error("bad request:" + path);
-          return;
-        }
-        final String host = path.substring(0, index);
-        final int port = Integer.parseInt(path.substring(index + 1) );
-        final Map<?,?> proxyInfo = Util.map(
-            "host", host,
-            "port", Integer.valueOf(port) );
-        context.getEventTarget().trigger("getproxy", proxyInfo);
-        final String proxy = (String)proxyInfo.get("proxy");
-
-        if (DIRECT.equals(proxy) ) {
-
-          final ConnectorHandler handler = new ConnectorHandler();
-          handler.setTargetHost(host);
-          handler.setTargetPort(port);
-          handler.setTargetProxy(false);
-          handler.handle(context, cltStream, requestHeader);
-
-        } else if (proxy != null) {
-
-          final ConnectorHandler handler = new ConnectorHandler();
-          setTarget(handler, proxy);
-          handler.setTargetProxy(true);
-          handler.handle(context, cltStream, requestHeader);
-
-        } else {
-          console.error("bad host:" + host);
+        final Map<?,?> requestInfo = Util.map(
+            "requestHeader", requestHeader,
+            "cltStream", cltStream);
+        context.getEventTarget().trigger("service", requestInfo);
+        if (!Boolean.TRUE.equals(requestInfo.get("consumed") ) ) {
+          sendError(404, "Not Found");
         }
 
       } else {
-
-        final URL url = new URL(path);
-        final Map<?,?> proxyInfo = Util.map(
-            "host", url.getHost(),
-            "port", Integer.valueOf(url.getPort() ) );
-        context.getEventTarget().trigger("getproxy", proxyInfo);
-        final String proxy = (String)proxyInfo.get("proxy");
-
-        if (DIRECT.equals(proxy) ) {
-
-          // rewrite start line.
-          requestHeader.setStartLine(method + " " +
-              url.getFile() + " " + version);
-          final ProxyHandler handler = new ProxyHandler();
-          handler.setTargetHost(url.getHost() );
-          handler.setTargetPort(url.getPort() != -1? url.getPort(): 80);
-          handler.setTargetProxy(false);
-          handler.handle(context, cltStream, requestHeader);
-
-        } else if (proxy != null) {
-
-          final ProxyHandler handler = new ProxyHandler();
-          setTarget(handler, proxy);
-          handler.setTargetProxy(true);
-          handler.handle(context, cltStream, requestHeader);
-
-        } else {
-          console.error("bad host:" + url.getHost() );
-        }
+        doProxySession();
       }
 
     } finally {
@@ -118,7 +86,87 @@ public class HttpSession extends HttpObject implements Runnable {
     }
   }
 
-  protected static void setTarget(
+  protected void sendError(
+      final int status, final String message) throws Exception {
+    cltStream.out.println("HTTP/1.1 " + status + " " + message);
+    cltStream.out.println();
+    cltStream.out.flush();
+  }
+
+  protected void doProxySession() throws Exception {
+
+    if (method.equalsIgnoreCase("CONNECT") ) {
+
+      // CONNECT
+
+      int index = path.indexOf(':');
+      if (index == -1) {
+        console.error("bad request:" + path);
+        sendError(400, "Bad Request");
+        return;
+      }
+      final String host = path.substring(0, index);
+      final int port = Integer.parseInt(path.substring(index + 1) );
+      final Map<?,?> proxyInfo = createProxyInfo(console, host, port);
+      context.getEventTarget().trigger("getproxy", proxyInfo);
+      final String proxy = (String)proxyInfo.get("proxy");
+
+      if (DIRECT.equalsIgnoreCase(proxy) ) {
+
+        final ConnectorHandler handler = new ConnectorHandler();
+        handler.setTargetHost(host);
+        handler.setTargetPort(port);
+        handler.setTargetProxy(false);
+        handler.handle(context, console, cltStream, requestHeader);
+
+      } else if (proxy != null) {
+
+        final ConnectorHandler handler = new ConnectorHandler();
+        setTarget(handler, proxy);
+        handler.setTargetProxy(true);
+        handler.handle(context, console, cltStream, requestHeader);
+
+      } else {
+        console.error("forbidden:" + host);
+        sendError(403, "Forbidden");
+      }
+
+    } else {
+
+      // HEAD, GET, POST, ...
+
+      final URL url = new URL(path);
+      final Map<?,?> proxyInfo = createProxyInfo(console,
+          url.getHost(), url.getPort() );
+      context.getEventTarget().trigger("getproxy", proxyInfo);
+      final String proxy = (String)proxyInfo.get("proxy");
+
+      if (DIRECT.equalsIgnoreCase(proxy) ) {
+
+        // rewrite start line.
+        requestHeader.setStartLine(method + " " +
+            url.getFile() + " " + version);
+        final ProxyHandler handler = new ProxyHandler();
+        handler.setTargetHost(url.getHost() );
+        handler.setTargetPort(url.getPort() != -1? url.getPort(): 80);
+        handler.setTargetProxy(false);
+        handler.handle(context, console, cltStream, requestHeader);
+
+      } else if (proxy != null) {
+
+        final ProxyHandler handler = new ProxyHandler();
+        setTarget(handler, proxy);
+        handler.setTargetProxy(true);
+        handler.handle(context, console, cltStream, requestHeader);
+
+      } else {
+        console.error("forbidden:" + url.getHost() );
+        sendError(403, "Forbidden");
+      }
+    }
+  }
+
+  protected void setTarget(
       final AbstractProxyHandler handler, final String proxy) {
     final int index = proxy.indexOf(':');
     final String host = index != -1? proxy.substring(0, index) : proxy;
@@ -135,11 +183,20 @@ public class HttpSession extends HttpObject implements Runnable {
     } catch(RuntimeException e) {
       throw e;
     } catch(SocketException e) {
-      console.error(e);
+      Console.global.error(e);
     } catch(EOFException e) {
-      console.error(e);
+      Console.global.error(e);
     } catch(Exception e) {
       throw new RuntimeException(e);
     }
   }
+
+  private static final Console nullLog = new Console() {
+    @Override
+    public void log(String msg) {}
+    @Override
+    public void error(String msg) {}
+    @Override
+    public void error(Throwable t) {}
+  };
 }
