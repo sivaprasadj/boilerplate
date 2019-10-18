@@ -113,31 +113,31 @@ public class ConnectorHandler extends AbstractProxyHandler {
     return connectorService.submit(new Callable<Integer>() {
       @Override
       public Integer call() throws Exception {
-          int readLen = 0;
-          while (true) {
-            try {
-              final int b = in.read();
-              if (b == -1) {
-                break;
-              }
-              try {
-                out.write(b);
-                out.flush();
-              } catch(SocketException e) {
-                if (response) {
-                  console.log("response aborted.");
-                  break;
-                } else {
-                  throw e;
-                }
-              }
-              readLen += 1;
-            } catch(SocketException e) {
-              console.error(e);
+        int readLen = 0;
+        while (true) {
+          try {
+            final int b = in.read();
+            if (b == -1) {
               break;
             }
+            try {
+              out.write(b);
+              out.flush();
+            } catch(SocketException e) {
+              if (response) {
+                console.log("response aborted.");
+                break;
+              } else {
+                throw e;
+              }
+            }
+            readLen += 1;
+          } catch(SocketException e) {
+            console.error(e);
+            break;
           }
-          return Integer.valueOf(readLen);
+        }
+        return Integer.valueOf(readLen);
       }
     });
   }
