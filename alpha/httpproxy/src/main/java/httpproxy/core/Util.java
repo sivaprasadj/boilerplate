@@ -3,6 +3,10 @@ package httpproxy.core;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Util
+ * @author kazuhiko arase
+ */
 public class Util {
 
   private Util() {

@@ -8,6 +8,10 @@ import java.util.Map;
 
 import httpproxy.io.PlainInputStream;
 
+/**
+ * HttpHeader
+ * @author kazuhiko arase
+ */
 public class HttpHeader {
   private static final String[] EMPTY_VALUES = new String[0];
   private static final String START_LINE = "startLine";

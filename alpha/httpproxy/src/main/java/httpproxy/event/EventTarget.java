@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * EventTarget
+ * @author kazuhiko arase
+ */
 public class EventTarget {
   private final Map<String,List<EventListener>> map =
       new HashMap<String, List<EventListener>>();

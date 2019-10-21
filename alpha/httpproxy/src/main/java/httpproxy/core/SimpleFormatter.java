@@ -7,7 +7,10 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-
+/**
+ * SimpleFormatter
+ * @author kazuhiko arase
+ */
 public class SimpleFormatter extends Formatter{
 
   private static final String SEPARATOR = " - ";

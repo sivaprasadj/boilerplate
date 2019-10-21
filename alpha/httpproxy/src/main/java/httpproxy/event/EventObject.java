@@ -1,6 +1,9 @@
 package httpproxy.event;
 
-
+/**
+ * EventObject
+ * @author kazuhiko arase
+ */
 public class EventObject {
   private final String type;
   private final Object target;

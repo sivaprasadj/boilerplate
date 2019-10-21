@@ -15,6 +15,10 @@ import httpproxy.core.Util;
 import httpproxy.io.IOUtil;
 import httpproxy.io.PlainStream;
 
+/**
+ * ProxyHandler
+ * @author kazuhiko arase
+ */
 public class ProxyHandler extends AbstractProxyHandler {
 
   private HttpContext context;

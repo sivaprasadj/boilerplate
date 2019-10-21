@@ -1,5 +1,9 @@
 package httpproxy.io;
 
+/**
+ * PlainStream
+ * @author kazuhiko arase
+ */
 public class PlainStream {
   public final PlainInputStream in;
   public final PlainOutputStream out;

@@ -3,11 +3,17 @@ package httpproxy.core;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Console
+ * @author kazuhiko arase
+ */
 public interface Console {
+
   void log(String msg);
   void error(String msg);
   void debug(String msg);
   void debug(Throwable t);
+
   Console global = new Console() {
     private final Logger logger = Logger.getLogger("httpproxy");
     @Override
@@ -27,6 +33,7 @@ public interface Console {
       logger.log(Level.FINEST, t.getMessage(), t);
     }
   };
+
   Console nullOut = new Console() {
     @Override
     public void log(String msg) {}

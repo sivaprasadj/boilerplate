@@ -2,6 +2,10 @@ package httpproxy.io;
 
 import java.io.IOException;
 
+/**
+ * PlainOutputStream
+ * @author kazuhiko arase
+ */
 public class PlainOutputStream implements ByteOutput {
   private final ByteOutput out;
   public PlainOutputStream(final ByteOutput out) {
@@ -21,11 +25,11 @@ public class PlainOutputStream implements ByteOutput {
     println();
   }
   @Override
-  public void write(int b) throws IOException {
+  public void write(final int b) throws IOException {
     out.write(b);
   }
   @Override
-  public void write(byte[] buf, int off, int len) throws IOException {
+  public void write(final byte[] buf, final int off, final int len) throws IOException {
     out.write(buf, off, len);
   }
   @Override

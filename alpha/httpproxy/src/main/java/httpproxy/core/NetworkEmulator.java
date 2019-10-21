@@ -9,6 +9,10 @@ import java.util.concurrent.ThreadFactory;
 import httpproxy.io.ByteInput;
 import httpproxy.io.ByteOutput;
 
+/**
+ * NetworkEmulator
+ * @author kazuhiko arase
+ */
 public class NetworkEmulator {
   protected static final Console console = Console.global;
   private static final long FEED_INTERVAL_IN_MILLIS = 50L;
@@ -85,10 +89,16 @@ public class NetworkEmulator {
         return in.read();
       }
       @Override
+      public int read(final byte[] buf, final int off, final int len) throws IOException {
+        final int readLen = in.read(buf, off, len);
+        consume(readLen);
+        return readLen;
+      }
+      @Override
       public int read(final byte[] buf) throws IOException {
-        final int len = in.read(buf);
-        consume(len);
-        return len;
+        final int readLen = in.read(buf);
+        consume(readLen);
+        return readLen;
       }
       @Override
       public boolean isShutdown() throws IOException {

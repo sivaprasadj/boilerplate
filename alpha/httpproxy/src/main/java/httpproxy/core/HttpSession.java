@@ -13,6 +13,10 @@ import httpproxy.handler.ConnectorHandler;
 import httpproxy.handler.ProxyHandler;
 import httpproxy.io.PlainStream;
 
+/**
+ * HttpSession
+ * @author kazuhiko arase
+ */
 public class HttpSession implements Runnable {
 
   private static final String DIRECT = "DIRECT";
@@ -51,7 +55,7 @@ public class HttpSession implements Runnable {
       }
 
       if (requestHeader.getStartLine().length() == 0) {
-        console.debug("no startline");
+        Console.global.debug("no startline");
         return;
       }
 

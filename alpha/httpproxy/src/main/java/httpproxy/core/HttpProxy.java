@@ -25,7 +25,10 @@ import httpproxy.io.ByteInput;
 import httpproxy.io.ByteOutput;
 import httpproxy.io.PlainStream;
 
-
+/**
+ * HttpProxy
+ * @author kazuhiko arase
+ */
 public class HttpProxy {
 
   protected static final Console console = Console.global;
@@ -70,6 +73,10 @@ public class HttpProxy {
           @Override
           public int read() throws IOException {
             return in.read();
+          }
+          @Override
+          public int read(byte[] buf, int off, int len) throws IOException {
+            return in.read(buf, off, len);
           }
           @Override
           public int read(byte[] buf) throws IOException {
