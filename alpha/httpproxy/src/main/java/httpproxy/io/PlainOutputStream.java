@@ -25,7 +25,15 @@ public class PlainOutputStream implements ByteOutput {
     out.write(b);
   }
   @Override
+  public void write(byte[] buf, int off, int len) throws IOException {
+    out.write(buf, off, len);
+  }
+  @Override
   public void flush() throws IOException {
     out.flush();
+  }
+  @Override
+  public boolean isShutdown() throws IOException {
+    return out.isShutdown();
   }
 }

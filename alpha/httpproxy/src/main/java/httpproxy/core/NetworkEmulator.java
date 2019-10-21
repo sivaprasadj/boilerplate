@@ -64,24 +64,35 @@ public class NetworkEmulator {
       Thread.sleep(FEED_INTERVAL_IN_MILLIS);
     }
   }
-  protected void consume() {
+  protected void consume(final int len) {
+    final int lenInBits = len * 8;
     synchronized(lock) {
       try {
-        while (bufInBits < 8) {
+        while (bufInBits < lenInBits) {
           lock.wait();
         }
       } catch(InterruptedException e) {
         throw new RuntimeException(e);
       }
-      bufInBits -= 8;
+      bufInBits -= lenInBits;
     }
   }
   public ByteInput wrap(final ByteInput in) {
     return new ByteInput() {
       @Override
       public int read() throws IOException {
-        consume();
+        consume(1);
         return in.read();
+      }
+      @Override
+      public int read(final byte[] buf) throws IOException {
+        final int len = in.read(buf);
+        consume(len);
+        return len;
+      }
+      @Override
+      public boolean isShutdown() throws IOException {
+        return in.isShutdown();
       }
     };
   }
@@ -89,12 +100,21 @@ public class NetworkEmulator {
     return new ByteOutput() {
       @Override
       public void write(final int b) throws IOException {
-        consume();
+        consume(1);
         out.write(b);
+      }
+      @Override
+      public void write(final byte[] buf, final int off, final int len) throws IOException {
+        consume(len);
+        out.write(buf, off, len); 
       }
       @Override
       public void flush() throws IOException {
         out.flush();
+      }
+      @Override
+      public boolean isShutdown() throws IOException {
+        return out.isShutdown();
       }
     };
   }

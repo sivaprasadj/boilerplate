@@ -71,6 +71,14 @@ public class HttpProxy {
           public int read() throws IOException {
             return in.read();
           }
+          @Override
+          public int read(byte[] buf) throws IOException {
+            return in.read(buf);
+          }
+          @Override
+          public boolean isShutdown() throws IOException {
+            return socket.isInputShutdown();
+          }
          };
         ByteOutput out = new ByteOutput() {
           private final OutputStream out =
@@ -80,8 +88,16 @@ public class HttpProxy {
             out.write(b);
           }
           @Override
+          public void write(byte[] buf, int off, int len) throws IOException {
+            out.write(buf, off, len);
+          }
+          @Override
           public void flush() throws IOException {
             out.flush();
+          }
+          @Override
+          public boolean isShutdown() throws IOException {
+            return socket.isOutputShutdown();
           }
         };
         in = emu.wrap(in);

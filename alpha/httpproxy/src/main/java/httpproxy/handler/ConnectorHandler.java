@@ -1,5 +1,6 @@
 package httpproxy.handler;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.Callable;
@@ -105,22 +106,41 @@ public class ConnectorHandler extends AbstractProxyHandler {
   protected Future<Integer> connect(
       final ByteInput in, final ByteOutput out) {
     return connectorService.submit(new Callable<Integer>() {
+      protected boolean isShutdown() throws IOException {
+        return in.isShutdown() && out.isShutdown();
+      }
+      
       @Override
       public Integer call() throws Exception {
+
+        final byte[] buf = new byte[8192];
         int readLen = 0;
+
         while (true) {
           try {
-            final int b = in.read();
-            if (b == -1) {
+
+            final int len = in.read(buf);
+            if (len == -1) {
               break;
             }
-            out.write(b);
+
+            if (isShutdown() ) {
+              break;
+            }
+
+            out.write(buf, 0, len);
             out.flush();
-            readLen += 1;
+            readLen += len;
+
+            if (isShutdown() ) {
+              break;
+            }
+
           } catch(SocketException e) {
             break;
           }
         }
+
         return Integer.valueOf(readLen);
       }
     });

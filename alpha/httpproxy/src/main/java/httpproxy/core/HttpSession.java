@@ -50,12 +50,17 @@ public class HttpSession implements Runnable {
         return;
       }
 
+      if (requestHeader.getStartLine().length() == 0) {
+        console.debug("no startline");
+        return;
+      }
+
       final Map<?,?> detail = Util.map("requestHeader", requestHeader);
 
       context.getEventTarget().trigger("beginsession", detail);
 
       final Object enableLog = detail.get("enableLog");
-      console = Boolean.TRUE.equals(enableLog)? Console.global : nullLog;
+      console = Boolean.TRUE.equals(enableLog)? Console.global : Console.nullOut;
 
       console.log(requestHeader.getStartLine() );
       console.log(requestHeader.getHeadersAsString() );
@@ -189,20 +194,11 @@ public class HttpSession implements Runnable {
     } catch(RuntimeException e) {
       throw e;
     } catch(SocketException e) {
-      Console.global.error(e);
+      Console.global.debug(e);
     } catch(EOFException e) {
-      Console.global.error(e);
+      Console.global.debug(e);
     } catch(Exception e) {
       throw new RuntimeException(e);
     }
   }
-
-  private static final Console nullLog = new Console() {
-    @Override
-    public void log(String msg) {}
-    @Override
-    public void error(String msg) {}
-    @Override
-    public void error(Throwable t) {}
-  };
 }

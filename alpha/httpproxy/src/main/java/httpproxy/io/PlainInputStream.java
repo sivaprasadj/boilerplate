@@ -12,6 +12,10 @@ public class PlainInputStream implements ByteInput {
   public int read() throws IOException {
     return in.read();
   }
+  @Override
+  public int read(final byte[] buf) throws IOException {
+    return in.read(buf);
+  }
   public String readLine() throws IOException {
     final ByteArrayOutputStream bout = new ByteArrayOutputStream();
     try {
@@ -31,5 +35,9 @@ public class PlainInputStream implements ByteInput {
       bout.close();
     }
     return new String(bout.toByteArray(), PlainConstants.US_ASCII);
+  }
+  @Override
+  public boolean isShutdown() throws IOException {
+    return in.isShutdown();
   }
 }
