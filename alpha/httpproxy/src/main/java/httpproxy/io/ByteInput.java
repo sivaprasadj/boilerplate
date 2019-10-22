@@ -10,5 +10,4 @@ public interface ByteInput {
   int read() throws IOException;
   int read(byte[] buf) throws IOException;
   int read(byte[] buf, int off, int len) throws IOException;
-  boolean isShutdown() throws IOException;
 }

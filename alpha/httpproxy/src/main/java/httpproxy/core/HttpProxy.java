@@ -82,10 +82,6 @@ public class HttpProxy {
           public int read(byte[] buf) throws IOException {
             return in.read(buf);
           }
-          @Override
-          public boolean isShutdown() throws IOException {
-            return socket.isInputShutdown();
-          }
          };
         ByteOutput out = new ByteOutput() {
           private final OutputStream out =
@@ -114,11 +110,11 @@ public class HttpProxy {
     };
 
     final int[] id = { 1 };
-    es = Executors.newFixedThreadPool(50, new ThreadFactory() {
+    es = Executors.newCachedThreadPool(new ThreadFactory() {
       @Override
       public Thread newThread(final Runnable r) {
         final Thread t = new Thread(r);
-        t.setName("proxy-" + id[0]++);
+        t.setName("proxy-session-" + id[0]++);
         return t;
       }
     });

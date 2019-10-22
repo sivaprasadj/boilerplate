@@ -23,9 +23,6 @@ public class IOUtil {
       }
       out.write(buf, 0, len);
       readLen += len;
-      if (in.isShutdown() && out.isShutdown() ) {
-        break;
-      }
     }
     return readLen;
   }
@@ -41,9 +38,6 @@ public class IOUtil {
       }
       out.write(buf, 0, len);
       readLen += len;
-      if (in.isShutdown() && out.isShutdown() ) {
-        break;
-      }
     }
     return readLen;
   }

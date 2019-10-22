@@ -100,10 +100,6 @@ public class NetworkEmulator {
         consume(readLen);
         return readLen;
       }
-      @Override
-      public boolean isShutdown() throws IOException {
-        return in.isShutdown();
-      }
     };
   }
   public ByteOutput wrap(final ByteOutput out) {

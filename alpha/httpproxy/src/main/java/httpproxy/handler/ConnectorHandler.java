@@ -2,6 +2,7 @@ package httpproxy.handler;
 
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,7 +35,10 @@ public class ConnectorHandler extends AbstractProxyHandler {
 
     final Socket svrSocket = SocketFactory.getDefault().
         createSocket(getTargetHost(), getTargetPort() );
+
     try {
+
+      svrSocket.setSoTimeout(5000);
 
       final PlainStream svrStream = context.createStream(svrSocket);
 
@@ -117,29 +121,24 @@ public class ConnectorHandler extends AbstractProxyHandler {
         int len;
         int readLen = 0;
 
-        while (true) {
-          try {
+        try {
+
+          while (true) {
 
             len = in.read(buf);
             if (len == -1) {
               break;
             }
 
-            if (in.isShutdown() && out.isShutdown() ) {
-              break;
-            }
-
             out.write(buf, 0, len);
             out.flush();
             readLen += len;
-
-            if (in.isShutdown() && out.isShutdown() ) {
-              break;
-            }
-
-          } catch(SocketException e) {
-            break;
           }
+
+        } catch(SocketTimeoutException e) {
+          // ignore
+        } catch(SocketException e) {
+          // ignore
         }
 
         return Integer.valueOf(readLen);

@@ -44,8 +44,4 @@ public class PlainInputStream implements ByteInput {
     }
     return new String(bout.toByteArray(), PlainConstants.US_ASCII);
   }
-  @Override
-  public boolean isShutdown() throws IOException {
-    return in.isShutdown();
-  }
 }
