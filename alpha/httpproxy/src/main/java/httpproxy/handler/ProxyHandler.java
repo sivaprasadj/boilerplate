@@ -178,7 +178,7 @@ public class ProxyHandler extends AbstractProxyHandler {
     final long time = System.currentTimeMillis() - startTime;
     final StringBuilder buf = new StringBuilder();
     buf.append("done");
-    buf.append("/content-length: ");
+    buf.append("/content-length:");
     buf.append(contentLength);
     buf.append("/");
     buf.append(time);

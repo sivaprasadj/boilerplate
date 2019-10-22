@@ -146,7 +146,7 @@ public class HttpProxy {
     }
     final Reader reader = new InputStreamReader(url.openStream(), "UTF-8");
     try {
-      console.log("eval: " + url);
+      console.log("eval:" + url);
       se.put(ScriptEngine.FILENAME, url.toString() );
       return se.eval(reader);
     } finally {

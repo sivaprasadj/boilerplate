@@ -27,7 +27,7 @@ public class NetworkEmulator {
   }
   public void setBps(long bps) {
     final DecimalFormat fmt = new DecimalFormat("###,###,###,###,##0");
-    console.log("network speed: " + fmt.format(bps / 8) +
+    console.log("network speed:" + fmt.format(bps / 8) +
         "[bytes per second] (" +
         fmt.format(bps / 1024 / 1024) + "Mbps)");
     this.bps = bps;

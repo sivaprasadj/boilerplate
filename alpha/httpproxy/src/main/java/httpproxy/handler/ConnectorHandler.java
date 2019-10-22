@@ -85,9 +85,9 @@ public class ConnectorHandler extends AbstractProxyHandler {
       final long time = System.currentTimeMillis() - startTime;
       final StringBuilder buf = new StringBuilder();
       buf.append("done");
-      buf.append("/req-length: ");
+      buf.append("/req-length:");
       buf.append(reqLen);
-      buf.append("/res-length: ");
+      buf.append("/res-length:");
       buf.append(resLen);
       buf.append("/");
       buf.append(time);
