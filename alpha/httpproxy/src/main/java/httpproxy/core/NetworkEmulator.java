@@ -100,6 +100,10 @@ public class NetworkEmulator {
         consume(readLen);
         return readLen;
       }
+      @Override
+      public int available() throws IOException {
+        return in.available();
+      }
     };
   }
   public ByteOutput wrap(final ByteOutput out) {

@@ -14,8 +14,7 @@ import javax.net.SocketFactory;
 import httpproxy.core.Console;
 import httpproxy.core.HttpContext;
 import httpproxy.core.HttpHeader;
-import httpproxy.io.ByteInput;
-import httpproxy.io.ByteOutput;
+import httpproxy.io.IOUtil;
 import httpproxy.io.PlainStream;
 
 /**
@@ -76,8 +75,8 @@ public class ConnectorHandler extends AbstractProxyHandler {
       cltStream.out.println();
       cltStream.out.flush();
 
-      final Future<Integer> reqCon = connect(cltStream.in, svrStream.out);
-      final Future<Integer> resCon = connect(svrStream.in, cltStream.out);
+      final Future<Integer> reqCon = connect(cltStream, svrStream);
+      final Future<Integer> resCon = connect(svrStream, cltStream);
 
       final int reqLen = reqCon.get().intValue();
       final int resLen = resCon.get().intValue();
@@ -110,14 +109,13 @@ public class ConnectorHandler extends AbstractProxyHandler {
         }
       });
 
-  protected Future<Integer> connect(final ByteInput in, final ByteOutput out) {
+  protected Future<Integer> connect(final PlainStream inStream, final PlainStream outStream) {
 
     return connectorService.submit(new Callable<Integer>() {
 
       @Override
       public Integer call() throws Exception {
 
-        final byte[] buf = new byte[8192];
         int len;
         int readLen = 0;
 
@@ -125,14 +123,17 @@ public class ConnectorHandler extends AbstractProxyHandler {
 
           while (true) {
 
-            len = in.read(buf);
-            if (len == -1) {
+            if (inStream.socket.isInputShutdown() &&
+                outStream.socket.isInputShutdown() ) {
               break;
             }
 
-            out.write(buf, 0, len);
-            out.flush();
-            readLen += len;
+            if ( (len = inStream.in.available() ) > 0) {
+              readLen += IOUtil.copyFully(inStream.in, outStream.out, len);
+              outStream.out.flush();
+            } else {
+              Thread.sleep(100);
+            }
           }
 
         } catch(SocketTimeoutException e) {

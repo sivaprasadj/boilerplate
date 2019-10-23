@@ -82,6 +82,10 @@ public class HttpProxy {
           public int read(byte[] buf) throws IOException {
             return in.read(buf);
           }
+          @Override
+          public int available() throws IOException {
+            return in.available();
+          }
          };
         ByteOutput out = new ByteOutput() {
           private final OutputStream out =
@@ -105,7 +109,7 @@ public class HttpProxy {
         };
         in = emu.wrap(in);
         out = emu.wrap(out);
-        return new PlainStream(in, out);
+        return new PlainStream(socket, in, out);
       }
     };
 

@@ -24,6 +24,10 @@ public class PlainInputStream implements ByteInput {
   public int read(final byte[] buf) throws IOException {
     return in.read(buf);
   }
+  @Override
+  public int available() throws IOException {
+    return in.available();
+  }
   public String readLine() throws IOException {
     final ByteArrayOutputStream bout = new ByteArrayOutputStream();
     try {
