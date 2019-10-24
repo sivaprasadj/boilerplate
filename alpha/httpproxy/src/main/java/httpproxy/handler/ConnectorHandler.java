@@ -53,6 +53,11 @@ public class ConnectorHandler extends AbstractProxyHandler {
         svrStream.out.flush();
       }
 
+      if (svrStream.socket.isInputShutdown() ) {
+        console.log("server shutdown.");
+        return;
+      }
+
       final HttpHeader responseHeader;
       if (isTargetProxy() ) {
         responseHeader = HttpHeader.readFrom(svrStream.in);
