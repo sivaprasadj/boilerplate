@@ -75,8 +75,9 @@ public class ConnectorHandler extends AbstractProxyHandler {
       cltStream.out.println();
       cltStream.out.flush();
 
-      final Future<Integer> reqCon = connect(cltStream, svrStream);
-      final Future<Integer> resCon = connect(svrStream, cltStream);
+      final boolean[] shutdown = { false };
+      final Future<Integer> reqCon = connect(cltStream, svrStream, shutdown);
+      final Future<Integer> resCon = connect(svrStream, cltStream, shutdown);
 
       final int reqLen = reqCon.get().intValue();
       final int resLen = resCon.get().intValue();
@@ -109,7 +110,9 @@ public class ConnectorHandler extends AbstractProxyHandler {
         }
       });
 
-  protected Future<Integer> connect(final PlainStream inStream, final PlainStream outStream) {
+  protected Future<Integer> connect(
+      final PlainStream inStream, final PlainStream outStream,
+      final boolean[] shutdown) {
 
     return connectorService.submit(new Callable<Integer>() {
 
@@ -123,16 +126,18 @@ public class ConnectorHandler extends AbstractProxyHandler {
 
           while (true) {
 
-            if (inStream.socket.isInputShutdown() &&
-                outStream.socket.isInputShutdown() ) {
-              break;
+            synchronized(shutdown) {
+              shutdown[0] |= inStream.socket.isInputShutdown();
+              if (shutdown[0]) {
+                break;
+              }
             }
 
             if ( (len = inStream.in.available() ) > 0) {
               readLen += IOUtil.copyFully(inStream.in, outStream.out, len);
               outStream.out.flush();
             } else {
-              Thread.sleep(100);
+              Thread.sleep(50);
             }
           }
 
