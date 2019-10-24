@@ -95,7 +95,7 @@ public class HttpProxy {
             out.write(b);
           }
           @Override
-          public void write(byte[] buf, int off, int len) throws IOException {
+          public void write(final byte[] buf, final int off, final int len) throws IOException {
             out.write(buf, off, len);
           }
           @Override

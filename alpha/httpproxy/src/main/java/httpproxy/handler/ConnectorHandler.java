@@ -14,7 +14,6 @@ import javax.net.SocketFactory;
 import httpproxy.core.Console;
 import httpproxy.core.HttpContext;
 import httpproxy.core.HttpHeader;
-import httpproxy.io.IOUtil;
 import httpproxy.io.PlainStream;
 
 /**
@@ -36,8 +35,6 @@ public class ConnectorHandler extends AbstractProxyHandler {
         createSocket(getTargetHost(), getTargetPort() );
 
     try {
-
-      svrSocket.setSoTimeout(5000);
 
       final PlainStream svrStream = context.createStream(svrSocket);
 
@@ -80,9 +77,12 @@ public class ConnectorHandler extends AbstractProxyHandler {
       cltStream.out.println();
       cltStream.out.flush();
 
-      final boolean[] shutdown = { false };
-      final Future<Integer> reqCon = connect(cltStream, svrStream, shutdown);
-      final Future<Integer> resCon = connect(svrStream, cltStream, shutdown);
+      final int soTimeout = 30000;
+      cltStream.socket.setSoTimeout(soTimeout);
+      svrStream.socket.setSoTimeout(soTimeout);
+
+      final Future<Integer> reqCon = connect(cltStream, svrStream);
+      final Future<Integer> resCon = connect(svrStream, cltStream);
 
       final int reqLen = reqCon.get().intValue();
       final int resLen = resCon.get().intValue();
@@ -115,35 +115,27 @@ public class ConnectorHandler extends AbstractProxyHandler {
         }
       });
 
-  protected Future<Integer> connect(
-      final PlainStream inStream, final PlainStream outStream,
-      final boolean[] shutdown) {
+  protected Future<Integer> connect(final PlainStream inStream, final PlainStream outStream) {
 
     return connectorService.submit(new Callable<Integer>() {
 
       @Override
       public Integer call() throws Exception {
 
-        int len;
+        final byte[] buf = new byte[8192];
         int readLen = 0;
 
         try {
 
           while (true) {
 
-            synchronized(shutdown) {
-              shutdown[0] |= inStream.socket.isInputShutdown();
-              if (shutdown[0]) {
-                break;
-              }
+            final int len = inStream.in.read(buf);
+            if (len == -1) {
+              break;
             }
-
-            if ( (len = inStream.in.available() ) > 0) {
-              readLen += IOUtil.copyFully(inStream.in, outStream.out, len);
-              outStream.out.flush();
-            } else {
-              Thread.sleep(50);
-            }
+            outStream.out.write(buf, 0, len);
+            outStream.out.flush();
+            readLen += len;
           }
 
         } catch(SocketTimeoutException e) {
