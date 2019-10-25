@@ -38,7 +38,7 @@ public class ConnectorHandler extends AbstractProxyHandler {
 
       final PlainStream svrStream = context.createStream(svrSocket);
 
-      if (isTargetProxy() ) {
+      if (isUseProxy() ) {
 
         svrStream.out.println(requestHeader.getStartLine() );
         for (final String key : requestHeader.getHeaderNames() ) {
@@ -56,7 +56,7 @@ public class ConnectorHandler extends AbstractProxyHandler {
       }
 
       final HttpHeader responseHeader;
-      if (isTargetProxy() ) {
+      if (isUseProxy() ) {
         responseHeader = HttpHeader.readFrom(svrStream.in);
       } else{
         responseHeader = new HttpHeader();

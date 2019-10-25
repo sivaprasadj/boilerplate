@@ -66,7 +66,7 @@ public class ProxyHandler extends AbstractProxyHandler {
   protected Map<?, ?> createDetail(final String name, final Object value) {
     return Util.map("targetHost", getTargetHost(),
         "targetPort", Integer.valueOf(getTargetPort() ),
-        "targetProxy", Boolean.valueOf(isTargetProxy() ),
+        "useProxy", Boolean.valueOf(isUseProxy() ),
         "console", console,
         name, value);
   }
@@ -80,7 +80,7 @@ public class ProxyHandler extends AbstractProxyHandler {
     int reqContentLength = -1;
     for (String key : requestHeader.getHeaderNames() ) {
       final String lcKey = key.toLowerCase();
-      if (!isTargetProxy() && lcKey.equals(Constants.PROXY_CONNECTION) ) {
+      if (!isUseProxy() && lcKey.equals(Constants.PROXY_CONNECTION) ) {
         // skip proxy-connection
         continue;
       }
@@ -119,7 +119,7 @@ public class ProxyHandler extends AbstractProxyHandler {
       responseHeader.setAttribute("status",
           Integer.valueOf(responseHeader.getStartLine().substring(i1 + 1, i2) ) );
 
-      if (!isTargetProxy() ) {
+      if (!isUseProxy() ) {
         responseHeader.setHeader(Constants.PROXY_CONNECTION, "close");
       }
     }

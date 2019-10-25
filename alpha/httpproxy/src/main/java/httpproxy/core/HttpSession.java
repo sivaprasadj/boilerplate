@@ -131,14 +131,14 @@ public class HttpSession implements Runnable {
         final ConnectorHandler handler = new ConnectorHandler();
         handler.setTargetHost(host);
         handler.setTargetPort(port);
-        handler.setTargetProxy(false);
+        handler.setUseProxy(false);
         handler.handle(context, console, cltStream, requestHeader);
 
       } else if (proxy != null) {
 
         final ConnectorHandler handler = new ConnectorHandler();
         setTarget(handler, proxy);
-        handler.setTargetProxy(true);
+        handler.setUseProxy(true);
         handler.handle(context, console, cltStream, requestHeader);
 
       } else {
@@ -164,14 +164,14 @@ public class HttpSession implements Runnable {
         final ProxyHandler handler = new ProxyHandler();
         handler.setTargetHost(url.getHost() );
         handler.setTargetPort(url.getPort() != -1? url.getPort(): 80);
-        handler.setTargetProxy(false);
+        handler.setUseProxy(false);
         handler.handle(context, console, cltStream, requestHeader);
 
       } else if (proxy != null) {
 
         final ProxyHandler handler = new ProxyHandler();
         setTarget(handler, proxy);
-        handler.setTargetProxy(true);
+        handler.setUseProxy(true);
         handler.handle(context, console, cltStream, requestHeader);
 
       } else {

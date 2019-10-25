@@ -6,10 +6,14 @@ import httpproxy.core.HttpHandler;
  * AbstractProxyHandler
  * @author kazuhiko arase
  */
+/**
+ * @author J205
+ *
+ */
 public abstract class AbstractProxyHandler implements HttpHandler {
   private String targetHost;
   private int targetPort;
-  private boolean targetProxy;
+  private boolean useProxy;
   protected AbstractProxyHandler() {
   }
   public String getTargetHost() {
@@ -24,10 +28,10 @@ public abstract class AbstractProxyHandler implements HttpHandler {
   public void setTargetPort(int targetPort) {
     this.targetPort = targetPort;
   }
-  public boolean isTargetProxy() {
-    return targetProxy;
+  public boolean isUseProxy() {
+    return useProxy;
   }
-  public void setTargetProxy(boolean targetProxy) {
-    this.targetProxy = targetProxy;
+  public void setUseProxy(boolean useProxy) {
+    this.useProxy = useProxy;
   }
 }
