@@ -37,11 +37,11 @@ init({
       var console = detail.get('console');
       detail.put('proxy', 'DIRECT');
     },
-    beforerequest: function(event) {
+    beforeproxyrequest: function(event) {
       var detail = event.getDetail();
       var console = detail.get('console');
     },
-    beforeresponse: function(event) {
+    beforeproxyresponse: function(event) {
       var detail = event.getDetail();
       var console = detail.get('console');
       var responseHeader = detail.get('responseHeader');

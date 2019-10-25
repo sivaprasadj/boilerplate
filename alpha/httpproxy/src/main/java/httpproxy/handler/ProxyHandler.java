@@ -73,12 +73,12 @@ public class ProxyHandler extends AbstractProxyHandler {
 
   protected void doRequest() throws Exception {
 
-    context.getEventTarget().trigger("beforerequest",
+    context.getEventTarget().trigger("beforeproxyrequest",
         createDetail("requestHeader", requestHeader) );
 
     svrStream.out.println(requestHeader.getStartLine() );
     int reqContentLength = -1;
-    for (String key : requestHeader.getHeaderNames() ) {
+    for (final String key : requestHeader.getHeaderNames() ) {
       final String lcKey = key.toLowerCase();
       if (!isUseProxy() && lcKey.equals(Constants.PROXY_CONNECTION) ) {
         // skip proxy-connection
@@ -124,7 +124,7 @@ public class ProxyHandler extends AbstractProxyHandler {
       }
     }
 
-    context.getEventTarget().trigger("beforeresponse",
+    context.getEventTarget().trigger("beforeproxyresponse",
         createDetail("responseHeader", responseHeader) );
 
     console.log(responseHeader.getStartLine() );
