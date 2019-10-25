@@ -6,10 +6,6 @@ import httpproxy.core.HttpHandler;
  * AbstractProxyHandler
  * @author kazuhiko arase
  */
-/**
- * @author J205
- *
- */
 public abstract class AbstractProxyHandler implements HttpHandler {
   private String targetHost;
   private int targetPort;
