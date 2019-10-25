@@ -4,6 +4,19 @@ var console = {
   error: function(msg) { $console.error('' + msg); }
 };
 
+var alert = function(msg) {
+  Packages.httpproxy.core.Util.alert(msg);
+};
+
+var confirm = function(msg) {
+  return !!Packages.httpproxy.core.Util.confirm(msg);
+};
+
+var input = function(msg) {
+  var input = Packages.httpproxy.core.Util.input(msg);
+  return input != null? '' + input : null;
+};
+
 var init = function(config) {
 
   var EventListener = Packages.httpproxy.event.EventListener;
