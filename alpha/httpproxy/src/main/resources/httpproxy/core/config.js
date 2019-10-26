@@ -4,16 +4,25 @@ var console = {
   error: function(msg) { $console.error('' + msg); }
 };
 
-var alert = function(msg) {
-  Packages.httpproxy.core.Util.alert(msg);
+var $optsToJavaMap = function(opts) {
+  opts = opts || {};
+  var map = Packages.httpproxy.core.Util.map();
+  for (var k in opts) {
+    map.put(k, opts[k]);
+  }
+  return map;
 };
 
-var confirm = function(msg) {
-  return !!Packages.httpproxy.core.Util.confirm(msg);
+var alert = function(msg, opts) {
+  Packages.httpproxy.core.Util.alert(msg, $optsToJavaMap(opts) );
 };
 
-var input = function(msg) {
-  var input = Packages.httpproxy.core.Util.input(msg);
+var confirm = function(msg, opts) {
+  return !!Packages.httpproxy.core.Util.confirm(msg, $optsToJavaMap(opts) );
+};
+
+var input = function(msg, opts) {
+  var input = Packages.httpproxy.core.Util.input(msg, $optsToJavaMap(opts) );
   return input != null? '' + input : null;
 };
 
