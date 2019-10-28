@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class HttpProxy {
   private ServerSocket serverSocket;
   private ExecutorService es;
   private EventTarget eventTarget;
+  private NetworkEmulator netEmu;
 
   public HttpProxy() {
   }
@@ -54,11 +56,31 @@ public class HttpProxy {
     console.log("server started at port " + port);
 
     // emulate slow network.
-    final NetworkEmulator emu = new NetworkEmulator();
-    emu.setBps(( (Number)config.get("bps") ).longValue() );
-    emu.start();
+    netEmu = new NetworkEmulator();
+    netEmu.setBps(( (Number)config.get("bps") ).longValue() );
+    netEmu.start();
 
-    final HttpContext context = new HttpContext() {
+    final int[] id = { 1 };
+    es = Executors.newCachedThreadPool(new ThreadFactory() {
+      @Override
+      public Thread newThread(final Runnable r) {
+        final Thread t = new Thread(r);
+        t.setName("proxy-session-" + id[0]++);
+        return t;
+      }
+    });
+
+    try {
+      while (true) {
+        es.execute(new HttpSession(createContext(), serverSocket.accept() ) );
+      }
+    } catch(SocketException e) {
+      // ignore.
+    }
+  }
+
+  protected HttpContext createContext() {
+    return new HttpContext() {
 
       @Override
       public EventTarget getEventTarget() {
@@ -107,24 +129,11 @@ public class HttpProxy {
             return socket.isOutputShutdown();
           }
         };
-        in = emu.wrap(in);
-        out = emu.wrap(out);
+        in = netEmu.wrap(in);
+        out = netEmu.wrap(out);
         return new PlainStream(socket, in, out);
       }
     };
-
-    final int[] id = { 1 };
-    es = Executors.newCachedThreadPool(new ThreadFactory() {
-      @Override
-      public Thread newThread(final Runnable r) {
-        final Thread t = new Thread(r);
-        t.setName("proxy-session-" + id[0]++);
-        return t;
-      }
-    });
-    while (true) {
-      es.execute(new HttpSession(context, serverSocket.accept() ) );
-    }
   }
   protected Map<?,?> loadConfig() throws Exception {
     final ScriptEngine se = new ScriptEngineManager().getEngineByName("javascript");

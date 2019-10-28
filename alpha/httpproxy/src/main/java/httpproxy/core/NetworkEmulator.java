@@ -3,8 +3,10 @@ package httpproxy.core;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import httpproxy.io.ByteInput;
 import httpproxy.io.ByteOutput;
@@ -17,7 +19,8 @@ public class NetworkEmulator {
   protected static final Console console = Console.global;
   private static final long FEED_INTERVAL_IN_MILLIS = 50L;
   private final Object lock = new Object();
-  private Executor es;
+  private ExecutorService es;
+  private boolean alive;
   private long bps = 0;
   private long bufInBits = 0;
   public NetworkEmulator() {
@@ -33,6 +36,7 @@ public class NetworkEmulator {
     this.bps = bps;
   }
   public void start() {
+    alive = true;
     es = Executors.newSingleThreadExecutor(new ThreadFactory() {
       @Override
       public Thread newThread(final Runnable r) {
@@ -55,9 +59,20 @@ public class NetworkEmulator {
     });
     console.log("network emulator started.");
   }
+  public void stop() {
+    try {
+      alive = false;
+      es.shutdown();
+      es.awaitTermination(1, TimeUnit.DAYS);
+    } catch(RuntimeException e) {
+      throw e;
+    } catch(Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
   protected void doTimer() throws Exception {
     long lastTime = System.currentTimeMillis();
-    while (true) {
+    while (alive) {
       synchronized(lock) {
         final long time = System.currentTimeMillis();
         final long feed = bps * (time - lastTime) / 1000;
