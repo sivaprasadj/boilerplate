@@ -6,7 +6,7 @@ var console = {
 
 var $optsToJavaMap = function(opts) {
   opts = opts || {};
-  var map = Packages.httpproxy.core.Util.map();
+  var map = Packages.httpproxy.core.Util.map([]);
   for (var k in opts) {
     map.put(k, opts[k]);
   }
