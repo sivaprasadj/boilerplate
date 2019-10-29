@@ -1,5 +1,8 @@
 package httpproxy.handler;
 
+import java.text.DecimalFormat;
+
+import httpproxy.core.Console;
 import httpproxy.core.HttpHandler;
 
 /**
@@ -29,5 +32,17 @@ public abstract class AbstractProxyHandler implements HttpHandler {
   }
   public void setUseProxy(boolean useProxy) {
     this.useProxy = useProxy;
+  }
+
+  protected void logResult(final Console console, final long time, final int reqLen, final int resLen) {
+    final StringBuilder buf = new StringBuilder();
+    buf.append("done");
+    buf.append("/req-in-bytes:");
+    buf.append(reqLen);
+    buf.append("/res-in-bytes:");
+    buf.append(resLen);
+    buf.append("/time-in-millis:");
+    buf.append(time);
+    console.log(buf.toString() );
   }
 }

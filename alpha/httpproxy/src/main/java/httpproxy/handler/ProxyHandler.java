@@ -30,8 +30,6 @@ public class ProxyHandler extends AbstractProxyHandler {
   private PlainStream svrStream;
   private HttpHeader responseHeader;
 
-  private long startTime;
-
   public ProxyHandler() {
   }
 
@@ -44,7 +42,7 @@ public class ProxyHandler extends AbstractProxyHandler {
     this.context = context;
     this.console = console;
 
-    startTime = System.currentTimeMillis();
+    final long startTime = System.currentTimeMillis();
 
     this.cltStream = cltStream;
     this.requestHeader = requestHeader;
@@ -55,8 +53,12 @@ public class ProxyHandler extends AbstractProxyHandler {
 
       svrStream = context.createStream(svrSocket);
 
-      doRequest();
-      doResponse();
+      final int reqLen = doRequest();
+      final int resLen = doResponse();
+
+      final long time = System.currentTimeMillis() - startTime;
+
+      logResult(console, time, reqLen, resLen);
 
     } finally {
       svrSocket.close();
@@ -71,7 +73,7 @@ public class ProxyHandler extends AbstractProxyHandler {
         name, value);
   }
 
-  protected void doRequest() throws Exception {
+  protected int doRequest() throws Exception {
 
     context.getEventTarget().trigger("beforeproxyrequest",
         createDetail("requestHeader", requestHeader) );
@@ -93,18 +95,21 @@ public class ProxyHandler extends AbstractProxyHandler {
     }
     svrStream.out.println();
     svrStream.out.flush();
+
+    int reqLen = 0;
     if (reqContentLength != -1) {
       try {
-        IOUtil.copyFully(cltStream.in, svrStream.out, reqContentLength);
+        reqLen = IOUtil.copyFully(cltStream.in, svrStream.out, reqContentLength);
       }catch(EOFException e) {
         console.error(e.getMessage() );
-        return;
+        return 0;
       }
     }
     svrStream.out.flush();
+    return reqLen;
   }
 
-  protected void doResponse() throws Exception {
+  protected int doResponse() throws Exception {
 
     responseHeader = HttpHeader.readFrom(svrStream.in);
 
@@ -151,19 +156,19 @@ public class ProxyHandler extends AbstractProxyHandler {
     } catch(SocketException e) {
       // ignore
       console.log("response aborted.");
-      return;
+      return 0;
     }
 
-    int contentLength = 0;
+    int resLen = 0;
     if (resContentLength != -1) {
-      contentLength += IOUtil.copyFully(
+      resLen += IOUtil.copyFully(
           svrStream.in, cltStream.out, resContentLength);
     } else if (chunked) {
       while (true) {
         final String chunk = svrStream.in.readLine();
         final int chunkSize = Integer.parseInt(chunk, 16);
         cltStream.out.println(chunk);
-        contentLength += IOUtil.copyFully(svrStream.in, cltStream.out, chunkSize);
+        resLen += IOUtil.copyFully(svrStream.in, cltStream.out, chunkSize);
         cltStream.out.println(svrStream.in.readLine() );
         cltStream.out.flush();
         if (chunkSize == 0) {
@@ -171,18 +176,10 @@ public class ProxyHandler extends AbstractProxyHandler {
         }
       }
     } else {
-      contentLength += IOUtil.copyFully(svrStream.in, cltStream.out);
+      resLen += IOUtil.copyFully(svrStream.in, cltStream.out);
     }
     cltStream.out.flush();
 
-    final long time = System.currentTimeMillis() - startTime;
-    final StringBuilder buf = new StringBuilder();
-    buf.append("done");
-    buf.append("/content-length:");
-    buf.append(contentLength);
-    buf.append("/");
-    buf.append(time);
-    buf.append("ms");
-    console.log(buf.toString() );
+    return resLen;
   }
 }
