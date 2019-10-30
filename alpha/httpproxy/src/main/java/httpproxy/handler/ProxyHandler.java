@@ -118,6 +118,7 @@ public class ProxyHandler extends AbstractProxyHandler {
       final int i2 = responseHeader.getStartLine().indexOf('\u0020', i1 + 1);
       if (i1 == -1 || i2 == -1) {
         console.error("bad res start line:" + responseHeader.getStartLine() );
+        return 0;
       }
       responseHeader.setAttribute("version",
           responseHeader.getStartLine().substring(0, i1) );
