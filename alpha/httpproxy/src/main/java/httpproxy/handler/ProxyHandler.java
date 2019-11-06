@@ -168,7 +168,12 @@ public class ProxyHandler extends AbstractProxyHandler {
     } else if (chunked) {
       while (true) {
         final String chunk = svrStream.in.readLine();
-        final int chunkSize = Integer.parseInt(chunk, 16);
+        // remove trailing white spaces.
+        int len = chunk.length();
+        while (len > 0 && Character.isWhitespace(chunk.charAt(len - 1) ) ) {
+          len -= 1;
+        }
+        final int chunkSize = Integer.parseInt(chunk.substring(0, len), 16);
         cltStream.out.println(chunk);
         resLen += IOUtil.copyFully(svrStream.in, cltStream.out, chunkSize);
         cltStream.out.println(svrStream.in.readLine() );
