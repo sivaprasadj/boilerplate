@@ -83,7 +83,8 @@ public class ProxyHandler extends AbstractProxyHandler {
     for (final String key : requestHeader.getHeaderNames() ) {
       final String lcKey = key.toLowerCase();
       if (!isUseProxy() && lcKey.equals(Constants.PROXY_CONNECTION) ) {
-        // skip proxy-connection
+        // force close connection
+        svrStream.out.println("Connection: close");
         continue;
       }
       for (final String value : requestHeader.getHeaderValues(key) ) {
@@ -125,9 +126,9 @@ public class ProxyHandler extends AbstractProxyHandler {
       responseHeader.setAttribute("status",
           Integer.valueOf(responseHeader.getStartLine().substring(i1 + 1, i2) ) );
 
-      if (!isUseProxy() ) {
-        responseHeader.setHeader(Constants.PROXY_CONNECTION, "close");
-      }
+      //if (!isUseProxy() ) {
+      //  responseHeader.setHeader(Constants.PROXY_CONNECTION, "close");
+      //}
     }
 
     context.getEventTarget().trigger("beforeproxyresponse",
