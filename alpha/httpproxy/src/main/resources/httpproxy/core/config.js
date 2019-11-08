@@ -55,6 +55,14 @@ init({
   on: {
     beginsession: function(event) {
       var detail = event.getDetail();
+      var requestHeader = detail.get('requestHeader');
+      var startLine = '' + requestHeader.getStartLine();
+      var tokens = startLine.split(/\u0020/g);
+      var url = tokens[1].match(/^([^\?]+)(\?.*)?$/);
+      if (url) {
+        var file = url[1];
+        var search = url[2];
+      }
       detail.put('enableLog', true);
     },
     getproxy: function(event) {
