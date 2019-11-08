@@ -4,27 +4,28 @@ var console = {
   error: function(msg) { $console.error('' + msg); }
 };
 
-var $optsToJavaMap = function(opts) {
-  opts = opts || {};
-  var map = Packages.httpproxy.core.Util.map([]);
-  for (var k in opts) {
-    map.put(k, opts[k]);
-  }
-  return map;
-};
-
-var alert = function(msg, opts) {
-  Packages.httpproxy.core.Util.alert(msg, $optsToJavaMap(opts) );
-};
-
-var confirm = function(msg, opts) {
-  return !!Packages.httpproxy.core.Util.confirm(msg, $optsToJavaMap(opts) );
-};
-
-var input = function(msg, opts) {
-  var input = Packages.httpproxy.core.Util.input(msg, $optsToJavaMap(opts) );
-  return input != null? '' + input : null;
-};
+var alert, confirm, input;
+!function() {
+  var Util = Packages.httpproxy.core.Util;
+  var optsToJavaMap = function(opts) {
+    opts = opts || {};
+    var map = Util.map([]);
+    for (var k in opts) {
+      map.put(k, opts[k]);
+    }
+    return map;
+  };
+  alert = function(msg, opts) {
+    Util.alert(msg, optsToJavaMap(opts) );
+  };
+  confirm = function(msg, opts) {
+    return !!Util.confirm(msg, optsToJavaMap(opts) );
+  };
+  input = function(msg, opts) {
+    var input = Util.input(msg, optsToJavaMap(opts) );
+    return input != null? '' + input : null;
+  };
+}();
 
 var init = function(config) {
 
@@ -47,6 +48,8 @@ var init = function(config) {
 init({
   // service port
   port: 8080,
+  // enable network emulation
+  enableNetEmu: true,
   // bps for slow network emulation
   bps: 100 * 1024 * 1024,
   on: {

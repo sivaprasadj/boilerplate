@@ -56,9 +56,13 @@ public class HttpProxy {
     console.log("server started at port " + port);
 
     // emulate slow network.
-    netEmu = new NetworkEmulator();
-    netEmu.setBps(( (Number)config.get("bps") ).longValue() );
-    netEmu.start();
+    final boolean enableNetEmu =
+        ((Boolean)config.get("enableNetEmu") ).booleanValue();
+    if (enableNetEmu) {
+      netEmu = new NetworkEmulator();
+      netEmu.setBps(( (Number)config.get("bps") ).longValue() );
+      netEmu.start();
+    }
 
     final int[] id = { 1 };
     es = Executors.newCachedThreadPool(new ThreadFactory() {
@@ -129,8 +133,10 @@ public class HttpProxy {
             return socket.isOutputShutdown();
           }
         };
-        in = netEmu.wrap(in);
-        out = netEmu.wrap(out);
+        if (netEmu != null) {
+          in = netEmu.wrap(in);
+          out = netEmu.wrap(out);
+        }
         return new PlainStream(socket, in, out);
       }
     };
