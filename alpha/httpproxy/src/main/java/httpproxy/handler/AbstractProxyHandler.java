@@ -1,7 +1,5 @@
 package httpproxy.handler;
 
-import java.text.DecimalFormat;
-
 import httpproxy.core.Console;
 import httpproxy.core.HttpHandler;
 

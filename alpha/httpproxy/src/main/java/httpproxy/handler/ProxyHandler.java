@@ -41,11 +41,10 @@ public class ProxyHandler extends AbstractProxyHandler {
       final HttpHeader requestHeader) throws Exception {
     this.context = context;
     this.console = console;
-
-    final long startTime = System.currentTimeMillis();
-
     this.cltStream = cltStream;
     this.requestHeader = requestHeader;
+
+    final long startTime = System.currentTimeMillis();
 
     final Socket svrSocket = SocketFactory.getDefault().
         createSocket(getTargetHost(), getTargetPort() );
@@ -75,18 +74,21 @@ public class ProxyHandler extends AbstractProxyHandler {
 
   protected int doRequest() throws Exception {
 
+    if (!isUseProxy() ) {
+      requestHeader.removeHeader(Constants.PROXY_CONNECTION);
+      requestHeader.setHeader(Constants.CONNECTION, "close");
+    } else {
+      requestHeader.setHeader(Constants.PROXY_CONNECTION, "close");
+    }
+
     context.getEventTarget().trigger("beforeproxyrequest",
         createDetail("requestHeader", requestHeader) );
 
     svrStream.out.println(requestHeader.getStartLine() );
+
     int reqContentLength = -1;
     for (final String key : requestHeader.getHeaderNames() ) {
       final String lcKey = key.toLowerCase();
-      if (!isUseProxy() && lcKey.equals(Constants.PROXY_CONNECTION) ) {
-        // force close connection
-        svrStream.out.println("Connection: close");
-        continue;
-      }
       for (final String value : requestHeader.getHeaderValues(key) ) {
         if (lcKey.equals(Constants.CONTENT_LENGTH) ) {
           reqContentLength = Integer.parseInt(value);
