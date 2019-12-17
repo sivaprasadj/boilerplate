@@ -1,0 +1,9 @@
+<project default="dist">
+  <target name="dist">
+    <zip destfile="test.xlsx">
+      <zipfileset dir="xbook">
+        <include name="**/*" />
+      </zipfileset>
+    </zip>
+  </target>
+</project>
