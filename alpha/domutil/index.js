@@ -1,6 +1,6 @@
-var domutil = function() {
+'use strict';
 
-  'use strict';
+var domutil = function() {
 
   var eventTarget = function(tagName, factory) {
     var _this = this;
@@ -39,15 +39,20 @@ var domutil = function() {
     return _this;
   };
 
-  var domWrapper = function($el, children) {
+  var domWrapper = function($el) {
     var _this = eventTarget.call({});
-    if (children) {
-      children.forEach(function(child) {
-        $el.appendChild(child);
-      });
-    }
     Object.defineProperty(_this, '$el', {
       get: function() { return $el; }
+    });
+    Object.defineProperty(_this, 'children', {
+      get: function() {
+        return function(children) {
+          for (var i = 0; i < children.length; i += 1) {
+            this.$el.appendChild(children[i]);
+          }
+          return this;
+        }.bind(this);
+      }
     });
     Object.defineProperty(_this, 'attrs', {
       get: function() {
@@ -98,16 +103,13 @@ var domutil = function() {
     return _this;
   };
 
-  var html = function(tagName, children) {
-    return domWrapper(
-        document.createElement(tagName),
-        children);
+  var html = function(tagName) {
+    return domWrapper(document.createElement(tagName) );
   };
 
-  var svg = function(tagName, children) {
-    return domWrapper(
-        document.createElementNS('http://www.w3.org/2000/svg', tagName),
-        children);
+  var svg = function(tagName) {
+    return domWrapper(document.createElementNS(
+        'http://www.w3.org/2000/svg', tagName) );
   };
 
   return {
