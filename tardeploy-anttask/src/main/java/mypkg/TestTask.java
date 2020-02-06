@@ -8,9 +8,8 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Tar;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.apache.tools.ant.taskdefs.Tar.TarFileSet;
+import org.apache.tools.ant.types.FileSet;
 
 public class TestTask  extends Task {
   private List<FileSet> filesets = new ArrayList<FileSet>();
