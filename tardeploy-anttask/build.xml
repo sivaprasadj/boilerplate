@@ -1,0 +1,13 @@
+<project default="test">
+  <taskdef classpath="bin/main" classname="mypkg.TestTask" name="test-task" />
+  <target name="test" >
+    <test-task>
+      <fileset dir="src">
+        <include name="**/*.java"/>
+      </fileset>
+      <fileset dir=".settings">
+        <include name="**/*ship*"/>
+      </fileset>
+    </test-task>
+  </target>
+</project>
