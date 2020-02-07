@@ -1,2 +1,0 @@
-#[pattern]:[user]:[group]:[fmode]:[abs path]
-*:user1:users:644:/usr/local/foo

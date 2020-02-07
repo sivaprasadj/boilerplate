@@ -1,13 +1,15 @@
 <project default="test">
-  <taskdef classpath="bin/main" classname="mypkg.TestTask" name="test-task" />
+
+  <taskdef classpath="bin/main" classname="TarDeployTask" name="tar-deploy" />
+
   <target name="test" >
-    <test-task>
-      <fileset dir="src">
-        <include name="**/*.java"/>
+    <delete file="test2.tar"></delete>
+    <tar-deploy destFile="test2.tar">
+      <fileset dir="src/test/resources">
+        <include name="**/*.txt"/>
+        <include name="**/*.sh"/>
       </fileset>
-      <fileset dir=".settings">
-        <include name="**/*ship*"/>
-      </fileset>
-    </test-task>
+    </tar-deploy>
   </target>
+
 </project>

@@ -12,10 +12,13 @@ import org.apache.tools.ant.taskdefs.Tar.TarFileSet;
 import org.apache.tools.ant.types.FileSet;
 
 public class TestTask  extends Task {
+
   private List<FileSet> filesets = new ArrayList<FileSet>();
+
   public void addFileset(FileSet fileset) {
     filesets.add(fileset);
-}
+  }
+
   @Override
   public void execute() throws BuildException {
 System.out.println("base:" + getProject().getBaseDir() );
@@ -43,6 +46,7 @@ System.out.println("base:" + getProject().getBaseDir() );
       tfs.setDir(getProject().getBaseDir() );
       tfs.setUserName("user1");
       tfs.setGroup("users");
+      tfs.setFileMode("640");
       tfs.setFullpath("/a/b/c/test1.xml");
       tfs.setPreserveLeadingSlashes(true);
       tfs.setIncludes("build.gradle");
@@ -52,6 +56,7 @@ System.out.println("base:" + getProject().getBaseDir() );
       tfs.setDir(getProject().getBaseDir() );
       tfs.setUserName("user2");
       tfs.setGroup("users");
+      tfs.setFileMode("600");
       tfs.setFullpath("/a/b/test2.xml");
       tfs.setPreserveLeadingSlashes(true);
       tfs.setIncludes("build.xml");
