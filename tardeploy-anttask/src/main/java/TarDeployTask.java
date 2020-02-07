@@ -32,6 +32,8 @@ public class TarDeployTask extends Task {
 
   private String encoding = "UTF-8";
 
+  private boolean verbose = false;
+
   private List<FileSet> filesets = new ArrayList<FileSet>();
 
   public File getDestFile() {
@@ -58,6 +60,14 @@ public class TarDeployTask extends Task {
     this.encoding = encoding;
   }
 
+  public boolean isVerbose() {
+    return verbose;
+  }
+
+  public void setVerbose(boolean verbose) {
+    this.verbose = verbose;
+  }
+
   public void addFileset(FileSet fileset) {
     filesets.add(fileset);
   }
@@ -69,15 +79,18 @@ public class TarDeployTask extends Task {
       throw new BuildException("destFile attribute must be set!");
     }
 
-    final Map<File, List<String[]>> infoMap = new HashMap<File, List<String[]>>();
-    final List<TarfileInfo> tarfileList = new ArrayList<TarfileInfo>();
-
     try {
+
+      final Map<File, List<String[]>> infoMap = new HashMap<File, List<String[]>>();
+      final List<TarfileInfo> tarfileList = new ArrayList<TarfileInfo>();
 
       for (final FileSet fs : filesets) {
         final DirectoryScanner ds = fs.getDirectoryScanner(getProject() );
         for (final String includedFile : ds.getIncludedFiles() ) {
           final File file = new File(ds.getBasedir(), includedFile);
+          if (file.getName().equals(getInfoFile() ) ) {
+            continue;
+          }
           final File infoFile = findInfoFile(file);
           if (infoFile == null) {
             log("skipping " + file + " (" + getInfoFile() + " not found)", Project.MSG_WARN);
@@ -107,45 +120,54 @@ public class TarDeployTask extends Task {
         }
       }
 
+      final Map<String,TarfileInfo> tarMap = new HashMap<String, TarDeployTask.TarfileInfo>();
+      boolean duplecated = false;
+      for (final TarfileInfo tarfile : tarfileList) {
+        if (tarMap.containsKey(tarfile.getFullpath() ) ) {
+          log("duplicated fullpath:" + tarfile.getFullpath(), Project.MSG_ERR);
+          log(" " + tarMap.get(tarfile.getFullpath() ).getFile().getAbsolutePath(), Project.MSG_ERR);
+          log(" " + tarfile.getFile().getAbsolutePath(), Project.MSG_ERR);
+          duplecated = true;
+        } else {
+          tarMap.put(tarfile.getFullpath(), tarfile);
+        }
+      }
+      if (duplecated) {
+        throw new BuildException("duplicated");
+      }
+
+      Collections.sort(tarfileList, new Comparator<TarfileInfo>() {
+        @Override
+        public int compare(final TarfileInfo o1, final TarfileInfo o2) {
+          return o1.getFullpath().compareTo(o2.getFullpath() );
+        }
+      });
+
+      final Tar tar = (Tar)getProject().createTask("tar");
+      for (final TarfileInfo tarfile : tarfileList) {
+        final File file = tarfile.getFile();
+        final String[] info = tarfile.getInfo();
+        final String fullpath = tarfile.getFullpath();
+        final TarFileSet tfs = tar.createTarFileSet();
+        tfs.setDir(file.getParentFile() );
+        tfs.setUserName(info[1]);
+        tfs.setGroup(info[2]);
+        tfs.setFileMode(info[3]);
+        tfs.setFullpath(fullpath);
+        tfs.setPreserveLeadingSlashes(fullpath.startsWith("/") );
+        tfs.createInclude().setName(file.getName() );
+        if (isVerbose() ) {
+          log("Adding tarfile: " + info[1] + " " + info[2] + " " + info[3] + " " + fullpath +
+              " from " + file.getCanonicalPath() );
+        }
+      }
+      tar.setDestFile(getDestFile() );
+
+      tar.perform();
+
     } catch(IOException e) {
       throw new BuildException(e);
     }
-
-    Map<String,TarfileInfo> tarMap = new HashMap<String, TarDeployTask.TarfileInfo>();
-    for (final TarfileInfo tarfile : tarfileList) {
-      if (tarMap.containsKey(tarfile.getFullpath() ) ) {
-        log("duplicated fullpath:" + tarfile.getFullpath(), Project.MSG_ERR);
-        log(" " + tarMap.get(tarfile.getFullpath() ).getFile().getAbsolutePath(), Project.MSG_ERR);
-        log(" " + tarfile.getFile().getAbsolutePath(), Project.MSG_ERR);
-      } else {
-        tarMap.put(tarfile.getFullpath(), tarfile);
-      }
-    }
-
-    Collections.sort(tarfileList, new Comparator<TarfileInfo>() {
-      @Override
-      public int compare(final TarfileInfo o1, final TarfileInfo o2) {
-        return o1.getFullpath().compareTo(o2.getFullpath() );
-      }
-    });
-
-    final Tar tar = (Tar)getProject().createTask("tar");
-    for (final TarfileInfo tarfile : tarfileList) {
-      final File file = tarfile.getFile();
-      final String[] info = tarfile.getInfo();
-      final String fullpath = tarfile.getFullpath();
-      final TarFileSet tfs = tar.createTarFileSet();
-      tfs.setDir(file.getParentFile() );
-      tfs.setUserName(info[1]);
-      tfs.setGroup(info[2]);
-      tfs.setFileMode(info[3]);
-      tfs.setFullpath(fullpath);
-      tfs.setPreserveLeadingSlashes(fullpath.startsWith("/") );
-      tfs.createInclude().setName(file.getName() );
-    }
-    tar.setDestFile(getDestFile() );
-
-    tar.perform();
   }
 
   protected static class TarfileInfo {
@@ -184,19 +206,25 @@ public class TarDeployTask extends Task {
     return null;
   }
 
-  protected List<String[]> readInfo(final File file) {
+  protected List<String[]> readInfo(final File file) throws BuildException {
     try {
       final BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), getEncoding() ) );
       try {
         final List<String[]> list = new ArrayList<String[]>();
         String line;
+        int lineNo = 0;
         while ( (line = in.readLine() ) != null) {
+          lineNo += 1;
           line = line.trim();
           if (line.length() == 0 || line.startsWith("#") ) {
             // skip blank line, comment line.
             continue;
           }
-          list.add(splitInfo(line) );
+          final String[] info = splitInfo(line);
+          if (info.length != 5) {
+            throw new BuildException("Illegal format " + line + " at " + file.getCanonicalPath() + " line " + lineNo); 
+          }
+          list.add(info);
         }
         return list;
       } finally {
@@ -205,7 +233,7 @@ public class TarDeployTask extends Task {
     } catch(RuntimeException e) {
       throw e;
     } catch(Exception e) {
-      throw new RuntimeException(e);
+      throw new BuildException(e);
     }
   }
 
