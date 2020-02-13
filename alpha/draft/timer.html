@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+<style>
+#tm {
+  font-family: monospace;
+  font-size:60pt;
+}
+</style>
+<script>
+window.addEventListener('load', function() {
+  var assertEquals = function(e, a) {
+    if (e !== a) {
+      throw 'expected ' + e + ' but ' + a;
+    }
+  }
+  var numToStr = function(n, digits) {
+    digits = digits || 0;
+    var neg = n < 0;
+    if (neg) {
+      n = -n;
+    }
+    var s = '' + n;
+    while (s.length < digits) {
+      s = '0' + s;
+    }
+    return (neg? '-' : '') + s;
+  };
+  var formatTime = function(t) {
+    var neg = t < 0;
+    if (neg) {
+      t = -t;
+    }
+    var m = Math.floor(t / 60);
+    var s = numToStr(t % 60, 2);
+    return m + ':' + s;
+  };
+
+  assertEquals('0', numToStr(0) );
+  assertEquals('00', numToStr(0, 2) );
+  assertEquals('00', numToStr(-0, 2) );
+  assertEquals('-01', numToStr(-1, 2) );
+  assertEquals('01', numToStr(1, 2) );
+
+  var timeInMin = 180;
+  var start = +new Date();
+  var update = function() {
+    var tm = document.getElementById('tm');
+    var t = timeInMin - Math.floor((+new Date() - start) / 1000);
+    tm.textContent = formatTime(t);
+    if (t < 0) {
+      if (t % 2 == 0) {
+        tm.style.backgroundColor = '#ff0';
+      } else {
+        tm.style.backgroundColor = '#f00';
+      }
+    } else if (t < 60) {
+      tm.style.backgroundColor = '#ff0';
+    }
+    window.setTimeout(update, 200);
+  };
+  update();
+
+  document.addEventListener('mousedown', function() {
+    var tm = document.getElementById('tm');
+    tm.style.backgroundColor = '';
+    start = +new Date();
+  });
+});
+
+</script>
+</head>
+<body>
+  <div id="tm"></div>
+</body>
+</html>
