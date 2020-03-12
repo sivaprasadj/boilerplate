@@ -13,8 +13,11 @@ import javax.imageio.stream.ImageOutputStream;
 
 public class Test{
   protected static int getColor(final int rgb, final int shift) {
-    final int c = (rgb >>> shift) & 0xff;
-    return Math.min(255, c * 3) << shift;
+    final int c = ( (rgb >>> shift) & 0xff) * 3;
+    final int x = Math.min(255, c);
+    final int y = (c - x) / 2;
+    final int f = (y << 16) | (y << 8) | y; 
+    return (x << shift) | f;
   }
   public static void main(String[] args) throws Exception {
     final BufferedImage src = ImageIO.read(new File("1908f1_1920_1080.jpg") );
