@@ -2,17 +2,24 @@
 <html>
 <head>
   <meta charset="UTF-8" />
+<!-- 
   <script src="assets/vue.js"></script>
+ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+  <script src="tg.js"></script>
   <script src="index.js"></script>
 </head>
 <body>
   <div id="app">
+
     <button @click="test_clickHandler"> test </button>
 
+    <osc v-model="outL" freq="440" :gain="lfo"></osc>
+    <osc v-model="outR" freq="439"></osc>
+    <osc v-model="lfo" freq="1" gain="-10"></osc>
 
-    <osc ref="o1"  :freq="430"></osc>
-    <osc ref="o2"  :freq="440"></osc>
-    <player ref="p1" channels="o1.out,o2.out" ></player>
+    <player ref="p1"  :channels="[ outL, outR ]"></player>
+
   </div>
 </body>
 </html>
