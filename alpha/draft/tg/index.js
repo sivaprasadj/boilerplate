@@ -11,13 +11,18 @@
             ' style="x-display: none; overflow: hidden;"' +
             ' width="220" height="90"' +
             ' viewBox="0 0 220 90" >' +
-            '<rect fill="#c0ccc0" stroke="none" x="0" y="0" width="220" height="90" />' +
-            '<circle fill="#000" stroke="none" cx="25" cy="25" r="16" />' +
-            '<circle fill="#000" stroke="none" cx="195" cy="25" r="16" />' +
-            '<circle fill="#000" stroke="none" cx="110" cy="92" r="12" />' +
+            '<rect fill="#c0ccc0" stroke="none"' +
+              ' x="0" y="0" width="220" height="90" />' +
+            '<circle fill="#000" stroke="none"' +
+              ' cx="110" cy="92" r="12" />' +
             '<g v-for="r in barRange()" :transform="barTran(r)">' +
-              '<path fill="#000" stroke="none" d="M-1 -15L-4 -86L0 -90L4 -86L1 -15Z" />' +
+              '<path ref="bars" fill="#000" stroke="none"' +
+                ' d="M-0.5 -15L-5 -84L0 -90L5 -84L0.5 -15Z" />' +
             '</g>' +
+            '<circle ref="lPoint" fill="#000" stroke="none"' +
+              ' cx="25" cy="25" r="16" />' +
+            '<circle ref="rPoint" fill="#000" stroke="none"' +
+              ' cx="195" cy="25" r="16" />' +
           '</svg>',
         props: {
           tempo: { type: Number, default: 120 },
@@ -101,6 +106,51 @@
               var scriptNode = audioContext.
                 createScriptProcessor(bufferSize, 0, numChannels);
 
+              !function() {
+
+                var on = '1.0';
+                var off = '0.05';
+                var step, lastStep = -1;
+
+                var onframe = function() {
+
+                  step = Math.floor(t * this.params.stepPerTime);
+
+                  if (lastStep != step) {
+
+                    var bars = this.$refs.bars;
+                    var bon = Math.floor( (step % this.params.div) *
+                        bars.length / this.params.div);
+                    if (Math.floor(step / this.params.div) % 2 == 0) {
+                    } else {
+                      bon = bars.length - 1 - bon;
+                    }
+
+                    for (var b = 0; b < bars.length; b += 1) {
+                      bars[b].setAttribute('opacity', b == bon? on : off);
+                    }
+
+                    if (Math.floor(step / this.params.div) % 2 == 0) {
+                      this.$refs.lPoint.setAttribute('opacity', on);
+                      this.$refs.rPoint.setAttribute('opacity', off);
+                    } else {
+                      this.$refs.lPoint.setAttribute('opacity', off);
+                      this.$refs.rPoint.setAttribute('opacity', on);
+                    }
+
+                    lastStep = step;
+                  }
+
+                  if (this.audioContext) {
+                    window.requestAnimationFrame(onframe);
+                  }
+
+                }.bind(this);
+
+                window.requestAnimationFrame(onframe);
+
+              }.bind(this)();
+
               scriptNode.onaudioprocess = function(event) {
 
                 outputBuffer = event.outputBuffer;
@@ -118,6 +168,13 @@
                     lastStep = step;
                     this.$emit('step', { step: step,
                       beat: this.params.beat, div: this.params.div });
+/*
+
+                    frameTask.push(function() {
+                    }.bind(this) );
+
+*/
+
                   }
 
                   chData[i] = gain * wave(2 * Math.PI * freq * t);
@@ -155,13 +212,6 @@
           } else {
             metronome.stop();
           }
-        },
-        metronome_stepHandler: function(event) {
-          if (event.step % (event.beat * event.div) ==  0) {
-            console.log(event);
-          } else if (event.step % event.div ==  0) {
-            console.log('** ',  event);
-          } 
         }
       }
     })
