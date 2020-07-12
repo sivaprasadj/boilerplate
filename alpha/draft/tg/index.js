@@ -111,43 +111,61 @@
                 var on = '1.0';
                 var off = '0.05';
 
-                var frameStep = function(step) {
+                this.$refs.barAx.setAttribute('opacity', on);
 
-                  var bars = this.$refs.bars;
-                  var bon = Math.floor( (step % this.params.div) *
-                      bars.length / this.params.div);
-                  if (Math.floor(step / this.params.div) % 2 == 0) {
-                  } else {
-                    bon = bars.length - 1 - bon;
-                  }
+                var bars = this.$refs.bars;
 
-                  this.$refs.barAx.setAttribute('opacity', on);
-
+                // reset bars
+                var barState = {};
+                !function() {
                   for (var b = 0; b < bars.length; b += 1) {
-                    bars[b].setAttribute('opacity', b == bon? on : off);
+                    bars[b].setAttribute('opacity', barState[b] = off);
                   }
+                }();
 
-                  if (Math.floor(step / this.params.div) % 2 == 0) {
-                    this.$refs.lPoint.setAttribute('opacity', on);
-                    this.$refs.rPoint.setAttribute('opacity', off);
+                var step;
+                var s0, lastS0 = null;
+                var s1, lastS1 = null;
+
+                var onframe = function(ft) {
+
+                  step = t * this.params.stepPerTime;
+                  s0 = Math.floor(step / this.params.div) % 2 == 0;
+                  s1 = Math.floor(step / this.params.div *
+                      bars.length) % (bars.length * 2);
+
+                  if (s1 < bars.length) {
                   } else {
-                    this.$refs.lPoint.setAttribute('opacity', off);
-                    this.$refs.rPoint.setAttribute('opacity', on);
+                    s1 = bars.length * 2 - 1 - s1;
                   }
-                }.bind(this);
 
-                var step, lastStep = -1;
-
-                var onframe = function() {
-                  step = Math.floor(t * this.params.stepPerTime);
-                  if (lastStep != step) {
-                    frameStep(step);
-                    lastStep = step;
+                  if (lastS0 !== s0) {
+                    if (s0) {
+                      this.$refs.lPoint.setAttribute('opacity', on);
+                      this.$refs.rPoint.setAttribute('opacity', off);
+                    } else {
+                      this.$refs.lPoint.setAttribute('opacity', off);
+                      this.$refs.rPoint.setAttribute('opacity', on);
+                    }
+                    lastS0 = s0;
                   }
+
+                  if (lastS1 !== s1) {
+                    for (var b = 0; b < bars.length; b += 1) {
+                      var state = b == s1? on : off;
+                      if (barState[b] !== state) {
+                        bars[b].setAttribute('opacity', barState[b] = state);
+                      }
+                    }
+                    lastS1 = s1;
+                  }
+
                   if (this.audioContext) {
                     window.requestAnimationFrame(onframe);
                   }
+
                 }.bind(this);
+
                 window.requestAnimationFrame(onframe);
 
               }.bind(this)();
