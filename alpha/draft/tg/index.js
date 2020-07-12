@@ -1,12 +1,24 @@
 'use strict'
 
 !function() {
-
+// 44 18
   window.addEventListener('load', function() {
 
     var components = {
       metronome: {
-        template: '<span style="display:none;"></span>',
+        template:
+          '<svg xmlns="http://www.w3.org/2000/svg"' +
+            ' style="x-display: none; overflow: hidden;"' +
+            ' width="220" height="90"' +
+            ' viewBox="0 0 220 90" >' +
+            '<rect fill="#c0ccc0" stroke="none" x="0" y="0" width="220" height="90" />' +
+            '<circle fill="#000" stroke="none" cx="25" cy="25" r="16" />' +
+            '<circle fill="#000" stroke="none" cx="195" cy="25" r="16" />' +
+            '<circle fill="#000" stroke="none" cx="110" cy="92" r="12" />' +
+            '<g v-for="r in barRange()" :transform="barTran(r)">' +
+              '<path fill="#000" stroke="none" d="M-1 -15L-4 -86L0 -90L4 -86L1 -15Z" />' +
+            '</g>' +
+          '</svg>',
         props: {
           tempo: { type: Number, default: 120 },
           beat: { type: Number, default: 4 }
@@ -41,6 +53,17 @@
           }
         },
         methods: {
+          barRange: function() {
+            var a = [];
+            var l = 6;
+            for (var i = -l; i <= l; i += 1) {
+              a.push(i)
+            }
+            return a;
+          },
+          barTran: function(r) {
+            return 'translate(110 92) rotate(' + (r * 7.75) + ')';
+          },
           start: function() {
 
             if (!this.audioContext) {
