@@ -12,7 +12,8 @@
       },
       data: function() {
         return {
-          audioContext: null
+          audioContext: null,
+          reset: function() {}
         };
       },
       watch: {
@@ -64,6 +65,10 @@
             var sampleRate = audioContext.sampleRate;
             var t = 0;
             var dt = 1 / sampleRate;
+
+            this.reset = function() {
+              t = 0;
+            };
 
             var gainNode = audioContext.createGain();
             gainNode.gain.value = 1;

@@ -19,14 +19,14 @@
     <template v-for="t in [40, 60, 80, 100, 120, 140, 160, 180, 200]">
       <label>
         <input type="radio" name="tempo" v-model="tempo" :value="t"
-          />{{t}}</label>
+          @click="$refs.metronome.reset()" />{{t}}</label>
     </template>
 
     <div>Beat</div>
     <template v-for="b in [0, 1, 2, 3, 4, 5, 6, 7]">
       <label>
         <input type="radio" name="beat" v-model="beat" :value="b" 
-          />{{b}}</label>
+          @click="$refs.metronome.reset()" />{{b}}</label>
     </template>
 
     <div>
