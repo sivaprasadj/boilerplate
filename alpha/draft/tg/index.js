@@ -7,7 +7,6 @@
     new Vue({
       el: '#app',
       data: {
-        playing: false,
         tempo: 120,
         beat: 4
       },
