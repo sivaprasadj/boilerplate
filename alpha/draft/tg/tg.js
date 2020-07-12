@@ -2,69 +2,63 @@
 
 !function() {
 
-  var _2PI = 2 * Math.PI;
-
-  var parseInput = function(input) {
-    if (typeof input == 'function') {
-      return input;
-    }
-    var n = +input;
-    if (typeof n == 'number' && !isNaN(n) ) {
-      return function() { return n; };
-    }
-    return function() { return 0; };
-  };
-
   var components = {
 
-    osc: {
-      template: '<span style="display:none;"><slot /></span>',
+    metronome: {
+      template: '<span style="display:none;"></span>',
       props: {
-        freq: { type: Object, default: 440 },
-        gain: { type: Object, default: 0 }
-      },
-      data: function() {
-        return {
-          mounted: false,
-          value: 0
-        };
-      },
-      watch: {
-        params: function() {
-          var freq = parseInput(this.freq);
-          var gain = parseInput(this.gain);
-          var out = function(t) {
-            this.value += Math.exp(gain(t) ) * Math.cos(_2PI * freq(t) * t);
-            return this.value;
-          }.bind(this);
-          this.$emit('input', out);
-        }
-      },
-      computed: {
-        params: function() {
-          return [ this.mounted, this.freq, this.gain ];
-        }
-      },
-      mounted: function() {
-        this.mounted = true;
-      }
-    },
-
-    player: {
-      template: '<span style="display:none;"><slot /></span>',
-      props: {
-        channels: { type: Array, default: function() { return []; } },
-        gain: { type: Number, default: function() { return 0.002; } }
+        tempo: { type: Number, default: 120 },
+        beat: { type: Number, default: 4 }
       },
       data: function() {
         return {
           audioContext: null
         };
       },
+      watch: {
+        params: function() {}
+      },
+      computed: {
+        params: function() {
+          var tempo =  this.tempo;
+          var beat = this.beat;
+          var freq = 440 * Math.exp(/* E note */ 7 / 12 * Math.log(2) );
+          var gain = 0.05;
+          var div = 16 * Math.max(1, Math.ceil(120 / tempo) );
+          var stepPerTime = div * tempo / 60;
+          return {
+            freq: freq,
+            gain: gain,
+            beat: beat,
+            div: div,
+            stepPerTime: stepPerTime
+          }; 
+        },
+        playing: function() {
+          return !!this.audioContext;
+        }
+      },
       methods: {
         start: function() {
 
           if (!this.audioContext) {
+
+            var bufferSize = 8192;
+            var numChannels = 1;
+            var freq, gain, step, lastStep = -1;
+            var outputBuffer, i, bufLen, c, chData;
+
+            var sine = function() {
+              var v = 0;
+              return function(n) {
+                v += Math.cos(n);
+                return v;
+              }
+            }();
+            var square = function(n) {
+              return Math.sin(n) < 0? -1 : 1;
+            };
+            var wave = square;
 
             var audioContext = new AudioContext();
             var sampleRate = audioContext.sampleRate;
@@ -72,33 +66,38 @@
             var dt = 1 / sampleRate;
 
             var gainNode = audioContext.createGain();
-            gainNode.gain.value = this.gain;
+            gainNode.gain.value = 1;
             gainNode.connect(audioContext.destination);
 
-            var bufferSize = 8192;
-            var channels = this.channels;
-            var numChannels = channels.length;
-
-            var outputBuffer, i, bufLen, c, chData;
             var scriptNode = audioContext.
               createScriptProcessor(bufferSize, 0, numChannels);
 
             scriptNode.onaudioprocess = function(event) {
+
               outputBuffer = event.outputBuffer;
               bufLen = outputBuffer.length;
-              chData = [];
-              for (c = 0; c < numChannels; c += 1) {
-                chData.push(outputBuffer.getChannelData(c) );
-              }
+              chData = outputBuffer.getChannelData(0);
+
               for (i = 0; i < bufLen; i += 1) {
-                for (c = 0; c < numChannels; c += 1) {
-                  chData[c][i] = channels[c](t);
+
+                step = Math.floor(t * this.params.stepPerTime);
+
+                if (lastStep != step) {
+                  freq = step % (this.params.beat * this.params.div) == 0?
+                      this.params.freq * 2 : this.params.freq;
+                  gain = step % this.params.div == 0? this.params.gain : 0;
+                  lastStep = step;
+                  this.$emit('step', { step: step,
+                    beat: this.params.beat, div: this.params.div });
                 }
+
+                chData[i] = gain * wave(2 * Math.PI * freq * t);
                 t += dt;
               }
-            };
-            scriptNode.connect(gainNode);
 
+            }.bind(this);
+
+            scriptNode.connect(gainNode);
             this.audioContext = audioContext;
           }
         },
@@ -108,8 +107,6 @@
             this.audioContext = null;
           }
         }
-      },
-      mounted: function() {
       }
     }
   };

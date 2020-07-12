@@ -8,21 +8,26 @@
       el: '#app',
       data: {
         playing: false,
-        lfo: null,
-        outL: null,
-        outR: null,
-        cout: null
+        tempo: 120,
+        beat: 4
       },
       components: {
       },
       methods: {
-        test_clickHandler: function() {
-          this.playing = !this.playing;
-          if (this.playing) {
-            this.$refs.p1.start();
+        start_clickHandler: function() {
+          var metronome = this.$refs.metronome;
+          if (!metronome.playing) {
+            metronome.start();
           } else {
-            this.$refs.p1.stop();
+            metronome.stop();
           }
+        },
+        metronome_stepHandler: function(event) {
+          if (event.step % (event.beat * event.div) ==  0) {
+            console.log(event);
+          } else if (event.step % event.div ==  0) {
+            console.log('** ',  event);
+          } 
         }
       }
     })

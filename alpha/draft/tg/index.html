@@ -10,15 +10,28 @@
   <script src="index.js"></script>
 </head>
 <body>
-  <div id="app">
+  <div id="app" @mousedown.prevent>
 
-    <button @click="test_clickHandler"> test </button>
+    <metronome ref="metronome" @step="metronome_stepHandler"
+      :tempo="+tempo" :beat="beat"></metronome>
+ 
+    <div>Tempo</div>
+    <template v-for="t in [40, 60, 80, 100, 120, 140, 160, 180, 200]">
+      <label>
+        <input type="radio" name="tempo" v-model="tempo" :value="t"
+          />{{t}}</label>
+    </template>
 
-    <osc v-model="outL" freq="440" :gain="lfo"></osc>
-    <osc v-model="outR" freq="439"></osc>
-    <osc v-model="lfo" freq="1" gain="-10"></osc>
+    <div>Beat</div>
+    <template v-for="b in [0, 1, 2, 3, 4, 5, 6, 7]">
+      <label>
+        <input type="radio" name="beat" v-model="beat" :value="b" 
+          />{{b}}</label>
+    </template>
 
-    <player ref="p1"  :channels="[ outL, outR ]"></player>
+    <div>
+      <button @click="start_clickHandler"> start </button>
+    </div>
 
   </div>
 </body>
