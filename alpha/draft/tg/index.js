@@ -111,6 +111,9 @@
                 var on = '1.0';
                 var off = '0.05';
 
+                var fon = '#f00';
+                var foff = '#000';
+
                 this.$refs.barAx.setAttribute('opacity', on);
 
                 var bars = this.$refs.bars;
@@ -140,11 +143,14 @@
                   }
 
                   if (lastS0 !== s0) {
+                    var b = Math.floor(step / this.params.div) % this.params.beat;
                     if (s0) {
+                      this.$refs.lPoint.setAttribute('fill', b == 0? fon : foff);
                       this.$refs.lPoint.setAttribute('opacity', on);
                       this.$refs.rPoint.setAttribute('opacity', off);
                     } else {
                       this.$refs.lPoint.setAttribute('opacity', off);
+                      this.$refs.rPoint.setAttribute('fill', b == 0? fon : foff);
                       this.$refs.rPoint.setAttribute('opacity', on);
                     }
                     lastS0 = s0;
