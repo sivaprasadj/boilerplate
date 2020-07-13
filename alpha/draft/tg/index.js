@@ -1,32 +1,18 @@
 'use strict'
 
 !function() {
-// 44 18
+
   window.addEventListener('load', function() {
 
     var components = {
       metronome: {
         template:
-          '<svg xmlns="http://www.w3.org/2000/svg"' +
-            ' style="x-display: none; overflow: hidden;"' +
-            ' width="220" height="90"' +
-            ' viewBox="0 0 220 90" >' +
-            '<rect fill="#c0ccc0" stroke="none"' +
-              ' x="0" y="0" width="220" height="90" />' +
-            '<circle ref="barAx" fill="#000" stroke="none" opacity="0"' +
-              ' cx="110" cy="92" r="12" />' +
-            '<g v-for="r in barRange()" :transform="barTran(r)">' +
-              '<path ref="bars" fill="#000" stroke="none" opacity="0"' +
-                ' d="M-0.5 -15L-5 -84L0 -90L5 -84L0.5 -15Z" />' +
-            '</g>' +
-            '<circle ref="lPoint" fill="#000" stroke="none" opacity="0"' +
-              ' cx="25" cy="25" r="16" />' +
-            '<circle ref="rPoint" fill="#000" stroke="none" opacity="0"' +
-              ' cx="195" cy="25" r="16" />' +
-          '</svg>',
+          '<span style="display:none;"></span>',
         props: {
+          beat: { type: Number, default: 4 },
+          gain: { type: Number, default: -40 },
           tempo: { type: Number, default: 120 },
-          beat: { type: Number, default: 4 }
+          mute: { type: Boolean, default: false }
         },
         data: function() {
           return {
@@ -39,17 +25,16 @@
         },
         computed: {
           params: function() {
-            var tempo =  this.tempo;
             var beat = this.beat;
+            var tempo =  this.tempo;
+            var mute = this.mute;
             var freq = 440 * Math.exp(/* E note */ 7 / 12 * Math.log(2) );
-            var gain = 0.05;
-            var div = 16 * Math.max(1, Math.ceil(120 / tempo) );
-            var stepPerTime = div * tempo / 60;
+            var vol = mute? 0 : Math.exp(this.gain / 20 * Math.log(10) );
+            var numUnitsPerStep = 16 * Math.max(1, Math.ceil(120 / tempo) );
+            var stepPerTime = numUnitsPerStep * tempo / 60;
             return {
-              freq: freq,
-              gain: gain,
-              beat: beat,
-              div: div,
+              freq: freq, beat: beat, vol: vol,
+              numUnitsPerStep: numUnitsPerStep,
               stepPerTime: stepPerTime
             }; 
           },
@@ -58,24 +43,13 @@
           }
         },
         methods: {
-          barRange: function() {
-            var a = [];
-            var l = 6;
-            for (var i = -l; i <= l; i += 1) {
-              a.push(i)
-            }
-            return a;
-          },
-          barTran: function(r) {
-            return 'translate(110 92) rotate(' + (r * 7.75) + ')';
-          },
           start: function() {
 
             if (!this.audioContext) {
 
               var bufferSize = 8192;
               var numChannels = 1;
-              var freq, gain, step, lastStep = -1;
+              var freq, vol, step, lastStep = -1;
               var outputBuffer, i, bufLen, c, chData;
 
               var sine = function() {
@@ -106,76 +80,6 @@
               var scriptNode = audioContext.
                 createScriptProcessor(bufferSize, 0, numChannels);
 
-              !function() {
-
-                var on = '1.0';
-                var off = '0.05';
-
-                var fon = '#f00';
-                var foff = '#000';
-
-                this.$refs.barAx.setAttribute('opacity', on);
-
-                var bars = this.$refs.bars;
-
-                // reset bars
-                var barState = {};
-                !function() {
-                  for (var b = 0; b < bars.length; b += 1) {
-                    bars[b].setAttribute('opacity', barState[b] = off);
-                  }
-                }();
-
-                var step;
-                var s0, lastS0 = null;
-                var s1, lastS1 = null;
-
-                var onframe = function(ft) {
-
-                  step = t * this.params.stepPerTime;
-                  s0 = Math.floor(step / this.params.div) % 2 == 0;
-                  s1 = Math.floor(step / this.params.div *
-                      bars.length) % (bars.length * 2);
-
-                  if (s1 < bars.length) {
-                  } else {
-                    s1 = bars.length * 2 - 1 - s1;
-                  }
-
-                  if (lastS0 !== s0) {
-                    var b = Math.floor(step / this.params.div) % this.params.beat;
-                    if (s0) {
-                      this.$refs.lPoint.setAttribute('fill', b == 0? fon : foff);
-                      this.$refs.lPoint.setAttribute('opacity', on);
-                      this.$refs.rPoint.setAttribute('opacity', off);
-                    } else {
-                      this.$refs.lPoint.setAttribute('opacity', off);
-                      this.$refs.rPoint.setAttribute('fill', b == 0? fon : foff);
-                      this.$refs.rPoint.setAttribute('opacity', on);
-                    }
-                    lastS0 = s0;
-                  }
-
-                  if (lastS1 !== s1) {
-                    for (var b = 0; b < bars.length; b += 1) {
-                      var state = b == s1? on : off;
-                      if (barState[b] !== state) {
-                        bars[b].setAttribute('opacity', barState[b] = state);
-                      }
-                    }
-                    lastS1 = s1;
-                  }
-
-                  if (this.audioContext) {
-                    window.requestAnimationFrame(onframe);
-                  }
-
-                }.bind(this);
-
-                window.requestAnimationFrame(onframe);
-
-              }.bind(this)();
-
               scriptNode.onaudioprocess = function(event) {
 
                 outputBuffer = event.outputBuffer;
@@ -187,15 +91,15 @@
                   step = Math.floor(t * this.params.stepPerTime);
 
                   if (lastStep != step) {
-                    freq = step % (this.params.beat * this.params.div) == 0?
+                    freq = step % (this.params.beat * this.params.numUnitsPerStep) == 0?
                         this.params.freq * 2 : this.params.freq;
-                    gain = step % this.params.div == 0? this.params.gain : 0;
+                    vol = step % this.params.numUnitsPerStep == 0? this.params.vol : 0;
                     lastStep = step;
                     this.$emit('step', { step: step,
-                      beat: this.params.beat, div: this.params.div });
+                      beat: this.params.beat, numUnitsPerStep: this.params.numUnitsPerStep });
                   }
 
-                  chData[i] = gain * wave(2 * Math.PI * freq * t);
+                  chData[i] = vol * wave(2 * Math.PI * freq * t);
                   t += dt;
                 }
 
@@ -212,6 +116,58 @@
             }
           }
         }
+      },
+      metronomeView: {
+        template:
+          '<svg xmlns="http://www.w3.org/2000/svg"' +
+            ' style="x-display: none; overflow: hidden;"' +
+            ' width="220" height="90"' +
+            ' viewBox="0 0 220 90" >' +
+            '<rect fill="#c0ccc0" stroke="none"' +
+              ' x="0" y="0" width="220" height="90" />' +
+            '<circle ref="barAx" fill="#000" stroke="none" :opacity="cOp"' +
+              ' cx="110" cy="92" r="12" />' +
+            '<g v-for="bar in bars" :transform="bar.tran">' +
+              '<path ref="bars" fill="#000" stroke="none" :opacity="bar.op"' +
+                ' d="M-0.5 -15L-5 -84L0 -90L5 -84L0.5 -15Z" />' +
+            '</g>' +
+            '<circle ref="lPoint" fill="#000" stroke="none" :opacity="lOp"' +
+              ' cx="25" cy="25" r="16" />' +
+            '<circle ref="rPoint" fill="#000" stroke="none" :opacity="rOp"' +
+              ' cx="195" cy="25" r="16" />' +
+          '</svg>',
+        data: function() {
+          return {
+            active: false, cOp: '0', lOp: '0', rOp: '0', bars: []
+          };
+        },
+        mounted: function() {
+          var defaultOpacity = '0.1';
+          this.cOp = this.lOp = this.rOp = defaultOpacity;
+          var bars = [];
+          var l = 6;
+          for (var i = -l; i <= l; i += 1) {
+            bars.push({
+              n: i,
+              tran: 'translate(110 92) rotate(' + (i * 7.75) + ')',
+              op: defaultOpacity
+            });
+          }
+          this.bars = bars;
+
+
+          var onframe = function() {
+            if (this.active) {
+              window.requestAnimationFrame(onframe);
+            }
+          }.bind(this);
+
+          this.active = true;
+          window.requestAnimationFrame(onframe);
+        },
+        beforeDestroy: function() {
+          this.active = false;
+        }
       }
     };
 
@@ -219,8 +175,11 @@
       el: '#app',
       components: components,
       data: {
+        beat: 4,
+        gain: -30,
         tempo: 120,
-        beat: 4
+        mute: false,
+        playing: false
       },
       methods: {
         start_clickHandler: function() {
@@ -230,7 +189,15 @@
           } else {
             metronome.stop();
           }
+          this.playing = metronome.playing;
         }
+      },
+      mounted: function() {
+        this.$refs.metronome.$on('step', function(event) {
+          if (event.step % event.numUnitsPerStep == 0) {
+            console.log(event);
+          }
+        });
       }
     })
   });
