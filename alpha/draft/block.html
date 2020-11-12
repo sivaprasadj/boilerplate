@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+<head>
+<script>
+'use strict'
+window.addEventListener('load', function() {
+
+  var $s = function(tagName) {
+    return {
+      $el: document.createElementNS(
+          'http://www.w3.org/2000/svg', tagName),
+      attrs: function(attrs) {
+        for (var k in attrs) {
+          this.$el.setAttribute(k, '' + attrs[k]);
+        }
+        return this;
+      }
+    };
+  };
+
+  var mat3 = function() {
+    var m = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+    return {
+      transform: function(v) {
+        var vcount = Math.floor(v.length / 3);
+        var ret = [];
+        for (var i = 0; i < vcount; i += 1) {
+          ret.push(m[0] * v[i * 3] + m[3] * v[i * 3 + 1] + m[6] * v[i * 3 + 2]);
+          ret.push(m[1] * v[i * 3] + m[4] * v[i * 3 + 1] + m[7] * v[i * 3 + 2]);
+          ret.push(m[2] * v[i * 3] + m[5] * v[i * 3 + 1] + m[8] * v[i * 3 + 2]);
+        }
+        return ret;
+      },
+      rotX: function(t, v) {
+        var s = Math.sin(t);
+        var c = Math.cos(t);
+        m = this.transform([
+          1,  0,  0,
+          0,  c, -s,
+          0,  s,  c
+        ]);
+        return this;
+      },
+      rotY: function(t, v) {
+        var s = Math.sin(t);
+        var c = Math.cos(t);
+        m = this.transform([
+           c, 0, s,
+           0, 1, 0,
+          -s, 0, c
+        ]);
+        return this;
+      },
+      rotZ: function(t, v) {
+        var s = Math.sin(t);
+        var c = Math.cos(t);
+        m = this.transform([
+          c, -s, 0,
+          s,  c, 0,
+          0,  0, 1
+        ]);
+        return this;
+      }
+    };
+  };
+
+  var trimNum = function(n) {
+    var d = Math.round(n * 100);
+    var neg = false;
+    if (d < 0) {
+      neg = true;
+      d = -d;
+    };
+    var s = '' + d;
+    while (s.length < 3) {
+      s = '0' + s;
+    }
+    return ((neg? '-' : '') +
+      s.substring(0, s.length - 2) + '.' +
+      s.substring(s.length - 2)).replace(/\.?0+$/, '');
+  };
+
+
+  var $svg = $s('svg').attrs({
+    width: 800, height: 600, viewBox: '-50 -50 800 600' });
+  document.body.appendChild($svg.$el);
+
+  var block = function(m, t, uw, uh, ud) {
+
+    var unit = 50;
+
+    var path = function(points) {
+      var vcount = Math.floor(points.length / 3);
+      var d = '';
+      for (var i = 0; i < vcount; i += 1) {
+        d += (i == 0? 'M' : 'L') +
+        trimNum(points[i * 3 + 0]) + ' ' +
+        trimNum(points[i * 3 + 1]);
+      }
+      d += 'Z';
+      $g.$el.appendChild(
+          $s('path').attrs({d: d, opacity: 0.8}).$el);
+    };
+
+    var r = unit * 2.5 / 8;
+    var ellipse = function(p) {
+      p = m.transform(p);
+      $g.$el.appendChild(
+          $s('ellipse').attrs({
+            cx: trimNum(p[0]),
+            cy: trimNum(p[1]),
+            rx: trimNum(r),
+            ry: trimNum(r * Math.cos(t) ), opacity: 0.8}).$el);
+    };
+
+    var $g = $s('g').attrs({fill: '#ccc', stroke: '#000',
+      'stroke-width': 1, 'stroke-linejoin': 'round' });
+    $svg.$el.appendChild($g.$el);
+
+    var w = unit * uw;
+    var h = unit * uh;
+    var d = unit * ud;
+    var rects = [];
+    rects.push([w, 0, 0,  w, h, 0,  w, h, d,  w, 0, d]);
+    rects.push([0, 0, 0,  w, 0, 0,  w, 0, d,  0, 0, d]);
+    rects.push([0, 0, 0,  w, 0, 0,  w, h, 0,  0, h, 0]);
+    rects.push([0, h, 0,  w, h, 0,  w, h, d,  0, h, d]);
+    rects.push([0, 0, 0,  0, h, 0,  0, h, d,  0, 0, d]);
+
+    for (var i = 0; i < rects.length; i += 1) {
+      path(m.transform(rects[i]) );
+    }
+    for (var y = 0; y < uh; y += 1) {
+      for (var x = 0; x < uw; x += 1) {
+        ellipse([unit * x + unit / 2, unit * y + unit / 2, 0]);
+        ellipse([unit * x + unit / 2, unit * y + unit / 2, -unit * 0.2]);
+      }
+    }
+  };
+
+//  block(1, 1, 3);
+  !function() {
+
+    var p0 = -35;
+    var p1 = 60;
+    var t = Math.acos(p1 / 100);
+    var m = mat3();
+    m.rotX(t).rotZ(p0 * Math.PI / 180);
+
+    block(m, t, 1, 1, 1 * 6 / 5);
+
+    var s = 0.5;
+    var u = [-s, -s, 0,  s, -s, 0,  s, s, 0,  -s, s, 0];
+    u = m.transform(u);
+
+    var x0 = u[0];
+    var y0 = u[1];
+    var x1 = u[3];
+    var y1 = u[4];
+    var x2 = u[6];
+    var y2 = u[7];
+
+    var p2 = Math.sin(t);
+    var p3 = x1 - x0;
+    var p4 = x1 - x2;
+    var p5 = Math.atan2(y1 - y0, x1 - x0);
+    var p6 = Math.atan2(y1 - y2, x1 - x2);
+
+
+    /*
+    -35deg/60%
+    22.79deg/102.39%
+    40.59deg/71.7%
+     */
+    console.log(
+        trimNum(p0) + 'deg',
+        trimNum(p1) + '%',
+        trimNum(p2 * 100) + '%',
+        trimNum(p3 * 100) + '%',
+        trimNum(p4 * 100) + '%',
+        trimNum(p5 * 180 / Math.PI) + 'deg',
+        trimNum(p6 * 180 / Math.PI) + 'deg'
+        );
+  }();
+
+});
+</script>
+</head>
+<body></body>
+</html>
