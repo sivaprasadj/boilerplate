@@ -173,13 +173,14 @@ window.addEventListener('load', function() {
     40.59deg/71.7%
      */
     console.log(
-        trimNum(p0) + 'deg',
-        trimNum(p1) + '%',
-        trimNum(p2 * 100) + '%',
-        trimNum(p3 * 100) + '%',
-        trimNum(p4 * 100) + '%',
-        trimNum(p5 * 180 / Math.PI) + 'deg',
-        trimNum(p6 * 180 / Math.PI) + 'deg'
+        trimNum(p0) + 'deg' +
+        ' / ' + trimNum(p1) + '%' +
+        '\n' + trimNum(p3 * 100) + '%' +
+        ' / ' + trimNum(p2 * 100) + '%' +
+        ' / ' + trimNum(p5 * 180 / Math.PI) + 'deg' +
+        '\n' + trimNum(p4 * 100) + '%' +
+        ' / ' + trimNum(p2 * 100) + '%' +
+        ' / ' + trimNum(p6 * 180 / Math.PI) + 'deg'
         );
   }();
 
