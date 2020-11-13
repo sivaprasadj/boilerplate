@@ -82,7 +82,7 @@ window.addEventListener('load', function() {
 
 
   var $svg = $s('svg').attrs({
-    width: 800, height: 600, viewBox: '-50 -50 800 600' });
+    width: 200, height: 200, viewBox: '-100 -100 200 200' });
   document.body.appendChild($svg.$el);
 
   var block = function(m, t, uw, uh, ud) {
@@ -102,7 +102,7 @@ window.addEventListener('load', function() {
           $s('path').attrs({d: d, opacity: 0.8}).$el);
     };
 
-    var r = unit * 2.5 / 8;
+    var r = unit * 2 * 2.5 / 8;
     var ellipse = function(p) {
       p = m.transform(p);
       $g.$el.appendChild(
@@ -115,34 +115,36 @@ window.addEventListener('load', function() {
 
     var $g = $s('g').attrs({fill: '#ccc', stroke: '#000',
       'stroke-width': 1, 'stroke-linejoin': 'round' });
+    while ($svg.$el.firstChild) {
+      $svg.$el.removeChild($svg.$el.firstChild);
+    }
     $svg.$el.appendChild($g.$el);
 
     var w = unit * uw;
     var h = unit * uh;
     var d = unit * ud;
     var rects = [];
-    rects.push([w, 0, 0,  w, h, 0,  w, h, d,  w, 0, d]);
-    rects.push([0, 0, 0,  w, 0, 0,  w, 0, d,  0, 0, d]);
-    rects.push([0, 0, 0,  w, 0, 0,  w, h, 0,  0, h, 0]);
-    rects.push([0, h, 0,  w, h, 0,  w, h, d,  0, h, d]);
-    rects.push([0, 0, 0,  0, h, 0,  0, h, d,  0, 0, d]);
+    rects.push([-w, -h, -d,  w, -h, -d,  w,  h, -d, -w,  h, -d]);
+    //rects.push([-w, -h,  d,  w, -h,  d,  w,  h,  d, -w,  h,  d]);
+    //rects.push([-w, -h,  d, -w, -h, -d, -w,  h, -d, -w,  h,  d]);
+    rects.push([ w, -h,  d,  w, -h, -d,  w,  h, -d,  w,  h,  d]);
+    //rects.push([-w, -h, -d, -w, -h,  d,  w, -h, d,   w, -h, -d]);
+    rects.push([-w,  h, -d, -w,  h,  d,  w,  h, d,   w,  h, -d]);
+
 
     for (var i = 0; i < rects.length; i += 1) {
       path(m.transform(rects[i]) );
     }
     for (var y = 0; y < uh; y += 1) {
       for (var x = 0; x < uw; x += 1) {
-        ellipse([unit * x + unit / 2, unit * y + unit / 2, 0]);
-        ellipse([unit * x + unit / 2, unit * y + unit / 2, -unit * 0.2]);
+        ellipse([0, 0, -d ]);
+        ellipse([0, 0, -d - unit * 0.4]);
       }
     }
   };
 
-//  block(1, 1, 3);
-  !function() {
+  var updateView = function(p0, p1) {
 
-    var p0 = -35;
-    var p1 = 60;
     var t = Math.acos(p1 / 100);
     var m = mat3();
     m.rotX(t).rotZ(p0 * Math.PI / 180);
@@ -166,12 +168,20 @@ window.addEventListener('load', function() {
     var p5 = Math.atan2(y1 - y0, x1 - x0);
     var p6 = Math.atan2(y1 - y2, x1 - x2);
 
-
     /*
     -35deg/60%
     22.79deg/102.39%
     40.59deg/71.7%
      */
+    document.getElementById('c0_0').textContent = trimNum(p0) + 'deg';
+    document.getElementById('c0_1').textContent = trimNum(p1) + '%';
+    document.getElementById('c1_0').textContent = trimNum(p3 * 100) + '%';
+    document.getElementById('c1_1').textContent = trimNum(p2 * 100) + '%';
+    document.getElementById('c1_2').textContent = trimNum(p5 * 180 / Math.PI) + 'deg';
+    document.getElementById('c2_0').textContent = trimNum(p4 * 100) + '%';
+    document.getElementById('c2_1').textContent = trimNum(p2 * 100) + '%';
+    document.getElementById('c2_2').textContent = trimNum(p6 * 180 / Math.PI) + 'deg';
+
     console.log(
         trimNum(p0) + 'deg' +
         ' / ' + trimNum(p1) + '%' +
@@ -182,10 +192,35 @@ window.addEventListener('load', function() {
         ' / ' + trimNum(p2 * 100) + '%' +
         ' / ' + trimNum(p6 * 180 / Math.PI) + 'deg'
         );
-  }();
+  };
 
+  var inputHandler = function() {
+    updateView(+p.value * 180 / Math.PI, Math.cos(+t.value) * 100);
+  };
+
+  var p = document.getElementById('p');
+  var t = document.getElementById('t');
+  p.addEventListener('input', inputHandler);
+  t.addEventListener('input', inputHandler);
+
+  inputHandler();
 });
 </script>
 </head>
-<body></body>
+<body>
+
+  <table>
+    <tbody>
+      <tr><td id="c0_0"></td><td id="c0_1"></td><td id="c0_2"></td></tr>
+      <tr><td id="c1_0"></td><td id="c1_1"></td><td id="c1_2"></td></tr>
+      <tr><td id="c2_0"></td><td id="c2_1"></td><td id="c2_2"></td></tr>
+    </tbody>
+  </table>
+
+  <input id="p" type="range" min="-1.5708" max="0" value="-0.6109" step="any" />
+  <br/>
+  <input id="t" type="range" min="0" max="1.5708" value="0.9273" step="any" />
+  <br/>
+
+</body>
 </html>
