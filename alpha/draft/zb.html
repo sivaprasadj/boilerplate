@@ -63,18 +63,24 @@ window.addEventListener('load', function() {
     var pSin = Math.sin(d2t(-pVal) );
     var tCos = Math.cos(d2t(tVal) );
     var tSin = Math.sin(d2t(tVal) );
+    var calc = function(y, x) {
+      var r = Math.sqrt(x * x + y * y);
+      return { tan: Math.atan2(y, x), cos: x/ r, sin: y / r };
+    };
+    var tl = calc(pSin * tCos, pCos);
+    var tr = calc(pCos * tCos, pSin);
     tRect.$el.setAttribute('transform', 
         ' scale(1 ' + tCos + ')' +
         'rotate(' + (-pVal) + ')');
     lRect.$el.setAttribute('transform',
-        ' translate(0' + 0 + ')' +
-        ' skewY(' + t2d(Math.atan2(pSin * tCos, pCos) ) + ')' +
+        ' translate(0 ' + 0 + ')' +
+        ' skewY(' + t2d(tl.tan) + ')' +
         ' translate(' + (-r / 2 * pSin) + ' 0)' +
         'scale(' + pCos + ' 1)'
         );
     rRect.$el.setAttribute('transform',
-        ' translate(0' + 0 + ')' +
-        ' skewY(' + t2d(-Math.atan2(pCos * tCos, pSin) ) + ')' +
+        ' translate(0 ' + 0 + ')' +
+        ' skewY(' + t2d(-tr.tan) + ')' +
         ' translate(' + (r / 2 * pCos) + ' 0)' +
         ' scale(' + pSin + ' 1)'
         );
@@ -90,9 +96,9 @@ window.addEventListener('load', function() {
 <table>
   <tbody>
     <tr><th>Pan:</th><td id="pLabel"></td>
-      <td><input id="p" type="range" min="-90" max="0" value="-15" /></td></tr>
+      <td><input id="p" type="range" min="-90" max="0" value="-35" /></td></tr>
     <tr><th>Tile:</th><td id="tLabel"></td>
-      <td><input id="t" type="range" min="0" max="90" value="5" /></td></tr>
+      <td><input id="t" type="range" min="0" max="90" value="60" /></td></tr>
   </tbody>
 </table>
  
