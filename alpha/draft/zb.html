@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <script>
+window.addEventListener('load', function() {
+
+  var $s = function(tagName) {
+    return {
+      $el: document.createElementNS(
+          'http://www.w3.org/2000/svg', tagName),
+      attrs: function(attrs) {
+        for (var k in attrs) {
+          this.$el.setAttribute(k, '' + attrs[k]);
+        }
+        return this;
+      }
+    };
+  };
+
+  var trimNum = function(n) {
+    var d = Math.round(n * 100);
+    var neg = false;
+    if (d < 0) {
+      neg = true;
+      d = -d;
+    };
+    var s = '' + d;
+    while (s.length < 3) {
+      s = '0' + s;
+    }
+    return ((neg? '-' : '') +
+      s.substring(0, s.length - 2) + '.' +
+      s.substring(s.length - 2)).replace(/\.?0+$/, '');
+  };
+  var width = 200;
+  var height = 150;
+  var r = 100;
+  var svg = $s('svg').attrs({
+    width: 200, height: 200, viewBox: (-width / 2) + ' ' + (-height  / 2) +
+    ' ' + width + ' ' + height });
+  document.body.appendChild(svg.$el);
+  var tRect = $s('rect').attrs({ x: -r / 2, y: -r / 2, width: r, height: r,
+    fill: 'none', stroke: '#000' });
+  var lRect = $s('rect').attrs({ x: -r / 2, y: -r / 2, width: r, height: r,
+    fill: 'none', stroke: '#f00' });
+  var rRect = $s('rect').attrs({ x: -r / 2, y: -r / 2, width: r, height: r,
+    fill: 'none', stroke: '#0f0' });
+  svg.$el.appendChild(tRect.$el);
+  svg.$el.appendChild(lRect.$el);
+  svg.$el.appendChild(rRect.$el);
+  var p = document.getElementById('p');
+  var t = document.getElementById('t');
+  var inputHandler = function() {
+    document.getElementById('pLabel').textContent = p.value;
+    document.getElementById('tLabel').textContent = t.value;
+    var pVal = +p.value;
+    var tVal = +t.value;
+    var d2t = function(t) { return t / 180 * Math.PI; };
+    var t2d = function(t) { return t / Math.PI * 180; };
+    var pCos = Math.cos(d2t(-pVal) );
+    var pSin = Math.sin(d2t(-pVal) );
+    var tCos = Math.cos(d2t(tVal) );
+    var tSin = Math.sin(d2t(tVal) );
+    tRect.$el.setAttribute('transform', 
+        ' scale(1 ' + tCos + ')' +
+        'rotate(' + (-pVal) + ')');
+    lRect.$el.setAttribute('transform',
+        ' translate(0' + 0 + ')' +
+        ' skewY(' + t2d(Math.atan2(pSin * tCos, pCos) ) + ')' +
+        ' translate(' + (-r / 2 * pSin) + ' 0)' +
+        'scale(' + pCos + ' 1)'
+        );
+    rRect.$el.setAttribute('transform',
+        ' translate(0' + 0 + ')' +
+        ' skewY(' + t2d(-Math.atan2(pCos * tCos, pSin) ) + ')' +
+        ' translate(' + (r / 2 * pCos) + ' 0)' +
+        ' scale(' + pSin + ' 1)'
+        );
+
+  };
+  inputHandler();
+  p.addEventListener('input', inputHandler);
+  t.addEventListener('input', inputHandler);
+});
+  </script>
+</head>
+<body>
+<table>
+  <tbody>
+    <tr><th>Pan:</th><td id="pLabel"></td>
+      <td><input id="p" type="range" min="-90" max="0" value="-15" /></td></tr>
+    <tr><th>Tile:</th><td id="tLabel"></td>
+      <td><input id="t" type="range" min="0" max="90" value="5" /></td></tr>
+  </tbody>
+</table>
+ 
+ 
+<br/>
+</body>
+</html>
