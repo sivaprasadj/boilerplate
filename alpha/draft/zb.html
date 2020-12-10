@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <script>
+
 window.addEventListener('load', function() {
 
   var $s = function(tagName) {
@@ -34,18 +35,45 @@ window.addEventListener('load', function() {
       s.substring(0, s.length - 2) + '.' +
       s.substring(s.length - 2)).replace(/\.?0+$/, '');
   };
+
+  var transformBuilder = function() {
+    var t = '';
+    return {
+      translate: function(tx, ty) {
+        t += ' translate(' + tx + ' ' + ty + ')';
+        return this;
+      },
+      scale: function(sx, sy) {
+        t += ' scale(' + sx + ' ' + sy + ')';
+        return this;
+      },
+      rotate: function(angle) {
+        t += ' rotate(' + angle + ')';
+        return this;
+      },
+      skewY: function(angle) {
+        t += ' skewY(' + angle + ')';
+        return this;
+      },
+      build: function() { return t; }
+    };
+  };
+
+  var d2t = function(d) { return d / 180 * Math.PI; };
+  var t2d = function(t) { return t / Math.PI * 180; };
+
   var width = 250;
   var height = 250;
   var r = 100;
   var svg = $s('svg').attrs({
-    width: 200, height: 200, viewBox: (-width / 2) + ' ' + (-height  / 2) +
+    width: 200, height: 200, viewBox: (-width / 2) + ' ' + (-height / 2) +
     ' ' + width + ' ' + height });
   document.body.appendChild(svg.$el);
-  var tRect = $s('rect').attrs({ x: -r / 2, y: -r / 2, width: r, height: r,
-    fill: 'none', stroke: '#000' });
-  var lRect = $s('rect').attrs({ x: -r / 2, y: -r / 2, width: r, height: r,
+  var tRect = $s('rect').attrs({ x: 0, y: 0, width: r, height: r,
+    fill: 'none', stroke: '#00f' });
+  var lRect = $s('rect').attrs({ x: 0, y: 0, width: r, height: r,
     fill: 'none', stroke: '#f00' });
-  var rRect = $s('rect').attrs({ x: -r / 2, y: -r / 2, width: r, height: r,
+  var rRect = $s('rect').attrs({ x: 0, y: 0, width: r, height: r,
     fill: 'none', stroke: '#0f0' });
   svg.$el.appendChild(tRect.$el);
   svg.$el.appendChild(lRect.$el);
@@ -54,9 +82,6 @@ window.addEventListener('load', function() {
   var p = document.getElementById('p');
   var t = document.getElementById('t');
 
-  var d2t = function(t) { return t / 180 * Math.PI; };
-  var t2d = function(t) { return t / Math.PI * 180; };
-
   var inputHandler = function() {
 
     document.getElementById('pLabel').textContent = p.value;
@@ -64,31 +89,34 @@ window.addEventListener('load', function() {
 
     var pVal = +p.value * -1;
     var tVal = +t.value;
+
     var pCos = Math.cos(d2t(pVal) );
     var pSin = Math.sin(d2t(pVal) );
     var tCos = Math.cos(d2t(tVal) );
     var tSin = Math.sin(d2t(tVal) );
 
     tRect.$el.setAttribute('transform',
-        ' scale(1 ' + tSin + ')' +
-        ' rotate(' + (pVal) + ')');
+        transformBuilder().scale(1, tSin).rotate(pVal).
+        translate(-r / 2, -r / 2).build() );
 
     lRect.$el.setAttribute('transform',
-        ' translate(' + (-r / 2 * pSin) +
-            ' ' + r / 2 * (tSin * pCos + tCos) + ')' +
-        ' skewY(' + t2d(Math.atan2(pSin * tSin, pCos) ) + ')' +
-        ' scale(' + pCos + ' ' + tCos + ')');
-    rRect.$el.setAttribute('transform',
-        ' translate(' + (r / 2 * pCos) +
-            ' ' + r / 2 * (tSin * pSin + tCos) + ')' +
-        ' skewY(' + t2d(-Math.atan2(pCos * tSin, pSin) ) + ')' +
-        ' scale(' + pSin + ' ' + tCos + ')');
+        transformBuilder().
+        translate(-r / 2 * pSin, r / 2 * (tSin * pCos + tCos) ).
+        skewY(t2d(Math.atan2(pSin * tSin, pCos) ) ).
+        scale(pCos, tCos).translate(-r / 2, -r / 2).build() );
 
+    rRect.$el.setAttribute('transform',
+        transformBuilder().
+        translate(r / 2 * pCos, r / 2 * (tSin * pSin + tCos) ).
+        skewY(t2d(-Math.atan2(pCos * tSin, pSin) ) ).
+        scale(pSin, tCos).translate(-r / 2, -r / 2).build() );
   };
+
   inputHandler();
   p.addEventListener('input', inputHandler);
   t.addEventListener('input', inputHandler);
 });
+
   </script>
 </head>
 <body>
@@ -100,8 +128,6 @@ window.addEventListener('load', function() {
       <td><input id="t" type="range" min="0" max="90" value="30" /></td></tr>
   </tbody>
 </table>
- 
- 
 <br/>
 </body>
 </html>
