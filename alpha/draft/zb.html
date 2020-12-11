@@ -95,21 +95,31 @@ window.addEventListener('load', function() {
     var tCos = Math.cos(d2t(tVal) );
     var tSin = Math.sin(d2t(tVal) );
 
-    tRect.$el.setAttribute('transform',
-        transformBuilder().scale(1, tSin).rotate(pVal).
-        translate(-r / 2, -r / 2).build() );
-
-    lRect.$el.setAttribute('transform',
-        transformBuilder().
-        translate(-r / 2 * pSin, r / 2 * (tSin * pCos + tCos) ).
+    var tTran = function(z) {
+      return transformBuilder().
+        translate(0, z * tCos).
+        scale(1, tSin).
+        rotate(pVal).
+        translate(-r / 2, -r / 2).build();
+    };
+    var lTran = function(z, x) {
+      return transformBuilder().
+        translate(-x * pSin, x * pCos * tSin + z * tCos).
         skewY(t2d(Math.atan2(pSin * tSin, pCos) ) ).
-        scale(pCos, tCos).translate(-r / 2, -r / 2).build() );
-
-    rRect.$el.setAttribute('transform',
-        transformBuilder().
-        translate(r / 2 * pCos, r / 2 * (tSin * pSin + tCos) ).
+        scale(pCos, tCos).
+        translate(-r / 2, -r / 2).build();
+    };
+    var rTran = function(z, y) {
+      return transformBuilder().
+        translate(y * pCos, y * pSin * tSin + z * tCos).
         skewY(t2d(-Math.atan2(pCos * tSin, pSin) ) ).
-        scale(pSin, tCos).translate(-r / 2, -r / 2).build() );
+        scale(pSin, tCos).
+        translate(-r / 2, -r / 2).build();
+    };
+
+    tRect.$el.setAttribute('transform', tTran(0) );
+    lRect.$el.setAttribute('transform', lTran(r / 2, r / 2) );
+    rRect.$el.setAttribute('transform', rTran(r / 2, r / 2) );
   };
 
   inputHandler();
