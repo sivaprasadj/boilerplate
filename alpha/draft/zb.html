@@ -157,9 +157,11 @@ window.addEventListener('load', function() {
 <table class="param-table">
   <tbody>
     <tr><th>Pan:</th><td id="pLabel" class="deg"></td>
-      <td><input id="p" type="range" min="-90" max="0" value="-40" /></td></tr>
+      <td><input id="p" type="range"
+        min="-90" max="0" step="1" value="-40" /></td></tr>
     <tr><th>Tilt:</th><td id="tLabel" class="deg"></td>
-      <td><input id="t" type="range" min="0" max="90" value="30" /></td></tr>
+      <td><input id="t" type="range"
+        min="0" max="90" step="1" value="30" /></td></tr>
     <tr><th>Top Transform:</th><td id="tTranLabel" colspan="2"></td></tr>
     <tr><th>Left Transform:</th><td id="lTranLabel" colspan="2"></td></tr>
     <tr><th>Right Transform:</th><td id="rTranLabel" colspan="2"></td></tr>
