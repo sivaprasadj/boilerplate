@@ -5,7 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <style>
 TABLE.param-table TH,
+TABLE.param-table TD { white-space: nowrap; }
+TABLE.param-table TH,
 TABLE.param-table TD.deg { text-align: right; }
+TABLE.param-table TD.deg { width: 2rem; }
 TABLE.param-table TD.deg::after { content: 'º'; }
   </style>
   <script>
@@ -79,7 +82,7 @@ window.addEventListener('load', function() {
   var svg = $s('svg').attrs({
     width: 200, height: 200, viewBox: (-width / 2) + ' ' + (-height / 2) +
     ' ' + width + ' ' + height });
-  document.body.appendChild(svg.$el);
+  document.getElementById('svg').appendChild(svg.$el);
 
   var tCir1 = $s('circle').attrs({
     cx: 0, cy: 0, r: 25, fill: 'none', stroke: '#f90' });
@@ -149,6 +152,17 @@ window.addEventListener('load', function() {
   inputHandler();
   p.addEventListener('input', inputHandler);
   t.addEventListener('input', inputHandler);
+
+  document.getElementById('download').addEventListener('click', function() {
+    var a = document.createElement('a');
+    document.body.appendChild(a);
+    var content = document.getElementById('svg').
+      innerHTML.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+    a.href = URL.createObjectURL(new Blob([ content ], { type: 'text/svg' }) );
+    a.download = 'brick.svg';
+    a.click();
+    document.body.removeChild(a);
+  });
 });
 
   </script>
@@ -167,6 +181,7 @@ window.addEventListener('load', function() {
     <tr><th>Right Transform:</th><td id="rTranLabel" colspan="2"></td></tr>
   </tbody>
 </table>
-<br/>
+<div id="svg"></div>
+<button id="download"> Download SVG </button>
 </body>
 </html>
