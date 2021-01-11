@@ -1,14 +1,14 @@
 <!doctype html>
 <html>
-<body>
-  <img src="tmpl.png" style="vertical-align:top;width:200px;height:200px;" />
-  <img src="test.png" style="vertical-align:top;" />
-  </br/>
-  <canvas id="cv"></canvas>
+<head>
 <script>
-!function() {
+
+'use strict';
+
+window.addEventListener('load', function() {
 
   var imgUrl = 'test.png';
+//  var imgUrl = 's1.png';
 
   var updateCanvas = function() {
 
@@ -31,12 +31,12 @@
     ctx.save();
     ctx.scale(size / 8 / unit, size / 8 / unit);
 
-    var draw = function(path, tran) {
+    var draw = function(path, mat) {
 
       ctx.save();
 
-      ctx.transform(tran[0], tran[1], tran[2], tran[3],
-          tran[4] * unit, tran[5] * unit);
+      ctx.transform(mat[0], mat[1], mat[2], mat[3],
+          mat[4] * unit, mat[5] * unit);
       ctx.beginPath();
       for (var i = 0; i < path.length; i += 2) {
         if (i == 0) {
@@ -161,7 +161,14 @@
   });
   img.src = imgUrl;
 
-}();
+  document.getElementById('smpl').src = imgUrl;
+});
 </script>
+</head>
+<body>
+  <img src="tmpl.png" style="vertical-align:top;width:200px;height:200px;" />
+  <img id="smpl" style="vertical-align:top;" />
+  </br/>
+  <canvas id="cv"></canvas>
 </body>
 </html>
