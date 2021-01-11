@@ -8,6 +8,8 @@
 <script>
 !function() {
 
+  var imgUrl = 'test.png';
+
   var updateCanvas = function() {
 
     var ctx = document.getElementById('cv').getContext('2d');
@@ -157,7 +159,7 @@
     console.log('loaded', img.width, img.height);
     updateCanvas();
   });
-  img.src = 'test.png';
+  img.src = imgUrl;
 
 }();
 </script>
