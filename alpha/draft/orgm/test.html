@@ -7,27 +7,25 @@
 
 window.addEventListener('load', function() {
 
-  var imgUrl = 'test.png';
-//  var imgUrl = 's1.png';
+  loadPaper('test.png');
+//  loadPaper('s1.png');
+});
+
+var loadPaper = function(imgUrl) {
 
   var updateCanvas = function() {
 
     var ctx = document.getElementById('cv').getContext('2d');
 
     var size = 512;
-    ctx.canvas.width = size * 2;
-    ctx.canvas.height = size * 2;
+    ctx.canvas.width = size;
+    ctx.canvas.height = size;
 
     // bg
-    ctx.fillStyle = '#999999';
+    ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, size, size);
 
     var unit = img.height / 4;
-/*
-    var sc = 0.5;
-    ctx.scale(sc, sc);
-    ctx.translate(100, 100);
-*/
     ctx.save();
     ctx.scale(size / 8 / unit, size / 8 / unit);
 
@@ -153,7 +151,7 @@ window.addEventListener('load', function() {
       }
     };
 
-    guide();
+//    guide();
   };
 
   var img = document.createElement('img');
@@ -164,7 +162,8 @@ window.addEventListener('load', function() {
   img.src = imgUrl;
 
   document.getElementById('smpl').src = imgUrl;
-});
+};
+
 </script>
 </head>
 <body>
