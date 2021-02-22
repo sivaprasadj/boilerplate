@@ -10,6 +10,15 @@
   min-height: 100px;
   padding: 2px;
 }
+
+#editor TABLE {
+  border-collapse: collapse;
+}
+#editor TABLE,
+#editor TABLE TD {
+  border: 1px solid red;
+}
+
 </style>
 <script>
 
@@ -95,7 +104,15 @@ var editor_replaceText = function(target, replacement) {
 </script>
 </head>
 <body>
-<div id="editor">test<hr/>test</div>
+<div id="editor">test<hr/>test
+<table>
+<tbody>
+<tr><td>a</td><td>a</td><td>a</td></tr>
+<tr><td>a</td><td>a</td><td>a</td></tr>
+<tr><td>a</td><td>a</td><td>a</td></tr>
+</tbody>
+</table>
+</div>
 <pre id="src"></pre>
 </body>
 </html>
