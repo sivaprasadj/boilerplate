@@ -121,7 +121,8 @@ public class ConnectorHandler extends AbstractProxyHandler {
 
           while (true) {
 
-            final int len = inStream.in.read(buf);
+            final int avl = Math.min(buf.length, inStream.in.available() );
+            final int len = avl > 0? inStream.in.read(buf, 0, avl) : inStream.in.read(buf);
             if (len == -1) {
               break;
             }
