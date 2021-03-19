@@ -279,8 +279,9 @@ window.addEventListener('load', function() {
   var hGap = 20;
   var vGap = 60;
 
-  var width = (fretWidth + hGap) * 9 - hGap + marginLeft * 2;
-  var height = (fretHeight + vGap) * Math.floor(chords.length / 9) -
+  var width = (fretWidth + hGap) * 9 -
+    hGap + marginLeft * 2;
+  var height = (fretHeight + vGap) * ~~(chords.length / 9) -
     vGap + marginTop * 2;
 
   var svgHolder = document.createElement('div');
