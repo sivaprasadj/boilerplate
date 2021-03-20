@@ -63,10 +63,10 @@ window.addEventListener('load', function() {
   var strokeWidth = 0.5;
 
   var wKeyHeight = 60;
-  var bKeyHeight = ~~(wKeyHeight * 0.6);
+  var bKeyHeight = wKeyHeight * 0.6;
   var wKeyPitch = 12;
-  var bKeyPitch = ~~(wKeyPitch * 0.6);
-  var numKeys = 12;
+  var bKeyPitch = wKeyPitch * 0.7;
+  var numKeys = 11;
 
   var chordRadius  = wKeyPitch / 4;
 
@@ -95,11 +95,14 @@ window.addEventListener('load', function() {
         'stroke-width': strokeWidth, stroke: black }) );
     }
 
+    var bkPat = [ 0, 1, 1, 0, 1, 1, 1 ];
     for (var i = 1; i < numKeys; i += 1) {
-      keys.append($s('rect').attrs({
-         x: wKeyPitch * i - bKeyPitch / 2,
-         y: 0, width: bKeyPitch, height: bKeyHeight,
-         stroke: 'none', fill: black }) );
+      if (bkPat[(i + 3) % bkPat.length] == 1) {
+        keys.append($s('rect').attrs({
+           x: wKeyPitch * i - bKeyPitch / 2,
+           y: 0, width: bKeyPitch, height: bKeyHeight,
+           stroke: 'none', fill: black }) );
+      }
     }
 
     if (chordName.match(/^([A-G])(#?)(.*)$/) ) {
