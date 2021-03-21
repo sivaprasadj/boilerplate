@@ -4,15 +4,15 @@
 window.addEventListener('load', function() {
 
   var chords = [
-    { label: 'C',     chord: [3, 0, 0, 0] },
-    { label: 'Cm',    chord: [3, 3, 3, 0] },
-    { label: 'C7',    chord: [1, 0, 0, 0] },
-    { label: 'CM7',   chord: [2, 0, 0, 0] },
-    { label: 'Cm7',   chord: [3, 3, 3, 3] },
-    { label: 'Cdim',  chord: [3, 2, 3, 2] },
-    { label: 'C6',    chord: [0, 0, 0, 0] },
-    { label: 'Caug',  chord: [3, 0, 0, 1] },
-    { label: 'Csus4', chord: [3, 1, 0, 0] }
+    { label: 'C',     chord: [0, 1, 2, 3]},
+    { label: 'Cm',    chord: [0, 1, 2, 3], shift: 1  },
+    { label: 'C7',    chord: [0, 1, 2, 3], shift: 2  },
+    { label: 'CM7',   chord: [0, 1, 2, 3], shift: 3  },
+    { label: 'Cm7',   chord: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+    { label: 'Cdim',  chord: [0, 2, 4, 6, 8, 10] },
+    { label: 'C6',    chord: [1, 3, 5, 7, 9, 11] },
+    { label: 'Caug',  chord: [0, 1, 2, 3] },
+    { label: 'Csus4', chord: [0, 1, 2, 3] }
   ];
 
   var svgNamespace = 'http://www.w3.org/2000/svg';
@@ -95,14 +95,32 @@ window.addEventListener('load', function() {
         'stroke-width': strokeWidth, stroke: black }) );
     }
 
+    var wkOffset = [ 0, 2, 4, 5, 7, 9, 11 ];
     var bkPat = [ 0, 1, 1, 0, 1, 1, 1 ];
     for (var i = 1; i < numKeys; i += 1) {
-      if (bkPat[(i + 3) % bkPat.length] == 1) {
+      if (bkPat[(i + shift) % bkPat.length] == 1) {
         keys.append($s('rect').attrs({
            x: wKeyPitch * i - bKeyPitch / 2,
            y: 0, width: bKeyPitch, height: bKeyHeight,
            stroke: 'none', fill: black }) );
       }
+    }
+
+    var appendNote = function(note, x, bk) {
+      var text = $s('text').attrs({ x: x, y: bk? 20 : 0, 'font-size': 12,
+        stroke: 'none', fill: bk? white : black });
+      text.$el.textContent = '' + note % 12;
+      keys.append(text);
+      
+    };
+    var note = wkOffset[shift];//wkOffset[shift];
+    for (var i = 0; i < numKeys; i += 1) {
+      if (i > 0 && bkPat[(i + shift) % bkPat.length] == 1) {
+        appendNote(note, wKeyPitch * i - bKeyPitch / 2, true);
+        note += 1;
+      }
+      appendNote(note, wKeyPitch * i, false);
+      note += 1;
     }
 
     if (chordName.match(/^([A-G])(#?)(.*)$/) ) {
@@ -161,11 +179,9 @@ window.addEventListener('load', function() {
   svgHolder.appendChild(svg.$el);
 
   // bg
-  /*
   svg.append($s('rect').attrs({
     x: 0, y: 0, width: width, height: height,
     fill: '#f0f0f0', stroke: '#00f' }));
-  */
 
   var x = marginLeft;
   var y = marginTop;
