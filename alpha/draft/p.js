@@ -89,7 +89,7 @@ window.addEventListener('load', function() {
   var fontSizeSmall = ~~(fontSize * 0.75);
   var strokeWidth = 0.5;
 
-  var wKeyHeight = 40;
+  var wKeyHeight = 60;
   var bKeyHeight = wKeyHeight * 0.6;
   var wKeyPitch = 12;
   var bKeyPitch = wKeyPitch * 7 / 12;
@@ -156,9 +156,14 @@ window.addEventListener('load', function() {
       }
       keys.append($s('circle').attrs({
         cx: x, cy: (bk? bKeyHeight : wKeyHeight) - chordRadius * 3,
+        r: chordRadius + 4,
+        'stroke-width': strokeWidth * 4,
+        stroke: 'none', fill: white }) );
+      keys.append($s('circle').attrs({
+        cx: x, cy: (bk? bKeyHeight : wKeyHeight) - chordRadius * 3,
         r: chordRadius + 2,
         'stroke-width': strokeWidth * 4,
-        stroke: white, fill: black }) );
+        stroke: 'none', fill: black }) );
     };
 
     var note = wkOffset[shift];
