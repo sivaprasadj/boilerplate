@@ -4,15 +4,15 @@
 window.addEventListener('load', function() {
 
   var chords = [
-    { label: 'C',     chord: [0, 1, 2, 3]},
-    { label: 'Cm',    chord: [0, 1, 2, 3], shift: 1  },
-    { label: 'C7',    chord: [0, 1, 2, 3], shift: 2  },
-    { label: 'CM7',   chord: [0, 1, 2, 3], shift: 3  },
-    { label: 'Cm7',   chord: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
-    { label: 'Cdim',  chord: [0, 2, 4, 6, 8, 10] },
-    { label: 'C6',    chord: [1, 3, 5, 7, 9, 11] },
-    { label: 'Caug',  chord: [0, 1, 2, 3] },
-    { label: 'Csus4', chord: [0, 1, 2, 3] }
+    { label: 'C',     chord: [0, 4, 7]},
+    { label: 'Cm',    chord: [0, 3, 7]},
+    { label: 'C7',    chord: [0, 4, 7, 10]},
+    { label: 'CM7',   chord: [0, 4, 7, 11]},
+    { label: 'Cm7',   chord: [0, 3, 7, 10] },
+    { label: 'Cdim',  chord: [0, 3, 6, 9] },
+    { label: 'C6',    chord: [0, 4, 7, 9] },
+    { label: 'Caug',  chord: [0, 4, 8] },
+    { label: 'Csus4', chord: [0, 5, 7] }
   ];
 
   var svgNamespace = 'http://www.w3.org/2000/svg';
@@ -75,6 +75,12 @@ window.addEventListener('load', function() {
 
   var appendKeys = function(x, y, chordName, chord, shift) {
     shift = shift || 0;
+
+    var cmap = {};
+    for (var i = 0; i < chord.length; i += 1) {
+      cmap[chord[i]] = true;
+    }
+
     var keys = $s('g').attrs({
       transform: 'translate(' + x + ' ' + y + ')' });
     svg.append(keys);
@@ -107,19 +113,29 @@ window.addEventListener('load', function() {
     }
 
     var appendNote = function(note, x, bk) {
-      var text = $s('text').attrs({ x: x, y: bk? 20 : 0, 'font-size': 12,
+      /*
+      var text = $s('text').attrs({
+        x: x, y: bk? bKeyHeight : wKeyHeight,
+        'font-size': 12, 'text-anchor': 'middle',
         stroke: 'none', fill: bk? white : black });
-      text.$el.textContent = '' + note % 12;
+      text.$el.textContent = '' + note;
       keys.append(text);
-      
+      */
+      if (!cmap[note]) {
+        return;
+      }
+      keys.append($s('circle').attrs({
+        cx: x, cy: (bk? bKeyHeight : wKeyHeight) - chordRadius * 2,
+        r: chordRadius + 1,
+        stroke: white, fill: black }) );
     };
     var note = wkOffset[shift];//wkOffset[shift];
     for (var i = 0; i < numKeys; i += 1) {
       if (i > 0 && bkPat[(i + shift) % bkPat.length] == 1) {
-        appendNote(note, wKeyPitch * i - bKeyPitch / 2, true);
+        appendNote(note, wKeyPitch * i, true);
         note += 1;
       }
-      appendNote(note, wKeyPitch * i, false);
+      appendNote(note, wKeyPitch * (i + 0.5), false);
       note += 1;
     }
 
