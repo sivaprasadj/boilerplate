@@ -89,10 +89,10 @@ window.addEventListener('load', function() {
   var fontSizeSmall = ~~(fontSize * 0.75);
   var strokeWidth = 0.5;
 
-  var wKeyHeight = 60;
+  var wKeyHeight = 40;
   var bKeyHeight = wKeyHeight * 0.6;
   var wKeyPitch = 12;
-  var bKeyPitch = wKeyPitch * 0.7;
+  var bKeyPitch = wKeyPitch * 7 / 12;
   var numKeys = 11;
 
   var chordRadius  = wKeyPitch / 4;
@@ -130,12 +130,15 @@ window.addEventListener('load', function() {
 
     var wkOffset = [ 0, 2, 4, 5, 7, 9, 11 ];
     var bkPat = [ 0, 1, 1, 0, 1, 1, 1 ];
+    var bkOff = [ 0, 1, 3, 0, 6, 8, 10 ];
     for (var i = 1; i < numKeys; i += 1) {
-      if (bkPat[(i + shift) % bkPat.length] == 1) {
+      var bi = (i + shift) % bkPat.length;
+      if (bkPat[bi] == 1) {
+        var o = bi / 7 - bkOff[bi] / 12;
         keys.append($s('rect').attrs({
-           x: wKeyPitch * i - bKeyPitch / 2,
+           x: wKeyPitch * (i - o) - bKeyPitch / 2,
            y: 0, width: bKeyPitch, height: bKeyHeight,
-           stroke: 'none', fill: black }) );
+           'stroke-width': strokeWidth, troke: black, fill: black }) );
       }
     }
 
@@ -157,10 +160,13 @@ window.addEventListener('load', function() {
         'stroke-width': strokeWidth * 4,
         stroke: white, fill: black }) );
     };
-    var note = wkOffset[shift];//wkOffset[shift];
+
+    var note = wkOffset[shift];
     for (var i = 0; i < numKeys; i += 1) {
-      if (i > 0 && bkPat[(i + shift) % bkPat.length] == 1) {
-        appendNote(note, wKeyPitch * i, true);
+      var bi = (i + shift) % bkPat.length;
+      if (i > 0 && bkPat[bi] == 1) {
+        var o = bi / 7 - bkOff[bi] / 12;
+        appendNote(note, wKeyPitch * (i - o), true);
         note += 1;
       }
       appendNote(note, wKeyPitch * (i + 0.5), false);
@@ -221,12 +227,12 @@ window.addEventListener('load', function() {
   var svg = $s('svg').attrs({
     width: width + 'px', height: height + 'px', xmlns: svgNamespace });
   svgHolder.appendChild(svg.$el);
-
+/*
   // bg
   svg.append($s('rect').attrs({
     x: 0, y: 0, width: width, height: height,
     fill: '#f0f0f0', stroke: '#00f' }));
-
+*/
   var x = marginLeft;
   var y = marginTop;
   for (var i = 0; i < chords.length; i += 1) {
