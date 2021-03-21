@@ -3,7 +3,7 @@
 
 window.addEventListener('load', function() {
 
-  var chords = [
+  var c = [
     { label: 'C',     chord: [0, 4, 7]},
     { label: 'Cm',    chord: [0, 3, 7]},
     { label: 'C7',    chord: [0, 4, 7, 10]},
@@ -14,6 +14,33 @@ window.addEventListener('load', function() {
     { label: 'Caug',  chord: [0, 4, 8] },
     { label: 'Csus4', chord: [0, 5, 7] }
   ];
+
+  var chords = [];
+
+  [
+    { label: 'C', tran: 0 },
+    { label: 'D', tran: 2 },
+    { label: 'E', tran: 4 },
+    { label: 'F', tran: 5 },
+    { label: 'G', tran: 7 },
+    { label: 'A', tran: 9 },
+    { label: 'B', tran: 11 },
+    { label: 'C#', tran: 1 },
+    { label: 'D#', tran: 3 },
+    { label: 'F#', tran: 6 },
+    { label: 'G#', tran: 8 },
+    { label: 'A#', tran: 10 }
+  ].forEach(function(d1) {
+    c.forEach(function(d2) {
+      if (d2.label.match(/^C(.*)$/) ) {
+        var name = d1.label + RegExp.$1;
+        var chord = d2.chord.map(function(c) {
+          return c + d1.tran;
+        });
+        chords.push({ label: name, chord: chord, shift: d1.tran > 5 ? 3 : 0 });
+      }
+    });
+  });
 
   var svgNamespace = 'http://www.w3.org/2000/svg';
 
@@ -125,8 +152,9 @@ window.addEventListener('load', function() {
         return;
       }
       keys.append($s('circle').attrs({
-        cx: x, cy: (bk? bKeyHeight : wKeyHeight) - chordRadius * 2,
-        r: chordRadius + 1,
+        cx: x, cy: (bk? bKeyHeight : wKeyHeight) - chordRadius * 3,
+        r: chordRadius + 2,
+        'stroke-width': strokeWidth * 4,
         stroke: white, fill: black }) );
     };
     var note = wkOffset[shift];//wkOffset[shift];
