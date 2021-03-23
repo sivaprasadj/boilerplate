@@ -4,135 +4,25 @@
 window.addEventListener('load', function() {
 
   var chords = [
-    { label: 'C',     chord: [3, 0, 0, 0] },
-    { label: 'Cm',    chord: [3, 3, 3, 0] },
-    { label: 'C7',    chord: [1, 0, 0, 0] },
-    { label: 'CM7',   chord: [2, 0, 0, 0] },
-    { label: 'Cm7',   chord: [3, 3, 3, 3] },
-    { label: 'Cdim',  chord: [3, 2, 3, 2] },
-    { label: 'C6',    chord: [0, 0, 0, 0] },
-    { label: 'Caug',  chord: [3, 0, 0, 1] },
-    { label: 'Csus4', chord: [3, 1, 0, 0] },
+    { label: 'C',     chord: [0, 1, 0, 2, 3, -1] },
+    { label: 'Cm',    chord: ['3_4', 4, 5, 5, 0, -1], shift: 2 },
+    { label: 'C7',    chord: [0, 1, 3, 2, 3, -1] },
+    { label: 'CM7',   chord: [0, 0, 0, 2, 3, -1] },
+    { label: 'Cm7',   chord: ['3_4', 0, 0, 0, 0, -1], shift: 2 },
+    { label: 'Cdim',  chord: ['2_2', 0, 0, 0, 0, -1], shift: 1 },
+    { label: 'Cadd9', chord: [0, 0, 0, 0, 0, -1] },
+    { label: 'Csus4', chord: ['1_1', 0, 0, 0, 0, -1] },
+    { label: 'Caug',  chord: [-1, '1_1', 0, 0, 0, -1] },
 
-    { label: 'D',     chord: [0, 2, 2, 2] },
-    { label: 'Dm',    chord: [0, 1, 2, 2] },
-    { label: 'D7',    chord: [3, 2, 2, 2] },
-    { label: 'DM7',   chord: [4, 2, 2, 2] },
-    { label: 'Dm7',   chord: [3, 1, 2, 2] },
-    { label: 'Ddim',  chord: [2, 1, 2, 1] },
-    { label: 'D6',    chord: [2, 2, 2, 2] },
-    { label: 'Daug',  chord: [1, 2, 2, 3] },
-    { label: 'Dsus4', chord: [0, 3, 2, 2] },
-
-    { label: 'E',     chord: [2, 4, 4, 4] },
-    { label: 'Em',    chord: [2, 3, 4, 0] },
-    { label: 'E7',    chord: [2, 0, 2, 1] },
-    { label: 'EM7',   chord: [2, 4, 3, 4] },
-    { label: 'Em7',   chord: [2, 0, 2, 0] },
-    { label: 'Edim',  chord: [1, 0, 1, 0] },
-    { label: 'E6',    chord: [2, 0, 1, 1] },
-    { label: 'Eaug',  chord: [3, 0, 0, 1] },
-    { label: 'Esus4', chord: [2, 5, 4, 4] },
-
-    { label: 'F',     chord: [0, 1, 0, 2] },
-    { label: 'Fm',    chord: [3, 1, 0, 1] },
-    { label: 'F7',    chord: [3, 1, 3, 2] },
-    { label: 'FM7',   chord: [0, 0, 5, 5] },
-    { label: 'Fm7',   chord: [3, 1, 3, 1] },
-    { label: 'Fdim',  chord: [2, 1, 2, 1] },
-    { label: 'F6',    chord: [3, 1, 2, 2] },
-    { label: 'Faug',  chord: [0, 1, 1, 2] },
-    { label: 'Fsus4', chord: [1, 1, 0, 3] },
-
-    { label: 'G',     chord: [2, 3, 2, 0] },
-    { label: 'Gm',    chord: [1, 3, 2, 0] },
-    { label: 'G7',    chord: [2, 1, 2, 0] },
-    { label: 'GM7',   chord: [2, 2, 2, 0] },
-    { label: 'Gm7',   chord: [1, 1, 2, 0] },
-    { label: 'Gdim',  chord: [1, 0, 1, 0] },
-    { label: 'G6',    chord: [2, 0, 2, 0] },
-    { label: 'Gaug',  chord: [2, 3, 3, 0] },
-    { label: 'Gsus4', chord: [3, 3, 2, 0] },
-
-    { label: 'A',     chord: [0, 0, 1, 2] },
-    { label: 'Am',    chord: [0, 0, 0, 2] },
-    { label: 'A7',    chord: [0, 0, 1, 0] },
-    { label: 'AM7',   chord: [0, 0, 1, 1] },
-    { label: 'Am7',   chord: [0, 0, 0, 0] },
-    { label: 'Adim',  chord: [3, 2, 3, 2] },
-    { label: 'A6',    chord: [4, 2, 4, 2] },
-    { label: 'Aaug',  chord: [0, 1, 1, 2] },
-    { label: 'Asus4', chord: [0, 0, 2, 2] },
-
-    { label: 'B',     chord: [2, 2, 3, 4] },
-    { label: 'Bm',    chord: [2, 2, 2, 4] },
-    { label: 'B7',    chord: [2, 2, 3, 2] },
-    { label: 'BM7',   chord: [1, 2, 3, 4] },
-    { label: 'Bm7',   chord: [2, 2, 2, 2] },
-    { label: 'Bdim',  chord: [2, 1, 2, 1] },
-    { label: 'B6',    chord: [2, 2, 3, 1] },
-    { label: 'Baug',  chord: [2, 3, 3, 4] },
-    { label: 'Bsus4', chord: [2, 2, 4, 4] },
-
-    { label: 'C#',     chord: [4, 1, 1, 1] },
-    { label: 'C#m',    chord: [4, 4, 4, 6], shift: 2 },
-    { label: 'C#7',    chord: [2, 1, 1, 1] },
-    { label: 'C#M7',   chord: [3, 1, 1, 1] },
-    { label: 'C#m7',   chord: [2, 0, 1, 1] },
-    { label: 'C#dim',  chord: [1, 0, 1, 0] },
-    { label: 'C#6',    chord: [1, 1, 1, 1] },
-    { label: 'C#aug',  chord: [0, 1, 1, 2] },
-    { label: 'C#sus4', chord: [4, 4, 6, 6], shift: 2 },
-
-    { label: 'D#',     chord: [1, 3, 3, 0] },
-    { label: 'D#m',    chord: [1, 2, 3, 3] },
-    { label: 'D#7',    chord: [4, 3, 3, 3] },
-    { label: 'D#M7',   chord: [5, 3, 3, 3] },
-    { label: 'D#m7',   chord: [4, 2, 3, 3] },
-    { label: 'D#dim',  chord: [3, 2, 3, 2] },
-    { label: 'D#6',    chord: [3, 3, 3, 3] },
-    { label: 'D#aug',  chord: [2, 3, 3, 0] },
-    { label: 'D#sus4', chord: [1, 4, 3, 3] },
-
-    { label: 'F#',     chord: [1, 2, 1, 3] },
-    { label: 'F#m',    chord: [0, 2, 1, 2] },
-    { label: 'F#7',    chord: [4, 2, 4, 3] },
-    { label: 'F#M7',   chord: [4, 6, 5, 6], shift: 2 },
-    { label: 'F#m7',   chord: [4, 2, 4, 2] },
-    { label: 'F#dim',  chord: [3, 2, 3, 2] },
-    { label: 'F#6',    chord: [4, 2, 3, 3] },
-    { label: 'F#aug',  chord: [1, 2, 2, 3] },
-    { label: 'F#sus4', chord: [4, 7, 6, 6], shift: 2 },
-
-    { label: 'G#',     chord: [3, 4, 3, 5] },
-    { label: 'G#m',    chord: [2, 4, 3, 1] },
-    { label: 'G#7',    chord: [3, 2, 3, 1] },
-    { label: 'G#M7',   chord: [3, 3, 3, 1] },
-    { label: 'G#m7',   chord: [2, 2, 3, 1] },
-    { label: 'G#dim',  chord: [2, 1, 2, 1] },
-    { label: 'G#6',    chord: [3, 1, 3, 1] },
-    { label: 'G#aug',  chord: [3, 0, 0, 1] },
-    { label: 'G#sus4', chord: [4, 4, 3, 1] },
-
-    { label: 'A#',     chord: [1, 1, 2, 3] },
-    { label: 'A#m',    chord: [1, 1, 1, 3] },
-    { label: 'A#7',    chord: [1, 1, 2, 1] },
-    { label: 'A#M7',   chord: [0, 1, 2, 3] },
-    { label: 'A#m7',   chord: [1, 1, 1, 1] },
-    { label: 'A#dim',  chord: [1, 0, 1, 0] },
-    { label: 'A#6',    chord: [1, 1, 2, 0] },
-    { label: 'A#aug',  chord: [1, 2, 2, 3] },
-    { label: 'A#sus4', chord: [1, 1, 3, 3] },
-
-    { label: 'X',     chord: [0, 0, 0, 0] },
-    { label: 'Xm',    chord: [0, 0, 0, 0] },
-    { label: 'X7',    chord: [0, 0, 0, 0] },
-    { label: 'XM7',   chord: [0, 0, 0, 0] },
-    { label: 'Xm7',   chord: [0, 0, 0, 0] },
-    { label: 'Xdim',  chord: [0, 0, 0, 0] },
-    { label: 'X6',    chord: [0, 0, 0, 0] },
-    { label: 'Xaug',  chord: [0, 0, 0, 0] },
-    { label: 'Xsus4', chord: [0, 0, 0, 0] }
+    { label: 'X',     chord: [0, 0, 0, 0, 0, 0] },
+    { label: 'Xm',    chord: [0, 0, 0, 0, 0, 0] },
+    { label: 'X7',    chord: [0, 0, 0, 0, 0, 0] },
+    { label: 'XM7',   chord: [0, 0, 0, 0, 0, 0] },
+    { label: 'Xm7',   chord: [0, 0, 0, 0, 0, 0] },
+    { label: 'Xdim',  chord: [0, 0, 0, 0, 0, 0] },
+    { label: 'Xadd9', chord: [0, 0, 0, 0, 0, 0] },
+    { label: 'Xsus4', chord: [0, 0, 0, 0, 0, 0] },
+    { label: 'Xaug',  chord: [0, 0, 0, 0, 0, 0] }
   ];
 
   var svgNamespace = 'http://www.w3.org/2000/svg';
@@ -175,9 +65,9 @@ window.addEventListener('load', function() {
     };
   };
 
-  var numFrets = 5;
+  var numFrets = 4;
   var fretPitch = 18;
-  var numStrings = 4;
+  var numStrings = 6;
   var strPitch = 12;
   var zeroFretGap = 4;
   var fretSrtoke = '#000000';
@@ -186,6 +76,7 @@ window.addEventListener('load', function() {
   var fontSize = 16;
   var fontSizeSmall = ~~(fontSize * 0.75);
   var strokeWidth = 0.5;
+  var fretStrokeWidth = 1;
 
   var chordRadius  = fretPitch / 4;
   var fretWidth = fretPitch * (numFrets + 0.5);
@@ -217,11 +108,55 @@ window.addEventListener('load', function() {
         build(), fill: 'none', 'stroke-linecap': 'square',
         'stroke-width': strokeWidth, stroke: fretSrtoke }) );
     }
+    var open = [];
     for (var i = 0; i < chord.length; i += 1) {
-      if (chord[i] > 0) {
+      open.push(0);
+    }
+    for (var i = 0; i < chord.length; i += 1) {
+      if (typeof chord[i] == 'string') {
+        if (chord[i].match(/^(\d+)_(\d+)$/) ) {
+          var c1 = +RegExp.$1;
+          var c2 = +RegExp.$2;
+          fret.append($s('rect').attrs({
+            x: (c1 - 0.5 - shift) * fretPitch - chordRadius,
+            y: i * strPitch,
+            width: chordRadius * 2, height: c2 * strPitch,
+            fill: chordFill, stroke: 'none' }) );
+          fret.append($s('circle').attrs({
+            cx: (c1 - 0.5 - shift) * fretPitch, cy: i * strPitch,
+            r: chordRadius, fill: chordFill, stroke: 'none' }) );
+          fret.append($s('circle').attrs({
+            cx: (c1 - 0.5 - shift) * fretPitch, cy: (i + c2) * strPitch,
+            r: chordRadius, fill: chordFill, stroke: 'none' }) );
+          for (var j = 0; j <= c2; j += 1) {
+            open[i + j] = 1;
+          }
+        }
+      } else if (chord[i] == -1) {
+        var s = chordRadius - 2;
+        fret.append($s('path').attrs({ d: pathBuilder().
+          M(-0.5 * fretPitch - s, i * strPitch - s).
+          L(-0.5 * fretPitch + s, i * strPitch + s).
+          build(), fill: 'none', 'stroke-linecap': 'square',
+          'stroke-width': fretStrokeWidth, stroke: fretSrtoke }) );
+        fret.append($s('path').attrs({ d: pathBuilder().
+          M(-0.5 * fretPitch + s, i * strPitch - s).
+          L(-0.5 * fretPitch - s, i * strPitch + s).
+          build(), fill: 'none', 'stroke-linecap': 'square',
+          'stroke-width': fretStrokeWidth, stroke: fretSrtoke }) );
+      } else if (chord[i] > 0) {
         fret.append($s('circle').attrs({
           cx: (chord[i] - 0.5 - shift) * fretPitch, cy: i * strPitch,
           r: chordRadius, fill: chordFill, stroke: 'none' }) );
+        open[i] = 1;
+      }
+    }
+    for (var i = 0; i < chord.length; i += 1) {
+      if (chord[i] == 0 && open[i] != 1) {
+        fret.append($s('circle').attrs({
+          cx: (- 0.5) * fretPitch, cy: i * strPitch,
+          r: chordRadius - 1, fill: 'none',
+          'stroke-width': fretStrokeWidth, stroke: fretSrtoke }) );
       }
     }
 
@@ -265,7 +200,7 @@ window.addEventListener('load', function() {
 
     for (var i = 0; i < numFrets; i += 1) {
       var text = $s('text').attrs({
-        x: (i + 0.5) * fretPitch,
+        x: (i + 0.5) * fretPitch + fretPitch * 0.5, /* dbg */
         y: fretHeight + chordRadius + fontSizeSmall,
         'text-anchor': 'middle',
         'font-family': fontFamily, 'font-size': fontSizeSmall });
