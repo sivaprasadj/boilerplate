@@ -178,7 +178,7 @@ window.addEventListener('load', function() {
   var numFrets = 4;
   var fretPitch = 18;
   var numStrings = 6;
-  var strPitch = 12;
+  var strPitch = 10;
   var zeroFretGap = 6;
   var fretSrtoke = '#000000';
   var chordFill = '#000000';
@@ -209,7 +209,7 @@ window.addEventListener('load', function() {
         M(i * fretPitch, 0).
         L(i * fretPitch, fretHeight).
         build(), fill: 'none', 'stroke-linecap': 'butt',
-        'stroke-width': shift == 0 && i == 0? strokeWidth * 6 : strokeWidth,
+        'stroke-width': shift == 0 && i == 0? strokeWidth * 5 : strokeWidth,
         stroke: fretSrtoke }) );
     }
     for (var i = 0; i < numStrings; i += 1) {
@@ -249,12 +249,12 @@ window.addEventListener('load', function() {
           M(-openPosRate * fretPitch - s, i * strPitch - s).
           L(-openPosRate * fretPitch + s, i * strPitch + s).
           build(), fill: 'none', 'stroke-linecap': 'square',
-          'stroke-width': fretStrokeWidth, stroke: fretSrtoke }) );
+          'stroke-width': fretStrokeWidth * 0.5, stroke: fretSrtoke }) );
         fret.append($s('path').attrs({ d: pathBuilder().
           M(-openPosRate * fretPitch + s, i * strPitch - s).
           L(-openPosRate * fretPitch - s, i * strPitch + s).
           build(), fill: 'none', 'stroke-linecap': 'square',
-          'stroke-width': fretStrokeWidth, stroke: fretSrtoke }) );
+          'stroke-width': fretStrokeWidth * 0.5, stroke: fretSrtoke }) );
       } else if (chord[i] > 0) {
         fret.append($s('circle').attrs({
           cx: (chord[i] - 0.5 - shift) * fretPitch, cy: i * strPitch,
@@ -267,7 +267,7 @@ window.addEventListener('load', function() {
         fret.append($s('circle').attrs({
           cx: -openPosRate * fretPitch, cy: i * strPitch,
           r: chordRadius - 1, fill: 'none',
-          'stroke-width': fretStrokeWidth, stroke: fretSrtoke }) );
+          'stroke-width': fretStrokeWidth * 0.5, stroke: fretSrtoke }) );
       }
     }
 
