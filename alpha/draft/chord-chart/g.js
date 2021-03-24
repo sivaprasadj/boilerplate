@@ -179,7 +179,7 @@ window.addEventListener('load', function() {
   var fretPitch = 18;
   var numStrings = 6;
   var strPitch = 12;
-  var zeroFretGap = 4;
+  var zeroFretGap = 6;
   var fretSrtoke = '#000000';
   var chordFill = '#000000';
   var fontFamily = 'Arial';
@@ -187,6 +187,7 @@ window.addEventListener('load', function() {
   var fontSizeSmall = ~~(fontSize * 0.75);
   var strokeWidth = 0.5;
   var fretStrokeWidth = 1;
+  var openPosRate = 0.5 / 4 * 6;
 
   var chordRadius  = fretPitch / 4;
   var fretWidth = fretPitch * (numFrets + 0.5);
@@ -208,7 +209,7 @@ window.addEventListener('load', function() {
         M(i * fretPitch, 0).
         L(i * fretPitch, fretHeight).
         build(), fill: 'none', 'stroke-linecap': 'butt',
-        'stroke-width': shift == 0 && i == 0? strokeWidth * 4 : strokeWidth,
+        'stroke-width': shift == 0 && i == 0? strokeWidth * 6 : strokeWidth,
         stroke: fretSrtoke }) );
     }
     for (var i = 0; i < numStrings; i += 1) {
@@ -245,13 +246,13 @@ window.addEventListener('load', function() {
       } else if (chord[i] == -1) {
         var s = chordRadius - 2;
         fret.append($s('path').attrs({ d: pathBuilder().
-          M(-0.5 * fretPitch - s, i * strPitch - s).
-          L(-0.5 * fretPitch + s, i * strPitch + s).
+          M(-openPosRate * fretPitch - s, i * strPitch - s).
+          L(-openPosRate * fretPitch + s, i * strPitch + s).
           build(), fill: 'none', 'stroke-linecap': 'square',
           'stroke-width': fretStrokeWidth, stroke: fretSrtoke }) );
         fret.append($s('path').attrs({ d: pathBuilder().
-          M(-0.5 * fretPitch + s, i * strPitch - s).
-          L(-0.5 * fretPitch - s, i * strPitch + s).
+          M(-openPosRate * fretPitch + s, i * strPitch - s).
+          L(-openPosRate * fretPitch - s, i * strPitch + s).
           build(), fill: 'none', 'stroke-linecap': 'square',
           'stroke-width': fretStrokeWidth, stroke: fretSrtoke }) );
       } else if (chord[i] > 0) {
@@ -264,7 +265,7 @@ window.addEventListener('load', function() {
     for (var i = 0; i < chord.length; i += 1) {
       if (chord[i] == 0 && open[i] != 1) {
         fret.append($s('circle').attrs({
-          cx: (- 0.5) * fretPitch, cy: i * strPitch,
+          cx: -openPosRate * fretPitch, cy: i * strPitch,
           r: chordRadius - 1, fill: 'none',
           'stroke-width': fretStrokeWidth, stroke: fretSrtoke }) );
       }
@@ -321,7 +322,7 @@ window.addEventListener('load', function() {
 
   var marginLeft = 20;
   var marginTop = 60;
-  var hGap = 20;
+  var hGap = 30;
   var vGap = 60;
 
   var width = (fretWidth + hGap) * 9 -
