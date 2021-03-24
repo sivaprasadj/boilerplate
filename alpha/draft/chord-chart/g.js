@@ -311,7 +311,7 @@ window.addEventListener('load', function() {
 
     for (var i = 0; i < numFrets; i += 1) {
       var text = $s('text').attrs({
-        x: (i + 0.5) * fretPitch + fretPitch * 0.5, /* dbg */
+        x: (i + 0.5) * fretPitch,
         y: fretHeight + chordRadius + fontSizeSmall,
         'text-anchor': 'middle',
         'font-family': fontFamily, 'font-size': fontSizeSmall });
