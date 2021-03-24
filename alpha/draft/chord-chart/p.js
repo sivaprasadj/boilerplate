@@ -87,7 +87,7 @@ window.addEventListener('load', function() {
   var fontFamily = 'Arial';
   var fontSize = 16;
   var fontSizeSmall = ~~(fontSize * 0.75);
-  var strokeWidth = 0.5;
+  var strokeWidth = 0.25;
 
   var wKeyHeight = 60;
   var bKeyHeight = wKeyHeight * 0.6;
