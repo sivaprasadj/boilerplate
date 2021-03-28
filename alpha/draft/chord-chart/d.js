@@ -25,6 +25,21 @@ window.addEventListener('load', function() {
       blen: 2
     },
     {
+      label: 'Nine Stroke Roll',
+      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 L4 L32 L32 R32 R32 L32 L32 R32 R32 L4',
+      blen: 1
+    },
+    {
+      label: 'Ten Stroke Roll',
+      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R16 L16 Q8 R32 R32 L32 L32 R32 R32 L32 L32 R16 L16 Q8',
+      blen: 1
+    },
+    {
+      label: 'Eleven Stroke Roll',
+      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L32 L32 R16 Q16 R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L32 L32 R16 Q16',
+      blen: 1
+    },
+    {
       label: 'X',
       pattern: 'L4 R4 L4 R4',
       blen: 1
@@ -32,6 +47,11 @@ window.addEventListener('load', function() {
     {
       label: 'X',
       pattern: 'L4 R4 L4 R4',
+      blen: 1
+    },
+    {
+      label: 'X',
+      pattern: 'L2 R4 L4',
       blen: 1
     }
   ];
@@ -91,7 +111,7 @@ window.addEventListener('load', function() {
  // var openPosRate = 0.5 / 4 * 6;
 
 //  var chordRadius  = fretPitch / 4;
-  var patWidth = 200;
+  var patWidth = 400;
   var patHeight = 50;
 
   var appendPattern = function(x, y, patternName, pattern, beatLength) {
@@ -99,13 +119,15 @@ window.addEventListener('load', function() {
     var pat = $s('g').attrs({
       transform: 'translate(' + x + ' ' + y + ')' });
     svg.append(pat);
+
     !function() {
       pat.append($s('rect').attrs({
         x: 0, y: 0, width: patWidth, height: patHeight,
         fill: 'none', 'stroke-linecap': 'butt',
         'stroke-width': strokeWidth,
-        stroke: patSrtoke }) );
+        stroke: '#fc6' }) );
     }();
+
     var x = 0;
     var pRe = /([A-Z]+)(\d+)/;
     pattern.split(/\s+/g).forEach(function(note, i) {
@@ -113,12 +135,14 @@ window.addEventListener('load', function() {
         var n = RegExp.$1;
         var d = +RegExp.$2;
         console.log(note, n, d, i);
+        if (n == 'L' || n == 'R') {
         var nx = x * patWidth * beatLength;
         pat.append($s('path').attrs({ d: pathBuilder().
           M(nx, 0).
           L(nx, patHeight).build(),
           fill: 'none', 'stroke-linecap': 'square',
           'stroke-width': strokeWidth, stroke: patSrtoke }) );
+        }
         x += 1 / d;
       }
     });
