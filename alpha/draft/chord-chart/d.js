@@ -26,7 +26,7 @@ window.addEventListener('load', function() {
     },
     {
       label: 'Nine Stroke Roll',
-      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 L4 L32 L32 R32 R32 L32 L32 R32 R32 L4',
+      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R4 L32 L32 R32 R32 L32 L32 R32 R32 L4',
       blen: 1
     },
     {
@@ -36,13 +36,33 @@ window.addEventListener('load', function() {
     },
     {
       label: 'Eleven Stroke Roll',
-      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L32 L32 R16 Q16 R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L32 L32 R16 Q16',
+      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L16 Q8 R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L16 Q8',
       blen: 1
     },
     {
       label: 'X',
       pattern: 'L4 R4 L4 R4',
       blen: 1
+    },
+    {
+      label: 'Single Paradiddle - Standard',
+      pattern: 'R16 L16 R16 R16 L16 R16 L16 L16',
+      blen: 2
+    },
+    {
+      label: 'Single Paradiddle - Reverse',
+      pattern: 'R16 R16 L16 R16 L16 L16 R16 L16',
+      blen: 2
+    },
+    {
+      label: 'Single Paradiddle - Inward',
+      pattern: 'R16 L16 L16 R16 L16 R16 R16 L16',
+      blen: 2
+    },
+    {
+      label: 'Single Paradiddle - Delayed',
+      pattern: 'R16 L16 R16 L16 L16 R16 L16 R16',
+      blen: 2
     },
     {
       label: 'X',
@@ -105,7 +125,7 @@ window.addEventListener('load', function() {
  // var chordFill = '#000000';
   var fontFamily = 'Arial';
   var fontSize = 16;
- // var fontSizeSmall = ~~(fontSize * 0.75);
+  var fontSizeSmall = ~~(fontSize * 0.75);
   var strokeWidth = 0.5;
  // var fretStrokeWidth = 1;
  // var openPosRate = 0.5 / 4 * 6;
@@ -134,14 +154,26 @@ window.addEventListener('load', function() {
       if (note.match(pRe) ) {
         var n = RegExp.$1;
         var d = +RegExp.$2;
-        console.log(note, n, d, i);
-        if (n == 'L' || n == 'R') {
         var nx = x * patWidth * beatLength;
-        pat.append($s('path').attrs({ d: pathBuilder().
-          M(nx, 0).
-          L(nx, patHeight).build(),
-          fill: 'none', 'stroke-linecap': 'square',
-          'stroke-width': strokeWidth, stroke: patSrtoke }) );
+        if (n == 'L' || n == 'R') {
+          pat.append($s('path').attrs({ d: pathBuilder().
+            M(nx, 0).
+            L(nx, patHeight).build(),
+            fill: 'none', 'stroke-linecap': 'square',
+            'stroke-width': strokeWidth, stroke: patSrtoke }) );
+          var text = $s('text').attrs({
+            x: nx,
+            y: patHeight + fontSizeSmall,
+            'text-anchor': 'middle',
+            'font-family': fontFamily, 'font-size': fontSizeSmall });
+          text.$el.textContent = n;
+          pat.append(text);
+        } else if (n == 'Q') {
+          pat.append($s('path').attrs({ d: pathBuilder().
+            M(nx, 0).
+            L(nx, patHeight).build(),
+            fill: 'none', 'stroke-linecap': 'square',
+            'stroke-width': strokeWidth, stroke: 'red' }) );
         }
         x += 1 / d;
       }
