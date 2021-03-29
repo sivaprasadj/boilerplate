@@ -366,7 +366,7 @@ window.addEventListener('load', function() {
   !function() {
       var text = $s('text').attrs({
         x: 0,
-        y: 0,
+        y: -fontSize * 0.2,
 //        'text-anchor': 'middle',
         'font-family': fontFamily, 'font-size': fontSize });
       text.$el.textContent = patternName;
