@@ -208,6 +208,19 @@ window.addEventListener('load', function() {
         stroke: '#fc6' }) );
     }();
 
+    var appendNote = function(label, x, y) {
+      var text = $s('text').attrs({ x: x, y: y, 'text-anchor': 'middle',
+        'font-family': fontFamily, 'font-size': fontSizeSmall,
+        fill: patStroke, stroke: 'none' });
+      text.$el.textContent = label;
+      pat.append(text);
+      if (label == 'R') {
+      } else if (label == 'L') {
+      } else {
+        throw new label;
+      }
+    };
+
     var x = 0;
     var pRe = /([A-Z]+)(\d+)/;
     pattern.split(/[\s|]+/g).forEach(function(note, i) {
@@ -216,19 +229,14 @@ window.addEventListener('load', function() {
         var d = +RegExp.$2;
         var nx = x * patWidth * beatLength;
         if (n == 'L' || n == 'R') {
+
           pat.append($s('path').attrs({ d: pathBuilder().
             M(nx, 0).
             L(nx, patHeight).build(),
             fill: 'none', 'stroke-linecap': 'square',
             'stroke-width': strokeWidth, stroke: patStroke }) );
-          var text = $s('text').attrs({
-            x: nx,
-            y: patHeight + fontSizeSmall,
-            'text-anchor': 'middle',
-            'font-family': fontFamily, 'font-size': fontSizeSmall,
-            stroke: 'none', fill: n == 'L'? patStrokeR : patStroke });
-          text.$el.textContent = n;
-          pat.append(text);
+          appendNote(n, nx, patHeight + fontSizeSmall);
+
         } else if (n == 'Q') {
           pat.append($s('path').attrs({ d: pathBuilder().
             M(nx, 0).
