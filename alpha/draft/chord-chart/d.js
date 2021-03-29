@@ -41,27 +41,87 @@ window.addEventListener('load', function() {
     },
     {
       label: 'X',
-      pattern: 'L4 R4 L4 R4',
+      pattern: '',
       blen: 1
     },
     {
-      label: 'Single Paradiddle - Standard',
+      label: 'Single Paradiddle / Standard',
       pattern: 'R16 L16 R16 R16 L16 R16 L16 L16',
       blen: 2
     },
     {
-      label: 'Single Paradiddle - Reverse',
+      label: 'Single Paradiddle / Reverse',
       pattern: 'R16 R16 L16 R16 L16 L16 R16 L16',
       blen: 2
     },
     {
-      label: 'Single Paradiddle - Inward',
+      label: 'Single Paradiddle / Inward',
       pattern: 'R16 L16 L16 R16 L16 R16 R16 L16',
       blen: 2
     },
     {
-      label: 'Single Paradiddle - Delayed',
+      label: 'Single Paradiddle / Delayed',
       pattern: 'R16 L16 R16 L16 L16 R16 L16 R16',
+      blen: 2
+    },
+    {
+      label: 'Double Paradiddle / Standard',
+      pattern: 'R16 L16 R16 L16 R16 R16 L16 R16 L16 R16 L16 L16',
+      blen: 1
+    },
+    {
+      label: 'Double Paradiddle / Reverse',
+      pattern: 'R16 R16 L16 R16 L16 R16 L16 L16 R16 L16 R16 L16',
+      blen: 1
+    },
+    {
+      label: 'Double Paradiddle / Inward',
+      pattern: 'R16 L16 R16 R16 L16 R16 L16 R16 L16 L16 R16 L16',
+      blen: 1
+    },
+    {
+      label: 'Double Paradiddle / Delayed',
+      pattern: 'R16 L16 R16 L16 R16 L16 L16 R16 L16 R16 L16 R16',
+      blen: 1
+    },
+    {
+      label: 'Triple Paradiddle / Standard',
+      pattern: 'R32 L32 R32 L32 R32 L32 R32 R32 | L32 R32 L32 R32 L32 R32 L32 L32',
+      blen: 2
+    },
+    {
+      label: 'Triple Paradiddle / Reverse',
+      pattern: 'R32 L32 R32 L32 R32 R32 L32 R32 | L32 R32 L32 R32 L32 L32 R32 L32',
+      blen: 2
+    },
+    {
+      label: 'Triple Paradiddle / Inward',
+      pattern: 'R32 L32 R32 L32 R32 L32 L32 R32 | L32 R32 L32 R32 L32 R32 R32 L32',
+      blen: 2
+    },
+    {
+      label: 'Triple Paradiddle / Delayed',
+      pattern: 'R32 L32 R32 L32 R32 L32 R32 L32 | L32 R32 L32 R32 L32 R32 L32 R32',
+      blen: 2
+    },
+    {
+      label: 'Paradiddle-Diddle / Standard',
+      pattern: 'R32 L32 R32 R32 L32 L32 | R32 L32 R32 R32 L32 L32',
+      blen: 2
+    },
+    {
+      label: 'Paradiddle-Diddle / Reverse',
+      pattern: 'R32 R32 L32 L32 R32 L32 | R32 R32 L32 L32 R32 L32',
+      blen: 2
+    },
+    {
+      label: 'Paradiddle-Diddle / Inward',
+      pattern: 'R32 L32 L32 R32 R32 L32 | R32 L32 L32 R32 R32 L32',
+      blen: 2
+    },
+    {
+      label: 'Paradiddle-Diddle / Delayed',
+      pattern: 'R32 R32 L32 R32 L32 L32 | R32 R32 L32 R32 L32 L32',
       blen: 2
     },
     {
@@ -132,7 +192,7 @@ window.addEventListener('load', function() {
 
 //  var chordRadius  = fretPitch / 4;
   var patWidth = 400;
-  var patHeight = 50;
+  var patHeight = 30;
 
   var appendPattern = function(x, y, patternName, pattern, beatLength) {
 
@@ -150,7 +210,7 @@ window.addEventListener('load', function() {
 
     var x = 0;
     var pRe = /([A-Z]+)(\d+)/;
-    pattern.split(/\s+/g).forEach(function(note, i) {
+    pattern.split(/[\s|]+/g).forEach(function(note, i) {
       if (note.match(pRe) ) {
         var n = RegExp.$1;
         var d = +RegExp.$2;
