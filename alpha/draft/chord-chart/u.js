@@ -180,7 +180,7 @@ window.addEventListener('load', function() {
   var numStrings = 4;
   var strPitch = 12;
   var zeroFretGap = 4;
-  var fretSrtoke = '#000000';
+  var fretStroke = '#000000';
   var chordFill = '#000000';
   var fontFamily = 'Arial';
   var fontSize = 16;
@@ -200,7 +200,7 @@ window.addEventListener('load', function() {
       fret.append($s('path').attrs({ d: pathBuilder().
         M(-zeroFretGap, 0).L(-zeroFretGap, fretHeight).build(),
         fill: 'none', 'stroke-linecap': 'square',
-        'stroke-width': strokeWidth, stroke: fretSrtoke }) );
+        'stroke-width': strokeWidth, stroke: fretStroke }) );
     }
     for (var i = 0; i <= numFrets; i += 1) {
       fret.append($s('path').attrs({ d: pathBuilder().
@@ -208,14 +208,14 @@ window.addEventListener('load', function() {
         L(i * fretPitch, fretHeight).
         build(), fill: 'none', 'stroke-linecap': 'butt',
         'stroke-width': shift == 0 && i == 0? strokeWidth * 4 : strokeWidth,
-        stroke: fretSrtoke }) );
+        stroke: fretStroke }) );
     }
     for (var i = 0; i < numStrings; i += 1) {
       fret.append($s('path').attrs({ d: pathBuilder().
         M(-zeroFretGap, i * strPitch).
         L(fretWidth, i * strPitch).
         build(), fill: 'none', 'stroke-linecap': 'square',
-        'stroke-width': strokeWidth, stroke: fretSrtoke }) );
+        'stroke-width': strokeWidth, stroke: fretStroke }) );
     }
     for (var i = 0; i < chord.length; i += 1) {
       if (chord[i] > 0) {
