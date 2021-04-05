@@ -197,6 +197,72 @@ window.addEventListener('load', function() {
       label: '',
       patterns: [
         {
+          label: 'Flam Paradiddle',
+          pattern: '',
+          blen: 2
+        },
+        {
+          label: 'Single Flammed Mill',
+          pattern: '',
+          blen: 2
+        }
+      ]
+    },
+    {
+      label: '',
+      patterns: [
+        {
+          label: 'Flam Paradiddle-Diddle',
+          pattern: '',
+          blen: 2
+        },
+        {
+          label: 'Pataflafla',
+          pattern: '',
+          blen: 2
+        }
+      ]
+    },
+    {
+      label: '',
+      patterns: [
+        {
+          label: 'Swiss Army Triplet',
+          pattern: '',
+          blen: 2
+        },
+        {
+          label: 'Inverted Flam Tap',
+          pattern: '',
+          blen: 2
+        }
+      ]
+    },
+    {
+      label: '',
+      patterns: [
+        {
+          label: 'Flam Drag',
+          pattern: '',
+          blen: 2
+        },
+        {
+          label: '',
+          pattern: '',
+          blen: 2
+        }
+      ]
+    },
+
+
+
+
+
+
+    {
+      label: '',
+      patterns: [
+        {
           label: 'Drag',
           pattern: 'l2 R4 r2 L4',
           blen: 2
@@ -271,7 +337,8 @@ window.addEventListener('load', function() {
 
 //  var chordRadius  = fretPitch / 4;
   var globalPatWidth = 800;
-  var patHeight = 30;
+//  var patHeight = 30;
+  var patHeight = 10;
 
   var appendPattern = function(x, y,
       patWidth, patternName, pattern, beatLength) {
