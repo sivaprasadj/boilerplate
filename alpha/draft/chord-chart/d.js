@@ -2,137 +2,171 @@
 'use strict'
 
 window.addEventListener('load', function() {
-
-  var patterns = [
+  var patternGroups = [
     {
-      label: 'Single Stroke Roll',
-      pattern: 'R32 L32 R32 L32 R32 L32 R32 L32 R32 L32 R32 L32 R32 L32 R32 L32',
-      blen: 2
+      label: '',
+      patterns: [
+        {
+          label: 'Single Stroke Roll',
+          pattern: 'R32 L32 R32 L32 R32 L32 R32 L32 R32 L32 R32 L32 R32 L32 R32 L32',
+          blen: 1
+        },
+        {
+          label: 'Double Stroke Open Roll',
+          pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L32 L32',
+          blen: 1
+        }
+      ]
     },
     {
-      label: 'Double Stroke Open Roll',
-      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L32 L32',
-      blen: 2
+      label: '',
+      patterns: [
+        {
+          label: 'Five Stroke Roll',
+          pattern: 'R32 R32 L32 L32 R8 L32 L32 R32 R32 L8',
+          blen: 1
+        },
+        {
+          label: 'Seven Stroke Roll',
+          pattern: 'R32 R32 L32 L32 R32 R32 L16 R32 R32 L32 L32 R32 R32 L16',
+          blen: 1
+        }
+      ]
     },
     {
-      label: 'Five Stroke Roll',
-      pattern: 'R32 R32 L32 L32 R8 L32 L32 R32 R32 L8',
-      blen: 2
+      label: '',
+      patterns: [
+        {
+          label: 'Nine Stroke Roll',
+          pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R4 L32 L32 R32 R32 L32 L32 R32 R32 L4',
+          blen: 1
+        },
+        {
+          label: 'Ten Stroke Roll',
+          pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R16 L16 Q8 R32 R32 L32 L32 R32 R32 L32 L32 R16 L16 Q8',
+          blen: 1
+        }
+      ]
     },
     {
-      label: 'Seven Stroke Roll',
-      pattern: 'R32 R32 L32 L32 R32 R32 L16 R32 R32 L32 L32 R32 R32 L16',
-      blen: 2
+      label: '',
+      patterns: [
+        {
+          label: 'Eleven Stroke Roll',
+          pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L16 Q8 R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L16 Q8',
+          blen: 1
+        },
+        {
+          label: '',
+          pattern: '',
+          blen: 1
+        }
+      ]
     },
     {
-      label: 'Nine Stroke Roll',
-      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R4 L32 L32 R32 R32 L32 L32 R32 R32 L4',
-      blen: 1
+      label: 'Single Paradiddle',
+      patterns: [
+        {
+          label: 'Standard',
+          pattern: 'R16 L16 R16 R16 L16 R16 L16 L16',
+          blen: 2
+        },
+        {
+          label: 'Reverse',
+          pattern: 'R16 R16 L16 R16 L16 L16 R16 L16',
+          blen: 2
+        },
+        {
+          label: 'Inward',
+          pattern: 'R16 L16 L16 R16 L16 R16 R16 L16',
+          blen: 2
+        },
+        {
+          label: 'Delayed',
+          pattern: 'R16 L16 R16 L16 L16 R16 L16 R16',
+          blen: 2
+        }
+      ]
     },
     {
-      label: 'Ten Stroke Roll',
-      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R16 L16 Q8 R32 R32 L32 L32 R32 R32 L32 L32 R16 L16 Q8',
-      blen: 1
+      label: 'Double Paradiddle',
+      patterns: [
+        {
+          label: 'Standard',
+          pattern: 'R16 L16 R16 L16 R16 R16 L16 R16 L16 R16 L16 L16',
+          blen: 1
+        },
+        {
+          label: 'Reverse',
+          pattern: 'R16 R16 L16 R16 L16 R16 L16 L16 R16 L16 R16 L16',
+          blen: 1
+        },
+        {
+          label: 'Inward',
+          pattern: 'R16 L16 R16 R16 L16 R16 L16 R16 L16 L16 R16 L16',
+          blen: 1
+        },
+        {
+          label: 'Delayed',
+          pattern: 'R16 L16 R16 L16 R16 L16 L16 R16 L16 R16 L16 R16',
+          blen: 1
+        }
+      ]
     },
     {
-      label: 'Eleven Stroke Roll',
-      pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L16 Q8 R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L16 Q8',
-      blen: 1
+      label: 'Triple Paradiddle',
+      patterns: [
+        {
+          label: 'Standard',
+          pattern: 'R32 L32 R32 L32 R32 L32 R32 R32 | L32 R32 L32 R32 L32 R32 L32 L32',
+          blen: 2
+        },
+        {
+          label: 'Reverse',
+          pattern: 'R32 L32 R32 L32 R32 R32 L32 R32 | L32 R32 L32 R32 L32 L32 R32 L32',
+          blen: 2
+        },
+        {
+          label: 'Inward',
+          pattern: 'R32 L32 R32 L32 R32 L32 L32 R32 | L32 R32 L32 R32 L32 R32 R32 L32',
+          blen: 2
+        },
+        {
+          label: 'Delayed',
+          pattern: 'R32 L32 R32 L32 R32 L32 R32 L32 | L32 R32 L32 R32 L32 R32 L32 R32',
+          blen: 2
+        }
+      ]
     },
     {
-      label: 'X',
-      pattern: '',
-      blen: 1
+      label: 'Paradiddle-Diddle',
+      patterns: [
+        {
+          label: 'Standard',
+          pattern: 'R32 L32 R32 R32 L32 L32 | R32 L32 R32 R32 L32 L32',
+          blen: 2
+        },
+        {
+          label: 'Reverse',
+          pattern: 'R32 R32 L32 L32 R32 L32 | R32 R32 L32 L32 R32 L32',
+          blen: 2
+        },
+        {
+          label: 'Inward',
+          pattern: 'R32 L32 L32 R32 R32 L32 | R32 L32 L32 R32 R32 L32',
+          blen: 2
+        },
+        {
+          label: 'Delayed',
+          pattern: 'R32 R32 L32 R32 L32 L32 | R32 R32 L32 R32 L32 L32',
+          blen: 2
+        }
+      ]
     },
     {
-      label: 'Single Paradiddle / Standard',
-      pattern: 'R16 L16 R16 R16 L16 R16 L16 L16',
-      blen: 2
-    },
-    {
-      label: 'Single Paradiddle / Reverse',
-      pattern: 'R16 R16 L16 R16 L16 L16 R16 L16',
-      blen: 2
-    },
-    {
-      label: 'Single Paradiddle / Inward',
-      pattern: 'R16 L16 L16 R16 L16 R16 R16 L16',
-      blen: 2
-    },
-    {
-      label: 'Single Paradiddle / Delayed',
-      pattern: 'R16 L16 R16 L16 L16 R16 L16 R16',
-      blen: 2
-    },
-    {
-      label: 'Double Paradiddle / Standard',
-      pattern: 'R16 L16 R16 L16 R16 R16 L16 R16 L16 R16 L16 L16',
-      blen: 1
-    },
-    {
-      label: 'Double Paradiddle / Reverse',
-      pattern: 'R16 R16 L16 R16 L16 R16 L16 L16 R16 L16 R16 L16',
-      blen: 1
-    },
-    {
-      label: 'Double Paradiddle / Inward',
-      pattern: 'R16 L16 R16 R16 L16 R16 L16 R16 L16 L16 R16 L16',
-      blen: 1
-    },
-    {
-      label: 'Double Paradiddle / Delayed',
-      pattern: 'R16 L16 R16 L16 R16 L16 L16 R16 L16 R16 L16 R16',
-      blen: 1
-    },
-    {
-      label: 'Triple Paradiddle / Standard',
-      pattern: 'R32 L32 R32 L32 R32 L32 R32 R32 | L32 R32 L32 R32 L32 R32 L32 L32',
-      blen: 2
-    },
-    {
-      label: 'Triple Paradiddle / Reverse',
-      pattern: 'R32 L32 R32 L32 R32 R32 L32 R32 | L32 R32 L32 R32 L32 L32 R32 L32',
-      blen: 2
-    },
-    {
-      label: 'Triple Paradiddle / Inward',
-      pattern: 'R32 L32 R32 L32 R32 L32 L32 R32 | L32 R32 L32 R32 L32 R32 R32 L32',
-      blen: 2
-    },
-    {
-      label: 'Triple Paradiddle / Delayed',
-      pattern: 'R32 L32 R32 L32 R32 L32 R32 L32 | L32 R32 L32 R32 L32 R32 L32 R32',
-      blen: 2
-    },
-    {
-      label: 'Paradiddle-Diddle / Standard',
-      pattern: 'R32 L32 R32 R32 L32 L32 | R32 L32 R32 R32 L32 L32',
-      blen: 2
-    },
-    {
-      label: 'Paradiddle-Diddle / Reverse',
-      pattern: 'R32 R32 L32 L32 R32 L32 | R32 R32 L32 L32 R32 L32',
-      blen: 2
-    },
-    {
-      label: 'Paradiddle-Diddle / Inward',
-      pattern: 'R32 L32 L32 R32 R32 L32 | R32 L32 L32 R32 R32 L32',
-      blen: 2
-    },
-    {
-      label: 'Paradiddle-Diddle / Delayed',
-      pattern: 'R32 R32 L32 R32 L32 L32 | R32 R32 L32 R32 L32 L32',
-      blen: 2
-    },
-    {
-      label: 'X',
-      pattern: 'L4 R4 L4 R4',
-      blen: 1
-    },
-    {
-      label: 'X',
-      pattern: 'L2 R4 L4',
-      blen: 1
+      label: 'AAA',
+      patterns: [
+      ]
     }
   ];
 
@@ -191,10 +225,11 @@ window.addEventListener('load', function() {
  // var openPosRate = 0.5 / 4 * 6;
 
 //  var chordRadius  = fretPitch / 4;
-  var patWidth = 400;
+  var globalPatWidth = 800;
   var patHeight = 30;
 
-  var appendPattern = function(x, y, patternName, pattern, beatLength) {
+  var appendPattern = function(x, y,
+      patWidth, patternName, pattern, beatLength) {
 
     var pat = $s('g').attrs({
       transform: 'translate(' + x + ' ' + y + ')' });
@@ -247,6 +282,8 @@ window.addEventListener('load', function() {
         x += 1 / d;
       }
     });
+
+// guts
 /*
     for (var i = 0; i <= numFrets; i += 1) {
       fret.append($s('path').attrs({ d: pathBuilder().
@@ -374,14 +411,52 @@ window.addEventListener('load', function() {
   }();
   };
 
+  var appendPatternGroup = function(x, y, groupName, patterns) {
+
+    var patGrp = $s('g').attrs({
+      transform: 'translate(' + x + ' ' + y + ')' });
+    svg.append(patGrp);
+
+    !function() {
+      patGrp.append($s('rect').attrs({
+        x: 0, y: 0,
+        width: globalPatWidth,
+        height: patHeight + vGapPat,
+        fill: 'none', 'stroke-linecap': 'butt',
+        'stroke-width': strokeWidth, stroke: '#66c' }) );
+    }();
+
+    !function() {
+        var text = $s('text').attrs({
+          x: 0,
+          y: -fontSize * 0.2,
+  //        'text-anchor': 'middle',
+          'font-family': fontFamily, 'font-size': fontSize });
+        text.$el.textContent = groupName;
+        patGrp.append(text);
+    }();
+
+    var patWidth = ~~( (globalPatWidth + hGap) / patterns.length) - hGap;
+    for (var i = 0; i < patterns.length; i += 1) {
+      appendPattern(
+        x,
+        y + vGapPat,
+        patWidth,
+        patterns[i].label,
+        patterns[i].pattern, patterns[i].blen);
+      x += patWidth + hGap;
+    }
+
+  };
+
   var marginLeft = 20;
   var marginTop = 60;
   var hGap = 30;
   var vGap = 60;
+  var vGapPat = 20;
 
-  var width = (patWidth + hGap) * 2 -
-    hGap + marginLeft * 2;
-  var height = (patHeight + vGap) * ~~(patterns.length / 2) -
+  var width = globalPatWidth + marginLeft * 2;
+  var height = (patHeight + vGap) * patternGroups.length -
     vGap + marginTop * 2;
 
   var svgHolder = document.createElement('div');
@@ -397,6 +472,12 @@ window.addEventListener('load', function() {
 
   var x = marginLeft;
   var y = marginTop;
+  for (var i = 0; i < patternGroups.length; i += 1) {
+    var patterns = patternGroups[i].patterns;
+    appendPatternGroup(x, y, patternGroups[i].label, patterns);
+    y += patHeight + vGap;
+  }
+  /*
   for (var i = 0; i < patterns.length; i += 1) {
     appendPattern(x, y, patterns[i].label,
       patterns[i].pattern, patterns[i].blen);
@@ -406,7 +487,7 @@ window.addEventListener('load', function() {
       y += patHeight + vGap;
     }
   }
-
+*/
   var button = document.createElement('button');
   button.textContent = ' download ';
   button.addEventListener('click', function() {
