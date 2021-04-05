@@ -198,12 +198,12 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Flam Paradiddle',
-          pattern: '',
+          pattern: 'l1 R16 L16 R16 R16 r1 L16 R16 L16 L16',
           blen: 2
         },
         {
           label: 'Single Flammed Mill',
-          pattern: '',
+          pattern: 'l1 R16 R16 L16 R16 r1 L16 L16 R16 L16',
           blen: 2
         }
       ]
@@ -213,12 +213,12 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Flam Paradiddle-Diddle',
-          pattern: '',
-          blen: 2
+          pattern: 'l1 R16 L16 R16 R16 L16 L16 | r1 L16 R16 L16 L16 R16 R16',
+          blen: 1
         },
         {
           label: 'Pataflafla',
-          pattern: '',
+          pattern: 'l1 R16 L16 R16 r1 L16 l1 R16 L16 R16 r1 L16',
           blen: 2
         }
       ]
@@ -228,12 +228,12 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Swiss Army Triplet',
-          pattern: '',
+          pattern: 'l1 R16 R16 r1 L16 | l1 R16 R16 r1 L16',
           blen: 2
         },
         {
           label: 'Inverted Flam Tap',
-          pattern: '',
+          pattern: 'l1 R16 L16 L16 R16 | l1 R16 L16 L16 R16',
           blen: 2
         }
       ]
@@ -243,8 +243,8 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Flam Drag',
-          pattern: '',
-          blen: 2
+          pattern: 'l1 R8 L16 L16 R8 | r1 L8 R16 R16 L8',
+          blen: 1
         },
         {
           label: '',
@@ -253,11 +253,6 @@ window.addEventListener('load', function() {
         }
       ]
     },
-
-
-
-
-
 
     {
       label: '',
@@ -271,6 +266,66 @@ window.addEventListener('load', function() {
           label: 'Single Drag Tap',
           pattern: 'l2 R8 L8 r2 L8 R8',
           blen: 2
+        }
+      ]
+    },
+    {
+      label: '',
+      patterns: [
+        {
+          label: 'Double Drag Tap',
+          pattern: 'l2 R8 l2 R8 L8 r2 L8 r2 L8 R8',
+          blen: 1
+        },
+        {
+          label: 'Lesson 25',
+          pattern: 'l2 R16 L16 R8 l2 R16 L16 R8',
+          blen: 2
+        }
+      ]
+    },
+    {
+      label: '',
+      patterns: [
+        {
+          label: 'Single Dragadiddle',
+          pattern: 'r1 R16 L16 R16 R16 | l1 L16 R16 L16 L16',
+          blen: 2
+        },
+        {
+          label: 'Drag Paradiddle #1',
+          pattern: 'R8 l2 R16 L16 R16 R16 | L8 r2 L16 R16 L16 L16',
+          blen: 1
+        }
+      ]
+    },
+    {
+      label: '',
+      patterns: [
+        {
+          label: 'Drag Paradiddle #2',
+          pattern: 'R8 l2 R8 l2 R16 L16 R16 R16 | L8 r2 L8 r2 L16 R16 L16 L16',
+          blen: 1
+        },
+        {
+          label: 'Single Ratamacue',
+          pattern: 'l2 R16 L16 R16 L8 | r2 L16 R16 L16 R8',
+          blen: 1
+        }
+      ]
+    },
+    {
+      label: '',
+      patterns: [
+        {
+          label: 'Double Ratamacue',
+          pattern: 'l2 R8 l2 R16 L16 R16 L8 | r2 L8 r2 L16 R16 L16 R8',
+          blen: 1
+        },
+        {
+          label: 'Triple Ratamacue',
+          pattern: 'l2 R8 l2 R8 l2 R16 L16 R16 L8 | r2 L8 r2 L8 r2 L16 R16 L16 R8',
+          blen: 1
         }
       ]
     },
