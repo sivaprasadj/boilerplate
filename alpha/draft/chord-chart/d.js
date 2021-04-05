@@ -164,6 +164,51 @@ window.addEventListener('load', function() {
       ]
     },
     {
+      label: '',
+      patterns: [
+        {
+          label: 'Flam',
+          pattern: 'l1 R4 r1 L4',
+          blen: 2
+        },
+        {
+          label: 'Flam Accent',
+          pattern: 'l1 R8 L8 R8 r1 L8 R8 L8',
+          blen: 1
+        }
+      ]
+    },
+    {
+      label: '',
+      patterns: [
+        {
+          label: 'Flam Tap',
+          pattern: 'l1 R16 R16 r1 L16 L16 l1 R16 R16 r1 L16 L16',
+          blen: 2
+        },
+        {
+          label: 'Flamacue',
+          pattern: 'l1 R16 L16 R16 L16 l1 R4',
+          blen: 2
+        }
+      ]
+    },
+    {
+      label: '',
+      patterns: [
+        {
+          label: 'Drag',
+          pattern: 'l2 R4 r2 L4',
+          blen: 2
+        },
+        {
+          label: 'Single Drag Tap',
+          pattern: 'l2 R8 L8 r2 L8 R8',
+          blen: 2
+        }
+      ]
+    },
+    {
       label: 'AAA',
       patterns: [
       ]
@@ -251,35 +296,54 @@ window.addEventListener('load', function() {
       pat.append(text);
       if (label == 'R') {
       } else if (label == 'L') {
+      } else if (label == 'l') {
+      } else if (label == 'r') {
       } else {
         throw new label;
       }
     };
 
     var x = 0;
-    var pRe = /([A-Z]+)(\d+)/;
+    var pRe = /([A-Za-z]+)(\d+)/;
     pattern.split(/[\s|]+/g).forEach(function(note, i) {
       if (note.match(pRe) ) {
+
         var n = RegExp.$1;
         var d = +RegExp.$2;
         var nx = x * patWidth * beatLength;
-        if (n == 'L' || n == 'R') {
 
-          pat.append($s('path').attrs({ d: pathBuilder().
-            M(nx, 0).
-            L(nx, patHeight).build(),
-            fill: 'none', 'stroke-linecap': 'square',
-            'stroke-width': strokeWidth, stroke: patStroke }) );
-          appendNote(n, nx, patHeight + fontSizeSmall);
+        if (n == 'l' || n == 'r') {
 
-        } else if (n == 'Q') {
-          pat.append($s('path').attrs({ d: pathBuilder().
-            M(nx, 0).
-            L(nx, patHeight).build(),
-            fill: 'none', 'stroke-linecap': 'square',
-            'stroke-width': strokeWidth, stroke: 'red' }) );
+          var fx = nx;
+          for (var i = 0; i < d; i += 1) {
+            fx -= 8;
+            pat.append($s('path').attrs({ d: pathBuilder().
+              M(fx, 0).
+              L(fx, patHeight).build(),
+              fill: 'none', 'stroke-linecap': 'square',
+              'stroke-width': strokeWidth, stroke: patStroke }) );
+            appendNote(n, fx, patHeight + fontSizeSmall);
+          }
+
+        } else {
+          if (n == 'L' || n == 'R') {
+  
+            pat.append($s('path').attrs({ d: pathBuilder().
+              M(nx, 0).
+              L(nx, patHeight).build(),
+              fill: 'none', 'stroke-linecap': 'square',
+              'stroke-width': strokeWidth, stroke: patStroke }) );
+            appendNote(n, nx, patHeight + fontSizeSmall);
+  
+          } else if (n == 'Q') {
+            pat.append($s('path').attrs({ d: pathBuilder().
+              M(nx, 0).
+              L(nx, patHeight).build(),
+              fill: 'none', 'stroke-linecap': 'square',
+              'stroke-width': strokeWidth, stroke: 'red' }) );
+          }
+          x += 1 / d;
         }
-        x += 1 / d;
       }
     });
 
