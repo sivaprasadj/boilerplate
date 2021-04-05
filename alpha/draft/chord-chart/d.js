@@ -68,22 +68,22 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Standard',
-          pattern: 'R16 L16 R16 R16 L16 R16 L16 L16',
+          pattern: 'b0-16-3 b1-16-3 R16 L16 R16 R16 | b0-16-3 b1-16-3 L16 R16 L16 L16',
           blen: 2
         },
         {
           label: 'Reverse',
-          pattern: 'R16 R16 L16 R16 L16 L16 R16 L16',
+          pattern: 'b0-16-3 b1-16-3 R16 R16 L16 R16 | b0-16-3 b1-16-3 L16 L16 R16 L16',
           blen: 2
         },
         {
           label: 'Inward',
-          pattern: 'R16 L16 L16 R16 L16 R16 R16 L16',
+          pattern: 'b0-16-3 b1-16-3 R16 L16 L16 R16 | b0-16-3 b1-16-3 L16 R16 R16 L16',
           blen: 2
         },
         {
           label: 'Delayed',
-          pattern: 'R16 L16 R16 L16 L16 R16 L16 R16',
+          pattern: 'b0-16-3 b1-16-3 R16 L16 R16 L16 | b0-16-3 b1-16-3 L16 R16 L16 R16',
           blen: 2
         }
       ]
@@ -94,22 +94,22 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Standard',
-          pattern: 'R16 L16 R16 L16 R16 R16 L16 R16 L16 R16 L16 L16',
+          pattern: 'b0-16-5 b1-16-5 R16 L16 R16 L16 R16 R16 | b0-16-5 b1-16-5 L16 R16 L16 R16 L16 L16',
           blen: 1
         },
         {
           label: 'Reverse',
-          pattern: 'R16 R16 L16 R16 L16 R16 L16 L16 R16 L16 R16 L16',
+          pattern: 'b0-16-5 b1-16-5 R16 R16 L16 R16 L16 R16 | b0-16-5 b1-16-5 L16 L16 R16 L16 R16 L16',
           blen: 1
         },
         {
           label: 'Inward',
-          pattern: 'R16 L16 R16 R16 L16 R16 L16 R16 L16 L16 R16 L16',
+          pattern: 'b0-16-5 b1-16-5 R16 L16 R16 R16 L16 R16 | b0-16-5 b1-16-5 L16 R16 L16 L16 R16 L16',
           blen: 1
         },
         {
           label: 'Delayed',
-          pattern: 'R16 L16 R16 L16 R16 L16 L16 R16 L16 R16 L16 R16',
+          pattern: 'b0-16-5 b1-16-5 R16 L16 R16 L16 R16 L16 | b0-16-5 b1-16-5 L16 R16 L16 R16 L16 R16',
           blen: 1
         }
       ]
@@ -119,22 +119,22 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Standard',
-          pattern: 'R32 L32 R32 L32 R32 L32 R32 R32 | L32 R32 L32 R32 L32 R32 L32 L32',
+          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 L32 R32 R32 | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 R32 L32 L32',
           blen: 2
         },
         {
           label: 'Reverse',
-          pattern: 'R32 L32 R32 L32 R32 R32 L32 R32 | L32 R32 L32 R32 L32 L32 R32 L32',
+          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 R32 L32 R32 | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 L32 R32 L32',
           blen: 2
         },
         {
           label: 'Inward',
-          pattern: 'R32 L32 R32 L32 R32 L32 L32 R32 | L32 R32 L32 R32 L32 R32 R32 L32',
+          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 L32 L32 R32 | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 R32 R32 L32',
           blen: 2
         },
         {
           label: 'Delayed',
-          pattern: 'R32 L32 R32 L32 R32 L32 R32 L32 | L32 R32 L32 R32 L32 R32 L32 R32',
+          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 L32 R32 L32 | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 R32 L32 R32',
           blen: 2
         }
       ]
@@ -145,23 +145,23 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Standard',
-          pattern: 'R32 L32 R32 R32 L32 L32 | R32 L32 R32 R32 L32 L32',
-          blen: 2
+          pattern: 'b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16 | b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16',
+          blen: 1
         },
         {
           label: 'Reverse',
-          pattern: 'R32 R32 L32 L32 R32 L32 | R32 R32 L32 L32 R32 L32',
-          blen: 2
+          pattern: 'b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16 | b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16',
+          blen: 1
         },
         {
           label: 'Inward',
-          pattern: 'R32 L32 L32 R32 R32 L32 | R32 L32 L32 R32 R32 L32',
-          blen: 2
+          pattern: 'b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16 | b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16',
+          blen: 1
         },
         {
           label: 'Delayed',
-          pattern: 'R32 R32 L32 R32 L32 L32 | R32 R32 L32 R32 L32 L32',
-          blen: 2
+          pattern: 'b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16 | b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16',
+          blen: 1
         }
       ]
     },
@@ -496,15 +496,14 @@ window.addEventListener('load', function() {
         }
 
       } else if (note.match(bRe) ) {
-console.log(note);
-var bh = 3;
+
+        var bh = 3;
         var pos = +RegExp.$1;
         var d = +RegExp.$2;
         var len = +RegExp.$3;
-//        var nx = x * patWidth * beatLength;
         pat.append($s('rect').attrs({
           x: nx, y: y1 + bh * 2.4 * pos,
-          width: patWidth / d * len,
+          width: patWidth / d * len * beatLength,
           height: bh,
           fill: patStroke, 'stroke-width': strokeWidth, stroke: patStroke }) );
       }
