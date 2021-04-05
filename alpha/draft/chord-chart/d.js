@@ -8,12 +8,12 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Single Stroke Roll',
-          pattern: 'R32 L32 R32 L32 R32 L32 R32 L32 R32 L32 R32 L32 R32 L32 R32 L32',
+          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 L32 R32 L32 | b1-32-3 b2-32-3 R32 L32 R32 L32 |  b0-32-7 b1-32-3 b2-32-3 R32 L32 R32 L32 |  b1-32-3 b2-32-3 R32 L32 R32 L32',
           blen: 1
         },
         {
           label: 'Double Stroke Open Roll',
-          pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L32 L32',
+          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32 | b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32',
           blen: 1
         }
       ]
@@ -23,12 +23,12 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Five Stroke Roll',
-          pattern: 'R32 R32 L32 L32 R8 L32 L32 R32 R32 L8',
+          pattern: 'b0-32-4 b1-32-3 b2-32-3 R32 R32 L32 L32 R8 | b0-32-4 b1-32-3 b2-32-3 L32 L32 R32 R32 L8',
           blen: 1
         },
         {
           label: 'Seven Stroke Roll',
-          pattern: 'R32 R32 L32 L32 R32 R32 L16 R32 R32 L32 L32 R32 R32 L16',
+          pattern: 'b0-32-6 b1-32-3 b2-32-3 R32 R32 L32 L32 b1-32-2 b2-32-1 R32 R32 L16 | b0-32-6 b1-32-3 b2-32-3 R32 R32 L32 L32 b1-32-2 b2-32-1 R32 R32 L16',
           blen: 1
         }
       ]
@@ -38,12 +38,12 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Nine Stroke Roll',
-          pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R4 L32 L32 R32 R32 L32 L32 R32 R32 L4',
+          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32 R4 | b0-32-7 b1-32-3 b2-32-3 L32 L32 R32 R32 | b1-32-3 b2-32-3 L32 L32 R32 R32 L4',
           blen: 1
         },
         {
           label: 'Ten Stroke Roll',
-          pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R16 L16 Q8 R32 R32 L32 L32 R32 R32 L32 L32 R16 L16 Q8',
+          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 |  b1-32-3 b2-32-3 R32 R32 L32 L32 | b0-32-1 b1-32-1 R32 L32 Q16 | b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32 | b0-32-1 b1-32-1 R32 L32 Q16',
           blen: 1
         }
       ]
@@ -90,6 +90,7 @@ window.addEventListener('load', function() {
     },
     {
       label: 'Double Paradiddle',
+      // ^6
       patterns: [
         {
           label: 'Standard',
@@ -140,6 +141,7 @@ window.addEventListener('load', function() {
     },
     {
       label: 'Paradiddle-Diddle',
+      // ^6
       patterns: [
         {
           label: 'Standard',
@@ -228,6 +230,7 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Swiss Army Triplet',
+          // ^3
           pattern: 'l1 R16 R16 r1 L16 | l1 R16 R16 r1 L16',
           blen: 2
         },
@@ -289,6 +292,7 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Single Dragadiddle',
+          // x
           pattern: 'r1 R16 L16 R16 R16 | l1 L16 R16 L16 L16',
           blen: 2
         },
@@ -309,6 +313,7 @@ window.addEventListener('load', function() {
         },
         {
           label: 'Single Ratamacue',
+          // ^3
           pattern: 'l2 R16 L16 R16 L8 | r2 L16 R16 L16 R8',
           blen: 1
         }
@@ -319,11 +324,13 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Double Ratamacue',
+          // ^3
           pattern: 'l2 R8 l2 R16 L16 R16 L8 | r2 L8 r2 L16 R16 L16 R8',
           blen: 1
         },
         {
           label: 'Triple Ratamacue',
+          // ^3
           pattern: 'l2 R8 l2 R8 l2 R16 L16 R16 L8 | r2 L8 r2 L8 r2 L16 R16 L16 R8',
           blen: 1
         }
@@ -393,7 +400,10 @@ window.addEventListener('load', function() {
 //  var chordRadius  = fretPitch / 4;
   var globalPatWidth = 800;
 //  var patHeight = 30;
-  var patHeight = 10;
+  var patHeight = 60;
+
+  var notePath = 'M 0 0c 0 5 -7.333 5.333 -7.333 1.667' +
+    'C -7.334 -2.334 0 -4.667 0 0z';
 
   var appendPattern = function(x, y,
       patWidth, patternName, pattern, beatLength) {
@@ -426,175 +436,89 @@ window.addEventListener('load', function() {
     };
 
     var x = 0;
-    var pRe = /([A-Za-z]+)(\d+)/;
+    var bRe = /b(\d+)-(\d+)-(\d+)/;
+    var pRe = /([RLQrl])(\d+)/;
+
     pattern.split(/[\s|]+/g).forEach(function(note, i) {
+
+        var nx = x * patWidth * beatLength;
+
+        var y1 = patHeight * 0.2;
+        var y2 = patHeight * 0.8;
+
       if (note.match(pRe) ) {
 
         var n = RegExp.$1;
         var d = +RegExp.$2;
-        var nx = x * patWidth * beatLength;
 
         if (n == 'l' || n == 'r') {
 
           var fx = nx;
           for (var i = 0; i < d; i += 1) {
-            fx -= 8;
+            fx -= 10;
+            var yn = y2 + 1.5;
             pat.append($s('path').attrs({ d: pathBuilder().
-              M(fx, 0).
-              L(fx, patHeight).build(),
+              M(fx, (y1 + yn) / 2).
+              L(fx, yn).build(),
               fill: 'none', 'stroke-linecap': 'square',
               'stroke-width': strokeWidth, stroke: patStroke }) );
-            appendNote(n, fx, patHeight + fontSizeSmall);
+            pat.append($s('path').attrs({ d: notePath,
+              transform: 'translate(' + fx + ' ' + yn + ') scale(0.6)',
+              fill: patStroke, 'stroke-width': strokeWidth, stroke: patStroke
+            }) );
+            appendNote(n.toUpperCase(), fx, patHeight + fontSizeSmall);
           }
 
         } else {
+
           if (n == 'L' || n == 'R') {
   
             pat.append($s('path').attrs({ d: pathBuilder().
-              M(nx, 0).
-              L(nx, patHeight).build(),
+              M(nx, y1).
+              L(nx, y2).build(),
               fill: 'none', 'stroke-linecap': 'square',
               'stroke-width': strokeWidth, stroke: patStroke }) );
+            pat.append($s('path').attrs({ d: notePath,
+              transform: 'translate(' + nx + ' ' + y2 + ')',
+              fill: patStroke, 'stroke-width': strokeWidth, stroke: patStroke
+            }) );
             appendNote(n, nx, patHeight + fontSizeSmall);
   
           } else if (n == 'Q') {
+
             pat.append($s('path').attrs({ d: pathBuilder().
-              M(nx, 0).
-              L(nx, patHeight).build(),
+              M(nx, y1).
+              L(nx, y2).build(),
               fill: 'none', 'stroke-linecap': 'square',
-              'stroke-width': strokeWidth, stroke: 'red' }) );
+              'stroke-width': strokeWidth * 2, stroke: 'red' }) );
           }
           x += 1 / d;
         }
+
+      } else if (note.match(bRe) ) {
+console.log(note);
+var bh = 3;
+        var pos = +RegExp.$1;
+        var d = +RegExp.$2;
+        var len = +RegExp.$3;
+//        var nx = x * patWidth * beatLength;
+        pat.append($s('rect').attrs({
+          x: nx, y: y1 + bh * 2.4 * pos,
+          width: patWidth / d * len,
+          height: bh,
+          fill: patStroke, 'stroke-width': strokeWidth, stroke: patStroke }) );
       }
     });
 
-// guts
-/*
-    for (var i = 0; i <= numFrets; i += 1) {
-      fret.append($s('path').attrs({ d: pathBuilder().
-        M(i * fretPitch, 0).
-        L(i * fretPitch, fretHeight).
-        build(), fill: 'none', 'stroke-linecap': 'butt',
-        'stroke-width': shift == 0 && i == 0? strokeWidth * 5 : strokeWidth,
-        stroke: fretStroke }) );
-    }
-    for (var i = 0; i < numStrings; i += 1) {
-      fret.append($s('path').attrs({ d: pathBuilder().
-        M(-zeroFretGap, i * strPitch).
-        L(fretWidth, i * strPitch).
-        build(), fill: 'none', 'stroke-linecap': 'square',
-        'stroke-width': strokeWidth, stroke: fretStroke }) );
-    }
-    var open = [];
-    for (var i = 0; i < chord.length; i += 1) {
-      open.push(0);
-    }
-    for (var i = 0; i < chord.length; i += 1) {
-      if (typeof chord[i] == 'string') {
-        if (chord[i].match(/^(\d+)_(\d+)$/) ) {
-          var c1 = +RegExp.$1;
-          var c2 = +RegExp.$2;
-          fret.append($s('rect').attrs({
-            x: (c1 - 0.5 - shift) * fretPitch - chordRadius,
-            y: i * strPitch,
-            width: chordRadius * 2, height: c2 * strPitch,
-            fill: chordFill, stroke: 'none' }) );
-          fret.append($s('circle').attrs({
-            cx: (c1 - 0.5 - shift) * fretPitch, cy: i * strPitch,
-            r: chordRadius, fill: chordFill, stroke: 'none' }) );
-          fret.append($s('circle').attrs({
-            cx: (c1 - 0.5 - shift) * fretPitch, cy: (i + c2) * strPitch,
-            r: chordRadius, fill: chordFill, stroke: 'none' }) );
-          for (var j = 0; j <= c2; j += 1) {
-            open[i + j] = 1;
-          }
-        }
-      } else if (chord[i] == -1) {
-        var s = chordRadius - 2;
-        fret.append($s('path').attrs({ d: pathBuilder().
-          M(-openPosRate * fretPitch - s, i * strPitch - s).
-          L(-openPosRate * fretPitch + s, i * strPitch + s).
-          build(), fill: 'none', 'stroke-linecap': 'square',
-          'stroke-width': fretStrokeWidth * 0.5, stroke: fretStroke }) );
-        fret.append($s('path').attrs({ d: pathBuilder().
-          M(-openPosRate * fretPitch + s, i * strPitch - s).
-          L(-openPosRate * fretPitch - s, i * strPitch + s).
-          build(), fill: 'none', 'stroke-linecap': 'square',
-          'stroke-width': fretStrokeWidth * 0.5, stroke: fretStroke }) );
-      } else if (chord[i] > 0) {
-        fret.append($s('circle').attrs({
-          cx: (chord[i] - 0.5 - shift) * fretPitch, cy: i * strPitch,
-          r: chordRadius, fill: chordFill, stroke: 'none' }) );
-        open[i] = 1;
-      }
-    }
-    for (var i = 0; i < chord.length; i += 1) {
-      if (chord[i] == 0 && open[i] != 1) {
-        fret.append($s('circle').attrs({
-          cx: -openPosRate * fretPitch, cy: i * strPitch,
-          r: chordRadius - 1, fill: 'none',
-          'stroke-width': fretStrokeWidth * 0.5, stroke: fretStroke }) );
-      }
-    }
-
-    if (chordName.match(/^([A-G])(#?)(.*)$/) ) {
-
-      var t1 = RegExp.$1;
-      var t2 = RegExp.$2;
-      var t3 = RegExp.$3;
-
-      var appendText = function(s, fontSize, x, y) {
-        var text = $s('text').attrs({ x: x, y: y,
+    !function() {
+        var text = $s('text').attrs({
+          x: 0,
+          y: -fontSize * 0.2,
+  //        'text-anchor': 'middle',
           'font-family': fontFamily, 'font-size': fontSize });
-        text.$el.textContent = s;
-        fret.append(text);
-        return text.$el.getBBox().width;
-      };
-
-      var x = 0;
-      var y = -(chordRadius + 6);
-
-      if (!t2) {
-
-        x += appendText(t1, fontSize, x, y);
-
-      } else {
-
-        var sGap = ~~(fontSizeSmall / 2);
-        var base = 'A'.charCodeAt(0);
-        var t4 = String.fromCharCode(
-            (t1.charCodeAt(0) - base + 1) % 7 + base);
-
-        x += appendText(t1, fontSize, x, y);
-        x += appendText(t2, fontSizeSmall, x, y - sGap);
-        x += appendText('/', fontSize, x, y);
-        x += appendText(t4, fontSize, x, y);
-        x += appendText('b', fontSizeSmall, x, y - sGap);
-      }
-
-      x += appendText(t3, fontSizeSmall, x, y);
-    }
-
-    for (var i = 0; i < numFrets; i += 1) {
-      var text = $s('text').attrs({
-        x: (i + 0.5) * fretPitch,
-        y: fretHeight + chordRadius + fontSizeSmall,
-        'text-anchor': 'middle',
-        'font-family': fontFamily, 'font-size': fontSizeSmall });
-      text.$el.textContent = '' + (i + 1 + shift);
-      fret.append(text);
-    }
-*/
-  !function() {
-      var text = $s('text').attrs({
-        x: 0,
-        y: -fontSize * 0.2,
-//        'text-anchor': 'middle',
-        'font-family': fontFamily, 'font-size': fontSize });
-      text.$el.textContent = patternName;
-      pat.append(text);
-  }();
+        text.$el.textContent = patternName;
+        pat.append(text);
+    }();
   };
 
   var appendPatternGroup = function(x, y, groupName, patterns) {
@@ -635,10 +559,10 @@ window.addEventListener('load', function() {
 
   };
 
-  var marginLeft = 20;
+  var marginLeft = 30;
   var marginTop = 60;
-  var hGap = 30;
-  var vGap = 60;
+  var hGap = 50;
+  var vGap = 80;
   var vGapPat = 20;
 
   var width = globalPatWidth + marginLeft * 2;
@@ -663,17 +587,7 @@ window.addEventListener('load', function() {
     appendPatternGroup(x, y, patternGroups[i].label, patterns);
     y += patHeight + vGap;
   }
-  /*
-  for (var i = 0; i < patterns.length; i += 1) {
-    appendPattern(x, y, patterns[i].label,
-      patterns[i].pattern, patterns[i].blen);
-    x += patWidth + hGap;
-    if ( (i + 1) % 2 == 0) {
-      x = marginLeft;
-      y += patHeight + vGap;
-    }
-  }
-*/
+
   var button = document.createElement('button');
   button.textContent = ' download ';
   button.addEventListener('click', function() {
@@ -683,7 +597,7 @@ window.addEventListener('load', function() {
       encodeURIComponent(content);
     var a = document.createElement('a');
     a.href = dataURL;
-    a.download = 'chords.svg';
+    a.download = 'drum-patterns.svg';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
