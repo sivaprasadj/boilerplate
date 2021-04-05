@@ -53,7 +53,7 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Eleven Stroke Roll',
-          pattern: 'R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L16 Q8 R32 R32 L32 L32 R32 R32 L32 L32 R32 R32 L16 Q8',
+          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32 | b0-32-2 b1-32-2 b2-32-1 R32 R32 L16 Q8 | b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32 | b0-32-2 b1-32-2 b2-32-1 R32 R32 L16 Q8',
           blen: 1
         },
         {
@@ -490,7 +490,7 @@ window.addEventListener('load', function() {
               M(nx, y1).
               L(nx, y2).build(),
               fill: 'none', 'stroke-linecap': 'square',
-              'stroke-width': strokeWidth * 2, stroke: 'red' }) );
+              'stroke-width': strokeWidth * 4, stroke: 'red' }) );
           }
           x += 1 / d;
         }
