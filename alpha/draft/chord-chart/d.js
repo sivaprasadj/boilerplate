@@ -2,18 +2,25 @@
 'use strict'
 
 window.addEventListener('load', function() {
+
   var patternGroups = [
     {
       label: '',
       patterns: [
         {
           label: 'Single Stroke Roll',
-          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 L32 R32 L32 | b1-32-3 b2-32-3 R32 L32 R32 L32 |  b0-32-7 b1-32-3 b2-32-3 R32 L32 R32 L32 |  b1-32-3 b2-32-3 R32 L32 R32 L32',
+          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 L32 R32 L32' +
+                ' | b1-32-3 b2-32-3 R32 L32 R32 L32' +
+                ' | b0-32-7 b1-32-3 b2-32-3 R32 L32 R32 L32' +
+                ' | b1-32-3 b2-32-3 R32 L32 R32 L32',
           blen: 1
         },
         {
           label: 'Double Stroke Open Roll',
-          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32 | b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32',
+          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b1-32-3 b2-32-3 R32 R32 L32 L32',
           blen: 1
         }
       ]
@@ -23,12 +30,14 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Five Stroke Roll',
-          pattern: 'b0-32-4 b1-32-3 b2-32-3 R32 R32 L32 L32 R8 | b0-32-4 b1-32-3 b2-32-3 L32 L32 R32 R32 L8',
+          pattern: 'b0-32-4 b1-32-3 b2-32-3 R32 R32 L32 L32 R8' +
+                ' | b0-32-4 b1-32-3 b2-32-3 L32 L32 R32 R32 L8',
           blen: 1
         },
         {
           label: 'Seven Stroke Roll',
-          pattern: 'b0-32-6 b1-32-3 b2-32-3 R32 R32 L32 L32 b1-32-2 b2-32-1 R32 R32 L16 | b0-32-6 b1-32-3 b2-32-3 R32 R32 L32 L32 b1-32-2 b2-32-1 R32 R32 L16',
+          pattern: 'b0-32-6 b1-32-3 b2-32-3 R32 R32 L32 L32 b1-32-2 b2-32-1 R32 R32 L16' +
+                ' | b0-32-6 b1-32-3 b2-32-3 R32 R32 L32 L32 b1-32-2 b2-32-1 R32 R32 L16',
           blen: 1
         }
       ]
@@ -38,12 +47,20 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Nine Stroke Roll',
-          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32 R4 | b0-32-7 b1-32-3 b2-32-3 L32 L32 R32 R32 | b1-32-3 b2-32-3 L32 L32 R32 R32 L4',
+          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b1-32-3 b2-32-3 R32 R32 L32 L32 R4' +
+                ' | b0-32-7 b1-32-3 b2-32-3 L32 L32 R32 R32' +
+                ' | b1-32-3 b2-32-3 L32 L32 R32 R32 L4',
           blen: 1
         },
         {
           label: 'Ten Stroke Roll',
-          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 |  b1-32-3 b2-32-3 R32 R32 L32 L32 | b0-32-1 b1-32-1 R32 L32 Q16 | b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32 | b0-32-1 b1-32-1 R32 L32 Q16',
+          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b0-32-1 b1-32-1 R32 L32 Q16' +
+                ' | b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b0-32-1 b1-32-1 R32 L32 Q16',
           blen: 1
         }
       ]
@@ -53,7 +70,12 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Eleven Stroke Roll',
-          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32 | b0-32-2 b1-32-2 b2-32-1 R32 R32 L16 Q8 | b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32 | b1-32-3 b2-32-3 R32 R32 L32 L32 | b0-32-2 b1-32-2 b2-32-1 R32 R32 L16 Q8',
+          pattern: 'b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b0-32-2 b1-32-2 b2-32-1 R32 R32 L16 Q8' +
+                ' | b0-32-7 b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b1-32-3 b2-32-3 R32 R32 L32 L32' +
+                ' | b0-32-2 b1-32-2 b2-32-1 R32 R32 L16 Q8',
           blen: 1
         },
         {
@@ -68,22 +90,26 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Standard',
-          pattern: 'b0-16-3 b1-16-3 R16 L16 R16 R16 | b0-16-3 b1-16-3 L16 R16 L16 L16',
+          pattern: 'b0-16-3 b1-16-3 R16 L16 R16 R16' +
+                ' | b0-16-3 b1-16-3 L16 R16 L16 L16',
           blen: 2
         },
         {
           label: 'Reverse',
-          pattern: 'b0-16-3 b1-16-3 R16 R16 L16 R16 | b0-16-3 b1-16-3 L16 L16 R16 L16',
+          pattern: 'b0-16-3 b1-16-3 R16 R16 L16 R16' +
+                ' | b0-16-3 b1-16-3 L16 L16 R16 L16',
           blen: 2
         },
         {
           label: 'Inward',
-          pattern: 'b0-16-3 b1-16-3 R16 L16 L16 R16 | b0-16-3 b1-16-3 L16 R16 R16 L16',
+          pattern: 'b0-16-3 b1-16-3 R16 L16 L16 R16' +
+                ' | b0-16-3 b1-16-3 L16 R16 R16 L16',
           blen: 2
         },
         {
           label: 'Delayed',
-          pattern: 'b0-16-3 b1-16-3 R16 L16 R16 L16 | b0-16-3 b1-16-3 L16 R16 L16 R16',
+          pattern: 'b0-16-3 b1-16-3 R16 L16 R16 L16' +
+                ' | b0-16-3 b1-16-3 L16 R16 L16 R16',
           blen: 2
         }
       ]
@@ -94,22 +120,26 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Standard',
-          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 L16 R16 R16 | t6 b0-16-5 b1-16-5 L16 R16 L16 R16 L16 L16',
+          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 L16 R16 R16' +
+                ' | t6 b0-16-5 b1-16-5 L16 R16 L16 R16 L16 L16',
           blen: 2
         },
         {
           label: 'Reverse',
-          pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 R16 | t6 b0-16-5 b1-16-5 L16 L16 R16 L16 R16 L16',
+          pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 R16' +
+                ' | t6 b0-16-5 b1-16-5 L16 L16 R16 L16 R16 L16',
           blen: 2
         },
         {
           label: 'Inward',
-          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 R16 | t6 b0-16-5 b1-16-5 L16 R16 L16 L16 R16 L16',
+          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 R16' +
+                ' | t6 b0-16-5 b1-16-5 L16 R16 L16 L16 R16 L16',
           blen: 2
         },
         {
           label: 'Delayed',
-          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 L16 R16 L16 | t6 b0-16-5 b1-16-5 L16 R16 L16 R16 L16 R16',
+          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 L16 R16 L16' +
+                ' | t6 b0-16-5 b1-16-5 L16 R16 L16 R16 L16 R16',
           blen: 2
         }
       ]
@@ -119,22 +149,26 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Standard',
-          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 L32 R32 R32 | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 R32 L32 L32',
+          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 L32 R32 R32' +
+                ' | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 R32 L32 L32',
           blen: 2
         },
         {
           label: 'Reverse',
-          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 R32 L32 R32 | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 L32 R32 L32',
+          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 R32 L32 R32' +
+                ' | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 L32 R32 L32',
           blen: 2
         },
         {
           label: 'Inward',
-          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 L32 L32 R32 | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 R32 R32 L32',
+          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 L32 L32 R32' +
+                ' | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 R32 R32 L32',
           blen: 2
         },
         {
           label: 'Delayed',
-          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 L32 R32 L32 | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 R32 L32 R32',
+          pattern: 'b0-32-7 b1-32-7 b2-32-7 R32 L32 R32 L32 | R32 L32 R32 L32' +
+                ' | b0-32-7 b1-32-7 b2-32-7 L32 R32 L32 R32 | L32 R32 L32 R32',
           blen: 2
         }
       ]
@@ -145,22 +179,26 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Standard',
-          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16 | t6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16',
+          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16' +
+                ' | t6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16',
           blen: 2
         },
         {
           label: 'Reverse',
-          pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16 | t6 b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16',
+          pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16' +
+                ' | t6 b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16',
           blen: 2
         },
         {
           label: 'Inward',
-          pattern: 't6 b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16 | t6 b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16',
+          pattern: 't6 b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16' +
+                ' | t6 b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16',
           blen: 2
         },
         {
           label: 'Delayed',
-          pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16 | t6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16',
+          pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16' +
+                ' | t6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16',
           blen: 2
         }
       ]
@@ -175,7 +213,8 @@ window.addEventListener('load', function() {
         },
         {
           label: 'Flam Accent',
-          pattern: 'b0-8-2 l1 R8 L8 R8 | b0-8-2 r1 L8 R8 L8',
+          pattern: 'b0-8-2 l1 R8 L8 R8' +
+                ' | b0-8-2 r1 L8 R8 L8',
           blen: 1
         }
       ]
@@ -185,7 +224,8 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Flam Tap',
-          pattern: 'b0-16-3 b1-16-3 l1 R16 R16 r1 L16 L16 | b0-16-3 b1-16-3 l1 R16 R16 r1 L16 L16',
+          pattern: 'b0-16-3 b1-16-3 l1 R16 R16 r1 L16 L16' +
+                ' | b0-16-3 b1-16-3 l1 R16 R16 r1 L16 L16',
           blen: 2
         },
         {
@@ -200,12 +240,14 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Flam Paradiddle',
-          pattern: 'b0-16-3 b1-16-3 l1 R16 L16 R16 R16 | b0-16-3 b1-16-3 r1 L16 R16 L16 L16',
+          pattern: 'b0-16-3 b1-16-3 l1 R16 L16 R16 R16' +
+                ' | b0-16-3 b1-16-3 r1 L16 R16 L16 L16',
           blen: 2
         },
         {
           label: 'Single Flammed Mill',
-          pattern: 'b0-16-3 b1-16-3 l1 R16 R16 L16 R16 | b0-16-3 b1-16-3 r1 L16 L16 R16 L16',
+          pattern: 'b0-16-3 b1-16-3 l1 R16 R16 L16 R16' +
+                ' | b0-16-3 b1-16-3 r1 L16 L16 R16 L16',
           blen: 2
         }
       ]
@@ -215,12 +257,14 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Flam Paradiddle-Diddle',
-          pattern: 't6 b0-16-5 b1-16-5 l1 R16 L16 R16 R16 L16 L16 | t6 b0-16-5 b1-16-5 r1 L16 R16 L16 L16 R16 R16',
+          pattern: 't6 b0-16-5 b1-16-5 l1 R16 L16 R16 R16 L16 L16' +
+                ' | t6 b0-16-5 b1-16-5 r1 L16 R16 L16 L16 R16 R16',
           blen: 2
         },
         {
           label: 'Pataflafla',
-          pattern: 'b0-16-3 b1-16-3 l1 R16 L16 R16 r1 L16 | b0-16-3 b1-16-3 l1 R16 L16 R16 r1 L16',
+          pattern: 'b0-16-3 b1-16-3 l1 R16 L16 R16 r1 L16' +
+                ' | b0-16-3 b1-16-3 l1 R16 L16 R16 r1 L16',
           blen: 2
         }
       ]
@@ -231,12 +275,14 @@ window.addEventListener('load', function() {
         {
           label: 'Swiss Army Triplet',
           // ^3
-          pattern: 't3 b0-16-5 b1-16-2 l1 R16 R16 r1 L16 | t3 b1-16-2 l1 R16 R16 r1 L16',
+          pattern: 't3 b0-16-5 b1-16-2 l1 R16 R16 r1 L16' +
+                ' | t3 b1-16-2 l1 R16 R16 r1 L16',
           blen: 2
         },
         {
           label: 'Inverted Flam Tap',
-          pattern: 'b0-16-3 b1-16-3 l1 R16 L16 L16 R16 | b0-16-3 b1-16-3 l1 R16 L16 L16 R16',
+          pattern: 'b0-16-3 b1-16-3 l1 R16 L16 L16 R16' +
+                ' | b0-16-3 b1-16-3 l1 R16 L16 L16 R16',
           blen: 2
         }
       ]
@@ -246,7 +292,8 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Flam Drag',
-          pattern: 'b0-8-2 l1 R8 b1-16-1 L16 L16 R8 | b0-8-2 r1 L8 b1-16-1 R16 R16 L8',
+          pattern: 'b0-8-2 l1 R8 b1-16-1 L16 L16 R8' +
+                ' | b0-8-2 r1 L8 b1-16-1 R16 R16 L8',
           blen: 1
         },
         {
@@ -267,7 +314,8 @@ window.addEventListener('load', function() {
         },
         {
           label: 'Single Drag Tap',
-          pattern: 'b0-8-1 l2 R8 L8 | b0-8-1 r2 L8 R8',
+          pattern: 'b0-8-1 l2 R8 L8' +
+                ' | b0-8-1 r2 L8 R8',
           blen: 2
         }
       ]
@@ -277,12 +325,14 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Double Drag Tap',
-          pattern: 'b0-8-2 l2 R8 l2 R8 L8 | b0-8-2 r2 L8 r2 L8 R8',
+          pattern: 'b0-8-2 l2 R8 l2 R8 L8' +
+                ' | b0-8-2 r2 L8 r2 L8 R8',
           blen: 1
         },
         {
           label: 'Lesson 25',
-          pattern: 'b0-16-2 b1-16-1 l2 R16 L16 R8 | b0-16-2 b1-16-1 l2 R16 L16 R8',
+          pattern: 'b0-16-2 b1-16-1 l2 R16 L16 R8' +
+                ' | b0-16-2 b1-16-1 l2 R16 L16 R8',
           blen: 2
         }
       ]
@@ -293,12 +343,14 @@ window.addEventListener('load', function() {
         {
           label: 'Single Dragadiddle',
           // x
-          pattern: 'b0-16-3 b1-16-3 r1 R16 L16 R16 R16 | b0-16-3 b1-16-3 l1 L16 R16 L16 L16',
+          pattern: 'b0-16-3 b1-16-3 r1 R16 L16 R16 R16' +
+                ' | b0-16-3 b1-16-3 l1 L16 R16 L16 L16',
           blen: 2
         },
         {
           label: 'Drag Paradiddle #1',
-          pattern: 'b0-16-5 R8 b1-16-3 l2 R16 L16 R16 R16 | b0-16-5 L8 b1-16-3 r2 L16 R16 L16 L16',
+          pattern: 'b0-16-5 R8 b1-16-3 l2 R16 L16 R16 R16' +
+                ' | b0-16-5 L8 b1-16-3 r2 L16 R16 L16 L16',
           blen: 1
         }
       ]
@@ -308,13 +360,15 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Drag Paradiddle #2',
-          pattern: 'b0-8-1 R8 l2 R8 b0-16-3 b1-16-3 l2 R16 L16 R16 R16 | b0-8-1 L8 r2 L8 b0-16-3 b1-16-3 r2 L16 R16 L16 L16',
+          pattern: 'b0-8-1 R8 l2 R8 b0-16-3 b1-16-3 l2 R16 L16 R16 R16' +
+                ' | b0-8-1 L8 r2 L8 b0-16-3 b1-16-3 r2 L16 R16 L16 L16',
           blen: 1
         },
         {
           label: 'Single Ratamacue',
           // ^3
-          pattern: 't3 b0-16-3 b1-16-2 l2 R16 L16 R16 L8 | t3 b0-16-3 b1-16-2 r2 L16 R16 L16 R8',
+          pattern: 't3 b0-16-3 b1-16-2 l2 R16 L16 R16 L8' +
+                ' | t3 b0-16-3 b1-16-2 r2 L16 R16 L16 R8',
           blen: 1
         }
       ]
@@ -325,13 +379,15 @@ window.addEventListener('load', function() {
         {
           label: 'Double Ratamacue',
           // ^3
-          pattern: 'b0-8-1 l2 R8 t3 b0-16-2 b1-16-2 l2 R16 L16 b0-16-1 R16 L8 | b0-8-1 r2 L8 t3 b0-16-2 b1-16-2 r2 L16 R16 b0-16-1 L16 R8',
+          pattern: 'b0-8-1 l2 R8 t3 b0-16-2 b1-16-2 l2 R16 L16 b0-16-1 R16 L8' +
+                ' | b0-8-1 r2 L8 t3 b0-16-2 b1-16-2 r2 L16 R16 b0-16-1 L16 R8',
           blen: 1
         },
         {
           label: 'Triple Ratamacue',
           // ^3
-          pattern: 'b0-16-2 l2 R8 l2 R8 | t3 b0-16-3 b1-16-2 l2 R16 L16 R16 L8 | b0-16-2 r2 L8 r2 L8 | t3 b0-16-3 b1-16-2 r2 L16 R16 L16 R8',
+          pattern: 'b0-16-2 l2 R8 l2 R8 | t3 b0-16-3 b1-16-2 l2 R16 L16 R16 L8' +
+                ' | b0-16-2 r2 L8 r2 L8 | t3 b0-16-3 b1-16-2 r2 L16 R16 L16 R8',
           blen: 1
         }
       ]
@@ -383,23 +439,15 @@ window.addEventListener('load', function() {
     };
   };
 
-//  var numFrets = 4;
-//  var fretPitch = 18;
-//  var numStrings = 6;
-//  var strPitch = 10;
-//  var zeroFretGap = 6;
+  var debug = true;
   var patStroke = '#000000';
   var patStrokeR = '#ffffff';
   var fontFamily = 'Arial';
   var fontSize = 16;
   var fontSizeSmall = fontSize * 0.75;
   var strokeWidth = 0.5;
- // var fretStrokeWidth = 1;
- // var openPosRate = 0.5 / 4 * 6;
 
-//  var chordRadius  = fretPitch / 4;
   var globalPatWidth = 800;
-//  var patHeight = 30;
   var patHeight = 60;
 
   var notePath = 'M 0 0c 0 5 -7.333 5.333 -7.333 1.667' +
@@ -412,13 +460,13 @@ window.addEventListener('load', function() {
       transform: 'translate(' + x + ' ' + y + ')' });
     svg.append(pat);
 
-    !function() {
+    if (debug) {
       pat.append($s('rect').attrs({
         x: 0, y: 0, width: patWidth, height: patHeight,
         fill: 'none', 'stroke-linecap': 'butt',
         'stroke-width': strokeWidth,
         stroke: '#fc6' }) );
-    }();
+    }
 
     var appendNote = function(label, x, y) {
       var text = $s('text').attrs({ x: x, y: y, 'text-anchor': 'middle',
@@ -543,14 +591,14 @@ window.addEventListener('load', function() {
       transform: 'translate(' + x + ' ' + y + ')' });
     svg.append(patGrp);
 
-    !function() {
+    if (debug) {
       patGrp.append($s('rect').attrs({
         x: 0, y: 0,
         width: globalPatWidth,
         height: patHeight + vGapPat,
         fill: 'none', 'stroke-linecap': 'butt',
         'stroke-width': strokeWidth, stroke: '#66c' }) );
-    }();
+    }
 
     !function() {
         var text = $s('text').attrs({
@@ -595,9 +643,11 @@ window.addEventListener('load', function() {
   svgHolder.appendChild(svg.$el);
 
   // bg
-  svg.append($s('rect').attrs({
-    x: 0, y: 0, width: width, height: height,
-    fill: '#f0f0f0', stroke: '#00f' }));
+  if (debug) {
+    svg.append($s('rect').attrs({
+      x: 0, y: 0, width: width, height: height,
+      fill: '#f0f0f0', stroke: '#00f' }));
+  }
 
   var x = marginLeft;
   var y = marginTop;
