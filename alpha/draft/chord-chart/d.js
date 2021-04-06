@@ -94,23 +94,23 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Standard',
-          pattern: 'b0-16-5 b1-16-5 R16 L16 R16 L16 R16 R16 | b0-16-5 b1-16-5 L16 R16 L16 R16 L16 L16',
-          blen: 1
+          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 L16 R16 R16 | t6 b0-16-5 b1-16-5 L16 R16 L16 R16 L16 L16',
+          blen: 2
         },
         {
           label: 'Reverse',
-          pattern: 'b0-16-5 b1-16-5 R16 R16 L16 R16 L16 R16 | b0-16-5 b1-16-5 L16 L16 R16 L16 R16 L16',
-          blen: 1
+          pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 R16 | t6 b0-16-5 b1-16-5 L16 L16 R16 L16 R16 L16',
+          blen: 2
         },
         {
           label: 'Inward',
-          pattern: 'b0-16-5 b1-16-5 R16 L16 R16 R16 L16 R16 | b0-16-5 b1-16-5 L16 R16 L16 L16 R16 L16',
-          blen: 1
+          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 R16 | t6 b0-16-5 b1-16-5 L16 R16 L16 L16 R16 L16',
+          blen: 2
         },
         {
           label: 'Delayed',
-          pattern: 'b0-16-5 b1-16-5 R16 L16 R16 L16 R16 L16 | b0-16-5 b1-16-5 L16 R16 L16 R16 L16 R16',
-          blen: 1
+          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 L16 R16 L16 | t6 b0-16-5 b1-16-5 L16 R16 L16 R16 L16 R16',
+          blen: 2
         }
       ]
     },
@@ -145,23 +145,23 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Standard',
-          pattern: 'b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16 | b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16',
-          blen: 1
+          pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16 | t6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16',
+          blen: 2
         },
         {
           label: 'Reverse',
-          pattern: 'b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16 | b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16',
-          blen: 1
+          pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16 | t6 b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16',
+          blen: 2
         },
         {
           label: 'Inward',
-          pattern: 'b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16 | b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16',
-          blen: 1
+          pattern: 't6 b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16 | t6 b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16',
+          blen: 2
         },
         {
           label: 'Delayed',
-          pattern: 'b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16 | b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16',
-          blen: 1
+          pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16 | t6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16',
+          blen: 2
         }
       ]
     },
@@ -215,8 +215,8 @@ window.addEventListener('load', function() {
       patterns: [
         {
           label: 'Flam Paradiddle-Diddle',
-          pattern: 'b0-16-5 b1-16-5 l1 R16 L16 R16 R16 L16 L16 | b0-16-5 b1-16-5 r1 L16 R16 L16 L16 R16 R16',
-          blen: 1
+          pattern: 't6 b0-16-5 b1-16-5 l1 R16 L16 R16 R16 L16 L16 | t6 b0-16-5 b1-16-5 r1 L16 R16 L16 L16 R16 R16',
+          blen: 2
         },
         {
           label: 'Pataflafla',
@@ -231,7 +231,7 @@ window.addEventListener('load', function() {
         {
           label: 'Swiss Army Triplet',
           // ^3
-          pattern: 'b0-16-5 b1-16-2 l1 R16 R16 r1 L16 | b1-16-2 l1 R16 R16 r1 L16',
+          pattern: 't3 b0-16-5 b1-16-2 l1 R16 R16 r1 L16 | t3 b1-16-2 l1 R16 R16 r1 L16',
           blen: 2
         },
         {
@@ -314,7 +314,7 @@ window.addEventListener('load', function() {
         {
           label: 'Single Ratamacue',
           // ^3
-          pattern: 'b0-16-3 b1-16-2 l2 R16 L16 R16 L8 | b0-16-3 b1-16-2 r2 L16 R16 L16 R8',
+          pattern: 't3 b0-16-3 b1-16-2 l2 R16 L16 R16 L8 | t3 b0-16-3 b1-16-2 r2 L16 R16 L16 R8',
           blen: 1
         }
       ]
@@ -325,13 +325,13 @@ window.addEventListener('load', function() {
         {
           label: 'Double Ratamacue',
           // ^3
-          pattern: 'b0-16-5 l2 R8 b1-16-2 l2 R16 L16 R16 L8 | b0-16-5 r2 L8 b1-16-2 r2 L16 R16 L16 R8',
+          pattern: 'b0-8-1 l2 R8 t3 b0-16-2 b1-16-2 l2 R16 L16 b0-16-1 R16 L8 | b0-8-1 r2 L8 t3 b0-16-2 b1-16-2 r2 L16 R16 b0-16-1 L16 R8',
           blen: 1
         },
         {
           label: 'Triple Ratamacue',
           // ^3
-          pattern: 'b0-16-2 l2 R8 l2 R8 | b0-16-3 b1-16-2 l2 R16 L16 R16 L8 | b0-16-2 r2 L8 r2 L8 | b0-16-3 b1-16-2 r2 L16 R16 L16 R8',
+          pattern: 'b0-16-2 l2 R8 l2 R8 | t3 b0-16-3 b1-16-2 l2 R16 L16 R16 L8 | b0-16-2 r2 L8 r2 L8 | t3 b0-16-3 b1-16-2 r2 L16 R16 L16 R8',
           blen: 1
         }
       ]
@@ -392,7 +392,7 @@ window.addEventListener('load', function() {
   var patStrokeR = '#ffffff';
   var fontFamily = 'Arial';
   var fontSize = 16;
-  var fontSizeSmall = ~~(fontSize * 0.75);
+  var fontSizeSmall = fontSize * 0.75;
   var strokeWidth = 0.5;
  // var fretStrokeWidth = 1;
  // var openPosRate = 0.5 / 4 * 6;
@@ -436,15 +436,18 @@ window.addEventListener('load', function() {
     };
 
     var x = 0;
+    var t = 0;
+    var tRe = /t(\d+)/;
     var bRe = /b(\d+)-(\d+)-(\d+)/;
     var pRe = /([RLQrl])(\d+)/;
 
     pattern.split(/[\s|]+/g).forEach(function(note, i) {
 
-        var nx = x * patWidth * beatLength;
+      var nx = x * patWidth * beatLength;
 
-        var y1 = patHeight * 0.2;
-        var y2 = patHeight * 0.8;
+      var y1 = patHeight * 0.2;
+      var y2 = patHeight * 0.8;
+      var fr = 0.28;
 
       if (note.match(pRe) ) {
 
@@ -453,7 +456,7 @@ window.addEventListener('load', function() {
 
         if (n == 'l' || n == 'r') {
 
-          var fx = nx;
+          var fx = nx - 2;
           for (var i = 0; i < d; i += 1) {
             fx -= 10;
             var yn = y2 + 1.5;
@@ -466,7 +469,8 @@ window.addEventListener('load', function() {
               transform: 'translate(' + fx + ' ' + yn + ') scale(0.6)',
               fill: patStroke, 'stroke-width': strokeWidth, stroke: patStroke
             }) );
-            appendNote(n.toUpperCase(), fx, patHeight + fontSizeSmall);
+            appendNote(n.toUpperCase(),
+              fx - fontSizeSmall * fr, patHeight + fontSizeSmall);
           }
 
         } else {
@@ -482,7 +486,7 @@ window.addEventListener('load', function() {
               transform: 'translate(' + nx + ' ' + y2 + ')',
               fill: patStroke, 'stroke-width': strokeWidth, stroke: patStroke
             }) );
-            appendNote(n, nx, patHeight + fontSizeSmall);
+            appendNote(n, nx - fontSizeSmall * fr, patHeight + fontSizeSmall);
   
           } else if (n == 'Q') {
 
@@ -492,8 +496,18 @@ window.addEventListener('load', function() {
               fill: 'none', 'stroke-linecap': 'square',
               'stroke-width': strokeWidth * 4, stroke: 'red' }) );
           }
-          x += 1 / d;
+          if (t > 0) {
+            x += 1 / d * 2 / 3;
+            t -= 1;
+          } else {
+            x += 1 / d;
+          }
         }
+
+      } else if (note.match(tRe) ) {
+
+        t = +RegExp.$1;
+        console.log(note, t);
 
       } else if (note.match(bRe) ) {
 
@@ -501,6 +515,9 @@ window.addEventListener('load', function() {
         var pos = +RegExp.$1;
         var d = +RegExp.$2;
         var len = +RegExp.$3;
+        if (t > 0) {
+          len = len * 2 / 3;
+        }
         pat.append($s('rect').attrs({
           x: nx, y: y1 + bh * 2.4 * pos,
           width: patWidth / d * len * beatLength,
@@ -545,7 +562,7 @@ window.addEventListener('load', function() {
         patGrp.append(text);
     }();
 
-    var patWidth = ~~( (globalPatWidth + hGap) / patterns.length) - hGap;
+    var patWidth = (globalPatWidth + hGap) / patterns.length - hGap;
     for (var i = 0; i < patterns.length; i += 1) {
       appendPattern(
         x,
@@ -558,15 +575,18 @@ window.addEventListener('load', function() {
 
   };
 
-  var marginLeft = 30;
+  var marginLeft = 40;
+  var marginRight = 30;
   var marginTop = 60;
+  var marginBottom = 60;
+
   var hGap = 50;
   var vGap = 80;
   var vGapPat = 20;
 
-  var width = globalPatWidth + marginLeft * 2;
+  var width = globalPatWidth + marginLeft + marginRight;
   var height = (patHeight + vGap) * patternGroups.length -
-    vGap + marginTop * 2;
+    vGap + marginTop + marginBottom;
 
   var svgHolder = document.createElement('div');
   document.body.appendChild(svgHolder);
