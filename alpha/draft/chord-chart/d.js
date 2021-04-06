@@ -452,6 +452,64 @@ window.addEventListener('load', function() {
 
   var notePath = 'M 0 0c 0 5 -7.333 5.333 -7.333 1.667' +
     'C -7.334 -2.334 0 -4.667 0 0z';
+/*
+  var restPath = 'M 58.966 458.578' +
+    ' c -0.458 0.698 -1.112 1.021 -1.586 1.196' +
+    ' c 0.015 -0.099 0.022 -0.198 0.022 -0.301' +
+    ' c 0 -1.104 -0.895 -1.999 -2 -1.999' +
+    ' c -1.104 0 -1.999 0.896 -1.999 1.999' +
+    ' c 0 1.104 0.896 2 1.999 2' +
+    ' c 0.692 0 1.301 -0.352 1.66 -0.885' +
+    ' c 0.439 -0.075 0.971 -0.269 1.54 -0.693' +
+    ' c -0.9 3.575 -2.109 7.68 -2.123 7.726' +
+    ' l -0.1 0.34 l 0.68 0.2 l 0.1 -0.34' +
+    ' c 0.015 -0.051 2.421 -8.932 2.421 -8.932' +
+    ' S 59.258 458.735 58.966 458.578 z';
+
+  restPath = function(path) {
+    //cx="56.491" cy="462.819"
+    var offsetX = 56.491;
+    var offsetY = 462.819;
+    var p = '';
+    var abs = false;
+    var coordIndex = 0;
+    path.split(/\s+/g).forEach(function(c) {
+      if (c.match(/^[A-Z]$/) ) {
+        p += c;
+        abs = true;
+      } else if (c.match(/^[a-z]$/) ) {
+        p += c;
+        abs = false;
+      } else {
+        c = +c;
+        if (abs) {
+          if (coordIndex % 2 == 0) {
+            c -= offsetX;
+          } else {
+            c -= offsetY;
+          }
+        }
+        p += ' ' + c;
+        coordIndex += 1;
+      }
+    });
+    return p;
+  } (restPath);
+  */
+
+  var restPath = 'M 2.475 -4.241'+
+    'c -0.458 0.698 -1.112 1.021 -1.586 1.196'+
+    'c 0.015 -0.099 0.022 -0.198 0.022 -0.301'+
+    'c 0 -1.104 -0.895 -1.999 -2 -1.999'+
+    'c -1.104 0 -1.999 0.896 -1.999 1.999'+
+    'c 0 1.104 0.896 2 1.999 2'+
+    'c 0.692 0 1.301 -0.352 1.66 -0.885'+
+    'c 0.439 -0.075 0.971 -0.269 1.54 -0.693'+
+    'c -0.9 3.575 -2.109 7.68 -2.123 7.726'+
+    'l -0.1 0.34l 0.68 0.2l 0.1 -0.34'+
+    'c 0.015 -0.051 2.421 -8.932 2.421 -8.932'+
+    'S 2.767 -4.084 2.475 -4.24'+
+    'z';
 
   var appendPattern = function(x, y,
       patWidth, patternName, pattern, beatLength) {
@@ -524,7 +582,7 @@ window.addEventListener('load', function() {
         } else {
 
           if (n == 'L' || n == 'R') {
-  
+
             pat.append($s('path').attrs({ d: pathBuilder().
               M(nx, y1).
               L(nx, y2).build(),
@@ -535,14 +593,12 @@ window.addEventListener('load', function() {
               fill: patStroke, 'stroke-width': strokeWidth, stroke: patStroke
             }) );
             appendNote(n, nx - fontSizeSmall * fr, patHeight + fontSizeSmall);
-  
+
           } else if (n == 'Q') {
 
-            pat.append($s('path').attrs({ d: pathBuilder().
-              M(nx, y1).
-              L(nx, y2).build(),
-              fill: 'none', 'stroke-linecap': 'square',
-              'stroke-width': strokeWidth * 4, stroke: 'red' }) );
+            pat.append($s('path').attrs({ d: restPath,
+            transform: 'translate(' + nx + ' ' + y2 + ')',
+              fill: patStroke, stroke: 'none' }) );
           }
           if (t > 0) {
             x += 1 / d * 2 / 3;
