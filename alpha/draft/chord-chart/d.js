@@ -265,14 +265,14 @@ window.addEventListener('load', function() {
         {
           label: 'Swiss Army Triplet',
           // ^3
-          pattern: 't3 b0-16-2 b1-16-2 l1 R16 R16 b0-16-1 r1 L16' +
-                ' | t3 b0-16-2 b1-16-2 l1 R16 R16 r1 L16',
+          pattern: 't3 b0-16-2 b1-16-2 l1 R16 R16 b0-16-1 L16' +
+                ' | t3 b0-16-2 b1-16-2 l1 R16 R16 L16',
           blen: 4
         },
         {
           label: 'Inverted Flam Tap',
-          pattern: 'b0-16-3 b1-16-3 l1 R16 L16 L16 R16' +
-                ' | b0-16-3 b1-16-3 l1 R16 L16 L16 R16',
+          pattern: 'b0-16-3 b1-16-3 l1 R16 L16 r1 L16 R16' +
+                ' | b0-16-3 b1-16-3 l1 R16 L16 r1 L16 R16',
           blen: 2
         },
         {
