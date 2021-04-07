@@ -434,16 +434,25 @@ window.addEventListener('load', function() {
     };
   };
 
-  var debug = true;
+  var debug = false;
   var patStroke = '#000000';
-  var patStrokeR = '#ffffff';
   var fontFamily = 'Arial';
   var fontSize = 16;
   var fontSizeSmall = fontSize * 0.75;
   var strokeWidth = 0.5;
+  var strokeDashArray = strokeWidth * 8 + ' ' + strokeWidth * 8;
 
   var globalPatWidth = 800;
   var patHeight = 60;
+
+  var marginLeft = 50;
+  var marginRight = 40;
+  var marginTop = 60;
+  var marginBottom = 60;
+
+  var hGap = 50;
+  var vGap = 80;
+  var vGapPat = 20;
 
   var notePath = 'M 0 0c 0 5 -7.333 5.333 -7.333 1.667' +
     'C -7.334 -2.334 0 -4.667 0 0z';
@@ -500,12 +509,12 @@ window.addEventListener('load', function() {
     ' S 2.767 -4.084 2.475 -4.241' +
     ' L 2.475 -4.241 z';
 
-  var appendPattern = function(x, y,
+  var appendPattern = function(patGrp, x, y,
       patWidth, patternName, pattern, beatLength) {
 
     var pat = $s('g').attrs({
       transform: 'translate(' + x + ' ' + y + ')' });
-    svg.append(pat);
+    patGrp.append(pat);
 
     if (debug) {
       pat.append($s('rect').attrs({
@@ -703,6 +712,18 @@ window.addEventListener('load', function() {
     }
 
     !function() {
+      var hOff = 10;
+      var vOff = - fontSize - 5;
+      patGrp.append($s('path').attrs({
+        d: pathBuilder().
+              M(-hOff, vOff).
+              L(globalPatWidth + hOff, vOff).build(),
+        fill: 'none', 'stroke-linecap': 'butt',
+        'stroke-dasharray': strokeDashArray,
+        'stroke-width': strokeWidth, stroke: '#000' }) );
+    }();
+
+    !function() {
         var text = $s('text').attrs({
           x: 0,
           y: -fontSize * 0.2,
@@ -713,26 +734,33 @@ window.addEventListener('load', function() {
     }();
 
     var patWidth = (globalPatWidth + hGap) / patterns.length - hGap;
+    var px = 0;
+
     for (var i = 0; i < patterns.length; i += 1) {
+
       appendPattern(
-        x,
-        y + vGapPat,
+        patGrp,
+        px,
+        vGapPat,
         patWidth,
         patterns[i].label,
         patterns[i].pattern, patterns[i].blen);
-      x += patWidth + hGap;
+
+      if (i > 0 && patterns[i].label) {
+        var divX = px - 40;
+        patGrp.append($s('path').attrs({
+          d: pathBuilder().
+                M(divX, 0).
+                L(divX, patHeight + vGapPat + fontSizeSmall + 10).build(),
+          fill: 'none', 'stroke-linecap': 'butt',
+          'stroke-dasharray': strokeDashArray,
+          'stroke-width': strokeWidth, stroke: '#000' }) );
+      }
+
+      px += patWidth + hGap;
     }
 
   };
-
-  var marginLeft = 40;
-  var marginRight = 30;
-  var marginTop = 60;
-  var marginBottom = 60;
-
-  var hGap = 50;
-  var vGap = 80;
-  var vGapPat = 20;
 
   var width = globalPatWidth + marginLeft + marginRight;
   var height = (patHeight + vGap) * patternGroups.length -
