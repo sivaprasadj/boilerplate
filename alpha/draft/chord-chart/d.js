@@ -453,23 +453,10 @@ window.addEventListener('load', function() {
   var notePath = 'M 0 0c 0 5 -7.333 5.333 -7.333 1.667' +
     'C -7.334 -2.334 0 -4.667 0 0z';
 /*
-  var restPath = 'M 58.966 458.578' +
-    ' c -0.458 0.698 -1.112 1.021 -1.586 1.196' +
-    ' c 0.015 -0.099 0.022 -0.198 0.022 -0.301' +
-    ' c 0 -1.104 -0.895 -1.999 -2 -1.999' +
-    ' c -1.104 0 -1.999 0.896 -1.999 1.999' +
-    ' c 0 1.104 0.896 2 1.999 2' +
-    ' c 0.692 0 1.301 -0.352 1.66 -0.885' +
-    ' c 0.439 -0.075 0.971 -0.269 1.54 -0.693' +
-    ' c -0.9 3.575 -2.109 7.68 -2.123 7.726' +
-    ' l -0.1 0.34 l 0.68 0.2 l 0.1 -0.34' +
-    ' c 0.015 -0.051 2.421 -8.932 2.421 -8.932' +
-    ' S 59.258 458.735 58.966 458.578 z';
-
-  restPath = function(path) {
+  var tmpPath = function(path) {
     //cx="56.491" cy="462.819"
-    var offsetX = 56.491;
-    var offsetY = 462.819;
+    var offsetX = 419.334;
+    var offsetY = 2009.168;
     var p = '';
     var abs = false;
     var coordIndex = 0;
@@ -494,8 +481,14 @@ window.addEventListener('load', function() {
       }
     });
     return p;
-  } (restPath);
-  */
+  } ('M 419.334 2009.168 c 0 2.333 0 2.001 0 4.5 c 2.333 1.166 3.667 1.999 5.5 7.499 C 424.501 2012.334 421.167 2013.834 419.334 2009.168 z');
+  console.log(tmpPath);
+*/
+
+  var flagPath = 'M 0 0' +
+    ' c 0 2.333 0 2.001 0 4.5' +
+    ' c 2.333 1.166 3.667 1.999 5.5 7.499' +
+    ' C 5.167 3.166 1.833 4.666 0 0 z';
 
   var restPath = 'M 2.475 -4.241' +
     ' C 2.017 -3.543 1.363 -3.22 0.889 -3.045' +
@@ -563,8 +556,9 @@ window.addEventListener('load', function() {
         if (n == 'l' || n == 'r') {
 
           var fx = nx - 2;
+          var dx = 10;
           for (var i = 0; i < d; i += 1) {
-            fx -= 10;
+            fx -= dx;
             var yn = y2 + 1.5;
             pat.append($s('path').attrs({ d: pathBuilder().
               M(fx, (y1 + yn) / 2).
@@ -575,6 +569,24 @@ window.addEventListener('load', function() {
               transform: 'translate(' + fx + ' ' + yn + ') scale(0.6)',
               fill: patStroke, 'stroke-width': strokeWidth, stroke: patStroke
             }) );
+            if (d == 1) {
+              pat.append($s('path').attrs({ d: flagPath,
+                transform: 'translate(' + fx + ' ' + (y1 + yn) / 2 + ')',
+                fill: patStroke, stroke: 'none' }) );
+              pat.append($s('path').attrs({ d: pathBuilder().
+                M(fx - 3, (y1 + yn) / 2 + 11).
+                L(fx + 6, (y1 + yn) / 2 + 5).build(),
+                fill: 'none', 'stroke-linecap': 'square',
+                'stroke-width': strokeWidth, stroke: patStroke }) );
+            } else if (i == 0) {
+              var w = dx * (d - 1);
+              pat.append($s('rect').attrs({
+                x: fx - w, y: (y1 + yn) / 2, width: w, height: 2,
+                fill: patStroke, stroke: patStroke }) );
+              pat.append($s('rect').attrs({
+                x: fx - w, y: (y1 + yn) / 2 + 5.5, width: w, height: 2,
+                fill: patStroke, stroke: patStroke }) );
+            }
             appendNote(n.toUpperCase(),
               fx - fontSizeSmall * fr, patHeight + fontSizeSmall);
           }
