@@ -213,9 +213,9 @@ window.addEventListener('load', function() {
         },
         {
           label: 'Flam Accent',
-          pattern: 'b0-8-2 l1 R8 L8 R8' +
-                ' | b0-8-2 r1 L8 R8 L8',
-          blen: 1
+          pattern: 't3 b0-8-2 l1 R8 L8 R8' +
+                ' | t3 b0-8-2 r1 L8 R8 L8',
+          blen: 2
         }
       ]
     },
@@ -542,6 +542,7 @@ window.addEventListener('load', function() {
 
     var x = 0;
     var t = 0;
+    var tf = false;
     var tRe = /t(\d+)/;
     var bRe = /b(\d+)-(\d+)-(\d+)/;
     var pRe = /([RLQrl])(\d+)/;
@@ -599,18 +600,39 @@ window.addEventListener('load', function() {
             transform: 'translate(' + nx + ' ' + y2 + ')',
               fill: patStroke, stroke: 'none' }) );
           }
+
           if (t > 0) {
+
+            if (tf) {
+
+              !function() {
+                  var text = $s('text').attrs({
+                    x: nx + 1 / d * 2 / 3 * patWidth * beatLength * (t - 1) / 2,
+                    y: y1 - 2,
+                    'text-anchor': 'middle',
+                    'font-family': fontFamily,
+                    'font-style': 'italic',
+                    'font-size': fontSizeSmall });
+                  text.$el.textContent = '' + t;
+                  pat.append(text);
+              }();
+
+            }
+
             x += 1 / d * 2 / 3;
             t -= 1;
+            tf = false;
+
           } else {
             x += 1 / d;
           }
+
         }
 
       } else if (note.match(tRe) ) {
 
         t = +RegExp.$1;
-        console.log(note, t);
+        tf = true;
 
       } else if (note.match(bRe) ) {
 
