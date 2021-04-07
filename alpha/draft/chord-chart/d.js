@@ -122,25 +122,29 @@ window.addEventListener('load', function() {
           label: 'Standard',
           pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 L16 R16 R16' +
                 ' | t6 b0-16-5 b1-16-5 L16 R16 L16 R16 L16 L16',
-          blen: 2
+          blen: 2,
+          rev: true
         },
         {
           label: 'Reverse',
           pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 R16' +
                 ' | t6 b0-16-5 b1-16-5 L16 L16 R16 L16 R16 L16',
-          blen: 2
+          blen: 2,
+          rev: true
         },
         {
           label: 'Inward',
           pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 R16' +
                 ' | t6 b0-16-5 b1-16-5 L16 R16 L16 L16 R16 L16',
-          blen: 2
+          blen: 2,
+          rev: true
         },
         {
           label: 'Delayed',
           pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 L16 R16 L16' +
                 ' | t6 b0-16-5 b1-16-5 L16 R16 L16 R16 L16 R16',
-          blen: 2
+          blen: 2,
+          rev: true
         }
       ]
     },
@@ -226,7 +230,8 @@ window.addEventListener('load', function() {
         {
           label: 'Flamacue',
           pattern: 'b0-16-3 b1-16-3 l1 R16 L16 R16 L16 | l1 R4',
-          blen: 2
+          blen: 2,
+          rev: true
         }
       ]
     },
@@ -267,7 +272,8 @@ window.addEventListener('load', function() {
           // ^3
           pattern: 't3 b0-16-2 b1-16-2 l1 R16 R16 b0-16-1 L16' +
                 ' | t3 b0-16-2 b1-16-2 l1 R16 R16 L16',
-          blen: 4
+          blen: 4,
+          rev: true
         },
         {
           label: 'Inverted Flam Tap',
@@ -327,7 +333,8 @@ window.addEventListener('load', function() {
           label: 'Lesson 25',
           pattern: 'b0-16-2 b1-16-1 l2 R16 L16 R8' +
                 ' | b0-16-2 b1-16-1 l2 R16 L16 R8',
-          blen: 2
+          blen: 2,
+          rev: true
         }
       ]
     },
@@ -434,9 +441,11 @@ window.addEventListener('load', function() {
   var fontSize = 16;
   var fontSizeSmall = fontSize * 0.75;
   var strokeWidth = 0.5;
-  var strokeDashArray = strokeWidth * 8 + ' ' + strokeWidth * 8;
+  var strokeDashArrayH = strokeWidth * 12 + ' ' + strokeWidth * 8 +
+    ' ' + strokeWidth * 4 + ' ' + strokeWidth * 8;
+  var strokeDashArrayV = strokeWidth * 8 + ' ' + strokeWidth * 8;
 
-  var globalPatWidth = 800;
+  var globalPatWidth = 900;
   var patHeight = 60;
 
   var marginLeft = 50;
@@ -504,7 +513,7 @@ window.addEventListener('load', function() {
     ' L 2.475 -4.241 z';
 
   var appendPattern = function(patGrp, x, y,
-      patWidth, patternName, pattern, beatLength) {
+      patWidth, patternName, pattern, beatLength, withReverse) {
 
     var pat = $s('g').attrs({
       transform: 'translate(' + x + ' ' + y + ')' });
@@ -518,16 +527,27 @@ window.addEventListener('load', function() {
         stroke: '#fc6' }) );
     }
 
-    var appendNote = function(label, x, y) {
+    var appendNote = function(label, x, y, small) {
+      var scale = small? 0.8 : 1;
       var text = $s('text').attrs({ x: x, y: y, 'text-anchor': 'middle',
-        'font-family': fontFamily, 'font-size': fontSizeSmall,
+        'font-family': fontFamily, 'font-size': fontSizeSmall * scale,
         fill: patStroke, stroke: 'none' });
       text.$el.textContent = label;
       pat.append(text);
+      if (withReverse) {
+        var text = $s('text').attrs({
+          x: x,
+          y: y + fontSizeSmall * 1.2 +
+            (small? -fontSizeSmall * (1 - scale) : 0),
+          'text-anchor': 'middle',
+          'font-family': fontFamily, 'font-size': fontSizeSmall * scale,
+          fill: patStroke, stroke: 'none' });
+        text.$el.textContent = label == 'R'? 'L' : 'R';
+        pat.append(text);
+      }
+      
       if (label == 'R') {
       } else if (label == 'L') {
-      } else if (label == 'l') {
-      } else if (label == 'r') {
       } else {
         throw new label;
       }
@@ -604,7 +624,7 @@ window.addEventListener('load', function() {
                 fill: patStroke, stroke: 'none' }) );
             }
             appendNote(n.toUpperCase(),
-              fx - fontSizeSmall * fr, patHeight + fontSizeSmall);
+              fx - fontSizeSmall * fr, patHeight + fontSizeSmall, true);
           }
 
         } else {
@@ -713,7 +733,7 @@ window.addEventListener('load', function() {
               M(-hOff, vOff).
               L(globalPatWidth + hOff, vOff).build(),
         fill: 'none', 'stroke-linecap': 'butt',
-        'stroke-dasharray': strokeDashArray,
+        'stroke-dasharray': strokeDashArrayH,
         'stroke-width': strokeWidth, stroke: '#000' }) );
     }();
 
@@ -733,21 +753,18 @@ window.addEventListener('load', function() {
     for (var i = 0; i < patterns.length; i += 1) {
 
       appendPattern(
-        patGrp,
-        px,
-        vGapPat,
-        patWidth,
-        patterns[i].label,
-        patterns[i].pattern, patterns[i].blen);
+        patGrp, px, vGapPat, patWidth,
+        patterns[i].label, patterns[i].pattern,
+        patterns[i].blen, patterns[i].rev);
 
       if (i > 0 && patterns[i].label) {
         var divX = px - 40;
         patGrp.append($s('path').attrs({
           d: pathBuilder().
-                M(divX, 0).
+                M(divX, 40).
                 L(divX, patHeight + vGapPat + fontSizeSmall + 10).build(),
           fill: 'none', 'stroke-linecap': 'butt',
-          'stroke-dasharray': strokeDashArray,
+          'stroke-dasharray': strokeDashArrayV,
           'stroke-width': strokeWidth, stroke: '#000' }) );
       }
 
