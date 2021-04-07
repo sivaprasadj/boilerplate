@@ -391,11 +391,6 @@ window.addEventListener('load', function() {
           blen: 1
         }
       ]
-    },
-    {
-      label: 'AAA',
-      patterns: [
-      ]
     }
   ];
 
@@ -490,6 +485,8 @@ window.addEventListener('load', function() {
     ' c 2.333 1.166 3.667 1.999 5.5 7.499' +
     ' C 5.167 3.166 1.833 4.666 0 0 z';
 
+  var accPath = 'M 0 0 c 6.757 7.163 11.667 0 11.667 0 S 6.465 4.672 0 0 z';
+
   var restPath = 'M 2.475 -4.241' +
     ' C 2.017 -3.543 1.363 -3.22 0.889 -3.045' +
     ' c 0.015 -0.1 0.021 -0.198 0.021 -0.302' +
@@ -557,9 +554,14 @@ window.addEventListener('load', function() {
 
           var fx = nx - 2;
           var dx = 10;
+
           for (var i = 0; i < d; i += 1) {
+
             fx -= dx;
+
             var yn = y2 + 1.5;
+            var ya = y2 + 6;
+
             pat.append($s('path').attrs({ d: pathBuilder().
               M(fx, (y1 + yn) / 2).
               L(fx, yn).build(),
@@ -569,7 +571,9 @@ window.addEventListener('load', function() {
               transform: 'translate(' + fx + ' ' + yn + ') scale(0.6)',
               fill: patStroke, 'stroke-width': strokeWidth, stroke: patStroke
             }) );
+
             if (d == 1) {
+
               pat.append($s('path').attrs({ d: flagPath,
                 transform: 'translate(' + fx + ' ' + (y1 + yn) / 2 + ')',
                 fill: patStroke, stroke: 'none' }) );
@@ -578,7 +582,12 @@ window.addEventListener('load', function() {
                 L(fx + 6, (y1 + yn) / 2 + 5).build(),
                 fill: 'none', 'stroke-linecap': 'square',
                 'stroke-width': strokeWidth, stroke: patStroke }) );
+              pat.append($s('path').attrs({ d: accPath,
+                transform: 'translate(' + (fx - 2.5) + ' ' + ya + ')',
+                fill: patStroke, stroke: 'none' }) );
+
             } else if (i == 0) {
+
               var w = dx * (d - 1);
               pat.append($s('rect').attrs({
                 x: fx - w, y: (y1 + yn) / 2, width: w, height: 2,
@@ -586,6 +595,10 @@ window.addEventListener('load', function() {
               pat.append($s('rect').attrs({
                 x: fx - w, y: (y1 + yn) / 2 + 5.5, width: w, height: 2,
                 fill: patStroke, stroke: patStroke }) );
+              pat.append($s('path').attrs({ d: accPath,
+                transform: 'translate(' + (fx - w - 2.5) + ' ' + ya + ')' +
+                  'scale(' + (d - 1 + 0.8)  + ' 1)',
+                fill: patStroke, stroke: 'none' }) );
             }
             appendNote(n.toUpperCase(),
               fx - fontSizeSmall * fr, patHeight + fontSizeSmall);
