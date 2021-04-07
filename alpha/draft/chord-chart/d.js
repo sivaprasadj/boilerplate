@@ -216,12 +216,7 @@ window.addEventListener('load', function() {
           pattern: 't3 b0-8-2 l1 R8 L8 R8' +
                 ' | t3 b0-8-2 r1 L8 R8 L8',
           blen: 2
-        }
-      ]
-    },
-    {
-      label: '',
-      patterns: [
+        },
         {
           label: 'Flam Tap',
           pattern: 'b0-16-3 b1-16-3 l1 R16 R16 r1 L16 L16' +
@@ -249,12 +244,7 @@ window.addEventListener('load', function() {
           pattern: 'b0-16-3 b1-16-3 l1 R16 R16 L16 R16' +
                 ' | b0-16-3 b1-16-3 r1 L16 L16 R16 L16',
           blen: 2
-        }
-      ]
-    },
-    {
-      label: '',
-      patterns: [
+        },
         {
           label: 'Flam Paradiddle-Diddle',
           pattern: 't6 b0-16-5 b1-16-5 l1 R16 L16 R16 R16 L16 L16' +
@@ -275,21 +265,16 @@ window.addEventListener('load', function() {
         {
           label: 'Swiss Army Triplet',
           // ^3
-          pattern: 't3 b0-16-5 b1-16-2 l1 R16 R16 r1 L16' +
-                ' | t3 b1-16-2 l1 R16 R16 r1 L16',
-          blen: 2
+          pattern: 't3 b0-16-2 b1-16-2 l1 R16 R16 b0-16-1 r1 L16' +
+                ' | t3 b0-16-2 b1-16-2 l1 R16 R16 r1 L16',
+          blen: 4
         },
         {
           label: 'Inverted Flam Tap',
           pattern: 'b0-16-3 b1-16-3 l1 R16 L16 L16 R16' +
                 ' | b0-16-3 b1-16-3 l1 R16 L16 L16 R16',
           blen: 2
-        }
-      ]
-    },
-    {
-      label: '',
-      patterns: [
+        },
         {
           label: 'Flam Drag',
           pattern: 'b0-8-2 l1 R8 b1-16-1 L16 L16 R8' +
@@ -303,7 +288,6 @@ window.addEventListener('load', function() {
         }
       ]
     },
-
     {
       label: '',
       patterns: [
@@ -316,6 +300,16 @@ window.addEventListener('load', function() {
           label: 'Single Drag Tap',
           pattern: 'b0-8-1 l2 R8 L8' +
                 ' | b0-8-1 r2 L8 R8',
+          blen: 2
+        },
+        {
+          label: '',
+          pattern: '',
+          blen: 2
+        },
+        {
+          label: '',
+          pattern: '',
           blen: 2
         }
       ]
@@ -367,8 +361,8 @@ window.addEventListener('load', function() {
         {
           label: 'Single Ratamacue',
           // ^3
-          pattern: 't3 b0-16-3 b1-16-2 l2 R16 L16 R16 L8' +
-                ' | t3 b0-16-3 b1-16-2 r2 L16 R16 L16 R8',
+          pattern: 't3 b0-16-2 b1-16-2 l2 R16 L16 b0-16-1 R16 L8' +
+                ' | t3 b0-16-2 b1-16-2 r2 L16 R16 b0-16-1 L16 R8',
           blen: 1
         }
       ]
@@ -386,8 +380,8 @@ window.addEventListener('load', function() {
         {
           label: 'Triple Ratamacue',
           // ^3
-          pattern: 'b0-16-2 l2 R8 l2 R8 | t3 b0-16-3 b1-16-2 l2 R16 L16 R16 L8' +
-                ' | b0-16-2 r2 L8 r2 L8 | t3 b0-16-3 b1-16-2 r2 L16 R16 L16 R8',
+          pattern: 'b0-16-2 l2 R8 l2 R8 | t3 b0-16-2 b1-16-2 l2 R16 L16 b0-16-1 R16 L8' +
+                ' | b0-16-2 r2 L8 r2 L8 | t3 b0-16-2 b1-16-2 r2 L16 R16 b0-16-1 L16 R8',
           blen: 1
         }
       ]
@@ -635,7 +629,7 @@ window.addEventListener('load', function() {
               fill: patStroke, stroke: 'none' }) );
           }
 
-          if (t > 0) {
+          if (t > 1) {
 
             if (tf) {
 
@@ -674,7 +668,7 @@ window.addEventListener('load', function() {
         var pos = +RegExp.$1;
         var d = +RegExp.$2;
         var len = +RegExp.$3;
-        if (t > 0) {
+        if (t > 1) {
           len = len * 2 / 3;
         }
         pat.append($s('rect').attrs({
