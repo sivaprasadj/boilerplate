@@ -726,11 +726,11 @@ window.addEventListener('load', function() {
     }
 
     !function() {
-      var hOff = 10;
+      var hOff = 15;
       var vOff = - fontSize - 5;
       patGrp.append($s('path').attrs({
         d: pathBuilder().
-              M(-hOff, vOff).
+              M(-hOff * 2, vOff).
               L(globalPatWidth + hOff, vOff).build(),
         fill: 'none', 'stroke-linecap': 'butt',
         'stroke-dasharray': strokeDashArrayH,
