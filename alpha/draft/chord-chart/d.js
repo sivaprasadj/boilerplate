@@ -721,7 +721,7 @@ window.addEventListener('load', function() {
         x: 0, y: 0,
         width: globalPatWidth,
         height: patHeight + vGapPat,
-        fill: 'none', 'stroke-linecap': 'butt',
+        fill: 'none', 'stroke-linecap': 'round',
         'stroke-width': strokeWidth, stroke: '#66c' }) );
     }
 
@@ -761,9 +761,9 @@ window.addEventListener('load', function() {
         var divX = px - 40;
         patGrp.append($s('path').attrs({
           d: pathBuilder().
-                M(divX, 40).
+                M(divX, 25).
                 L(divX, patHeight + vGapPat + fontSizeSmall + 10).build(),
-          fill: 'none', 'stroke-linecap': 'butt',
+          fill: 'none', 'stroke-linecap': 'round',
           'stroke-dasharray': strokeDashArrayV,
           'stroke-width': strokeWidth, stroke: '#000' }) );
       }
