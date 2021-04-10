@@ -4,6 +4,7 @@
 window.addEventListener('load', function() {
 
   var chords = [
+
     { label: 'C',     chord: [3, 0, 0, 0] },
     { label: 'Cm',    chord: [3, 3, 3, 0] },
     { label: 'C7',    chord: [1, 0, 0, 0] },
@@ -122,17 +123,8 @@ window.addEventListener('load', function() {
     { label: 'A#dim',  chord: [1, 0, 1, 0] },
     { label: 'A#6',    chord: [1, 1, 2, 0] },
     { label: 'A#aug',  chord: [1, 2, 2, 3] },
-    { label: 'A#sus4', chord: [1, 1, 3, 3] },
+    { label: 'A#sus4', chord: [1, 1, 3, 3] }
 
-    { label: 'X',     chord: [0, 0, 0, 0] },
-    { label: 'Xm',    chord: [0, 0, 0, 0] },
-    { label: 'X7',    chord: [0, 0, 0, 0] },
-    { label: 'XM7',   chord: [0, 0, 0, 0] },
-    { label: 'Xm7',   chord: [0, 0, 0, 0] },
-    { label: 'Xdim',  chord: [0, 0, 0, 0] },
-    { label: 'X6',    chord: [0, 0, 0, 0] },
-    { label: 'Xaug',  chord: [0, 0, 0, 0] },
-    { label: 'Xsus4', chord: [0, 0, 0, 0] }
   ];
 
   var svgNamespace = 'http://www.w3.org/2000/svg';
@@ -183,7 +175,7 @@ window.addEventListener('load', function() {
   var fretStroke = '#000000';
   var chordFill = '#000000';
   var fontFamily = 'Arial';
-  var fontSize = 16;
+  var fontSize = 20;
   var fontSizeSmall = ~~(fontSize * 0.75);
   var strokeWidth = 0.5;
 
@@ -277,7 +269,7 @@ window.addEventListener('load', function() {
   var marginLeft = 20;
   var marginTop = 60;
   var hGap = 20;
-  var vGap = 60;
+  var vGap = 70;
 
   var width = (fretWidth + hGap) * 9 -
     hGap + marginLeft * 2;
