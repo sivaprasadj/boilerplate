@@ -175,7 +175,7 @@ window.addEventListener('load', function() {
   var fretStroke = '#000000';
   var chordFill = '#000000';
   var fontFamily = 'Arial';
-  var fontSize = 20;
+  var fontSize = 16;
   var fontSizeSmall = ~~(fontSize * 0.75);
   var strokeWidth = 0.5;
 

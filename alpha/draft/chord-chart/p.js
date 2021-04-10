@@ -85,7 +85,7 @@ window.addEventListener('load', function() {
   var black = '#000000';
   var white = '#ffffff';
   var fontFamily = 'Arial';
-  var fontSize = 28;
+  var fontSize = 20;
   var fontSizeSmall = ~~(fontSize * 0.75);
   var strokeWidth = 0.25;
 
