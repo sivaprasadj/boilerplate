@@ -85,7 +85,7 @@ window.addEventListener('load', function() {
   var black = '#000000';
   var white = '#ffffff';
   var fontFamily = 'Arial';
-  var fontSize = 16;
+  var fontSize = 28;
   var fontSizeSmall = ~~(fontSize * 0.75);
   var strokeWidth = 0.25;
 
@@ -142,40 +142,36 @@ window.addEventListener('load', function() {
       }
     }
 
-    var appendNote = function(note, x, bk) {
-      /*
-      var text = $s('text').attrs({
-        x: x, y: bk? bKeyHeight : wKeyHeight,
-        'font-size': 12, 'text-anchor': 'middle',
-        stroke: 'none', fill: bk? white : black });
-      text.$el.textContent = '' + note;
-      keys.append(text);
-      */
+    var appendNote = function(note, x, bk, base) {
       if (!cmap[note]) {
         return;
       }
-      keys.append($s('circle').attrs({
-        cx: x, cy: (bk? bKeyHeight : wKeyHeight) - chordRadius * 3,
-        r: chordRadius + 4,
-        'stroke-width': strokeWidth * 4,
-        stroke: 'none', fill: white }) );
-      keys.append($s('circle').attrs({
-        cx: x, cy: (bk? bKeyHeight : wKeyHeight) - chordRadius * 3,
-        r: chordRadius + 2,
-        'stroke-width': strokeWidth * 4,
-        stroke: 'none', fill: black }) );
+      var y = (bk? bKeyHeight : wKeyHeight) - chordRadius * 3.5;
+      if (base) {
+        keys.append($s('circle').attrs({
+          cx: x, cy: y, r: chordRadius + 5,
+          'stroke-width': strokeWidth * 4,
+          stroke: 'none', fill: white }) );
+      } else {
+        keys.append($s('circle').attrs({
+          cx: x, cy: y, r: chordRadius + 2,
+          'stroke-width': strokeWidth * 4,
+          stroke: 'none', fill: black }) );
+      }
     };
 
-    var note = wkOffset[shift];
-    for (var i = 0; i < numKeys; i += 1) {
-      var bi = (i + shift) % bkPat.length;
-      if (i > 0 && bkPat[bi] == 1) {
-        var o = bi / 7 - bkOff[bi] / 12;
-        appendNote(note, wKeyPitch * (i - o), true);
+    for (var b = 0; b < 2; b += 1) {
+      var note = wkOffset[shift];
+      for (var i = 0; i < numKeys; i += 1) {
+        var bi = (i + shift) % bkPat.length;
+        if (i > 0 && bkPat[bi] == 1) {
+          var o = bi / 7 - bkOff[bi] / 12;
+          appendNote(note, wKeyPitch * (i - o), true, b == 0);
+          note += 1;
+        }
+        appendNote(note, wKeyPitch * (i + 0.5), false, b == 0);
         note += 1;
       }
-      appendNote(note, wKeyPitch * (i + 0.5), false);
-      note += 1;
     }
 
     if (chordName.match(/^([A-G])(#?)(.*)$/) ) {
