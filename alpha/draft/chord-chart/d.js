@@ -122,29 +122,25 @@ window.addEventListener('load', function() {
           label: 'Standard',
           pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 L16 R16 R16' +
                 ' | t6 b0-16-5 b1-16-5 L16 R16 L16 R16 L16 L16',
-          blen: 2,
-          rev: true
+          blen: 2
         },
         {
           label: 'Reverse',
           pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 R16' +
                 ' | t6 b0-16-5 b1-16-5 L16 L16 R16 L16 R16 L16',
-          blen: 2,
-          rev: true
+          blen: 2
         },
         {
           label: 'Inward',
           pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 R16' +
                 ' | t6 b0-16-5 b1-16-5 L16 R16 L16 L16 R16 L16',
-          blen: 2,
-          rev: true
+          blen: 2
         },
         {
           label: 'Delayed',
           pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 L16 R16 L16' +
                 ' | t6 b0-16-5 b1-16-5 L16 R16 L16 R16 L16 R16',
-          blen: 2,
-          rev: true
+          blen: 2
         }
       ]
     },
@@ -185,25 +181,29 @@ window.addEventListener('load', function() {
           label: 'Standard',
           pattern: 't6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16' +
                 ' | t6 b0-16-5 b1-16-5 R16 L16 R16 R16 L16 L16',
-          blen: 2
+          blen: 2,
+          rev: true
         },
         {
           label: 'Reverse',
           pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16' +
                 ' | t6 b0-16-5 b1-16-5 R16 R16 L16 L16 R16 L16',
-          blen: 2
+          blen: 2,
+          rev: true
         },
         {
           label: 'Inward',
           pattern: 't6 b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16' +
                 ' | t6 b0-16-5 b1-16-5 R16 L16 L16 R16 R16 L16',
-          blen: 2
+          blen: 2,
+          rev: true
         },
         {
           label: 'Delayed',
           pattern: 't6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16' +
                 ' | t6 b0-16-5 b1-16-5 R16 R16 L16 R16 L16 L16',
-          blen: 2
+          blen: 2,
+          rev: true
         }
       ]
     },
