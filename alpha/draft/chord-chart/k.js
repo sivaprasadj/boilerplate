@@ -7,12 +7,13 @@ window.addEventListener('load', function() {
     { label: 'C',     chord: [0, 4, 7]},
     { label: 'Cm',    chord: [0, 3, 7]},
     { label: 'C7',    chord: [0, 4, 7, 10]},
-    { label: 'CM7',   chord: [0, 4, 7, 11]},
     { label: 'Cm7',   chord: [0, 3, 7, 10] },
-    { label: 'Cdim',  chord: [0, 3, 6, 9] },
+    { label: 'CM7',   chord: [0, 4, 7, 11]},
+    { label: 'Cadd9', chord: [0, 14, 4, 7] },
     { label: 'C6',    chord: [0, 4, 7, 9] },
-    { label: 'Caug',  chord: [0, 4, 8] },
-    { label: 'Csus4', chord: [0, 5, 7] }
+    { label: 'Csus4', chord: [0, 5, 7] },
+    { label: 'Cdim',  chord: [0, 3, 6, 9] },
+    { label: 'Caug',  chord: [0, 4, 8] }
   ];
 
   var chords = [];
@@ -93,7 +94,7 @@ window.addEventListener('load', function() {
   var bKeyHeight = wKeyHeight * 0.6;
   var wKeyPitch = 12;
   var bKeyPitch = wKeyPitch * 7 / 12;
-  var numKeys = 11;
+  var numKeys = 14;
 
   var chordRadius  = wKeyPitch / 4;
 
@@ -218,9 +219,9 @@ window.addEventListener('load', function() {
   var hGap = 20;
   var vGap = 60;
 
-  var width = (keysWidth + hGap) * 9 -
+  var width = (keysWidth + hGap) * c.length -
     hGap + marginLeft * 2;
-  var height = (keysHeight + vGap) * ~~(chords.length / 9) -
+  var height = (keysHeight + vGap) * ~~(chords.length / c.length) -
     vGap + marginTop * 2;
 
   var svgHolder = document.createElement('div');
@@ -240,7 +241,7 @@ window.addEventListener('load', function() {
     appendKeys(x, y, chords[i].label,
         chords[i].chord, chords[i].shift);
     x += keysWidth + hGap;
-    if ( (i + 1) % 9 == 0) {
+    if ( (i + 1) % c.length == 0) {
       x = marginLeft;
       y += keysHeight + vGap;
     }
