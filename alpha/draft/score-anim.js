@@ -9,42 +9,23 @@
     data: {
       width: 1920,
       height: 1080,
-      numFrames: 12,
       currentFrame: 0,
       clips: [
         'A', 'B', 'C', 'D', 'E', 'F'
-      ]
-    },
-    computed: {
+      ],
+      maxClips: 4
     },
     watch: {
       currentFrame: function(currentFrame) {
         this.render(this.$refs.cv.getContext('2d'), currentFrame);
       }
     },
+    computed: {
+      numFrames: function() {
+        return this.clips.length;
+      }
+    },
     methods: {
-      getClipList: function(currentFrame) {
-        var maxClips= 4;
-        var index = +currentFrame + 1;
-        var clips = this.clips;
-        var clipList = [
-          {
-            x: 10,
-            y: 10,
-            width: 200,
-            height: 50,
-            text: 'X' + index
-          },
-          {
-            x: 250,
-            y: 10,
-            width: 200,
-            height: 50,
-            text: 'Y' + index
-          }
-        ];
-        return clipList;
-      },
       render: function(ctx, currentFrame) {
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -52,29 +33,56 @@
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        ctx.fillStyle = 'rgba(0,0,255,1)';
-        ctx.fillRect(0, 0, 100, 100);
-        ctx.fillStyle = 'rgba(0,0,255,0.5)';
-        ctx.fillRect(100, 100, 100, 100);
+        ctx.strokeStyle = '#ff0';
+        ctx.lineWidth = 4;
 
-        ctx.textAlign = 'center';
-        ctx.textBaseline  = 'middle';
-        ctx.font = 'bold 48px sans-serif';
+        var div = 4;
+        for (var i = 1; i < div; i += 1) {
 
-        this.getClipList(currentFrame).forEach(function(clip) {
+          ctx.beginPath();
+          ctx.moveTo(0, i * this.height / div);
+          ctx.lineTo(this.width, i * this.height / div);
+          ctx.stroke();
 
-          ctx.fillStyle = '#0cf';
-          ctx.fillRect(clip.x, clip.y, clip.width, clip.height);
+          ctx.beginPath();
+          ctx.moveTo(i * this.width / div, 0);
+          ctx.lineTo(i * this.width / div, this.height);
+          ctx.stroke();
+        }
 
-          ctx.strokeStyle = '#fff';
-          ctx.lineWidth = 4;
-          ctx.strokeRect(clip.x, clip.y, clip.width, clip.height);
+        var clips = this.clips;
+        var maxClips = this.maxClips;
+//        var grpIndex = ~~( (currentFrame + maxClips - 1) / maxClips) + 1;
 
-          ctx.fillStyle = '#fff';
-          ctx.fillText(clip.text,
-              clip.x + clip.width / 2,
-              clip.y + clip.height / 2);
-        });
+        var y = 700;
+        var width = 200;
+        var height = 100;
+
+        for (var i = 0; i < maxClips; i += 1) {
+          var clipFrame = ~~(currentFrame / maxClips) * maxClips + i;
+          if (clipFrame < clips.length) {
+
+            var x = this.width / 2 + i * width - ~~(maxClips * width / 2);
+            var text = clips[clipFrame];
+
+            if (clipFrame == currentFrame) {
+              ctx.fillStyle = 'rgba(255,255,255,0.5)';
+              ctx.fillRect(x, y, width, height);
+            }
+  
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(x, y, width, height);
+  
+            ctx.textAlign = 'center';
+            ctx.textBaseline  = 'middle';
+            ctx.font = 'bold 48px sans-serif';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(text, x + width / 2, y + height / 2);
+          }
+        }
+
+
 
       },
       download_clickHandler: function() {
@@ -93,8 +101,12 @@
           if (currentFrame < this.numFrames) {
             this.render(ctx, currentFrame);
             ctx.canvas.toBlob(function(data) {
-              zip.file(currentFrame + '.png', data);
-              window.setTimeout(putFile, 0);
+              var seq = '' + currentFrame;
+              while (seq.length < 3) {
+                seq = '0' + seq;
+              }
+              zip.file('img' + seq + '.png', data);
+              putFile();
             });
           } else {
             var filename = 'test.zip';
