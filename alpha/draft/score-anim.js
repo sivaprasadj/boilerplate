@@ -36,6 +36,8 @@
     methods: {
       render: function(ctx, currentFrame, publish) {
 
+        currentFrame = +currentFrame;
+
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         if (!publish) {
@@ -63,7 +65,16 @@
         var clips = this.clips;
         var maxClips = this.maxClips;
 
-        var y = 700;
+        var fontFamily = 'sans-serif';
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline  = 'middle';
+        ctx.font = 'bold 200px ' + fontFamily;
+        ctx.fillStyle = '#fff';
+        ctx.fillText(clips[currentFrame],
+          this.width / 2, this.height / 2);
+
+        var y = 720;
         var width = 200;
         var height = 100;
 
@@ -85,7 +96,7 @@
   
             ctx.textAlign = 'center';
             ctx.textBaseline  = 'middle';
-            ctx.font = 'bold 48px sans-serif';
+            ctx.font = 'bold 60px ' + fontFamily;
             ctx.fillStyle = '#fff';
             ctx.fillText(text, x + width / 2, y + height / 2);
           }
