@@ -10,9 +10,17 @@
       width: 1920,
       height: 1080,
       currentFrame: 0,
+      /*
       clips: [
         'A', 'B', 'C', 'D', 'E', 'F'
       ],
+      */
+      clips: (
+        'G C G G D7 D7 D7 D7 ' +
+        'G C G G A7 D7 G  G7 ' +
+        'C C G G D7 D7 G G7 ' +
+        'C C G G D7 D7 G G '
+      ).replace(/^\s+|\s+$/g, '').split(/\s+/g),
       maxClips: 4
     },
     watch: {
@@ -26,33 +34,34 @@
       }
     },
     methods: {
-      render: function(ctx, currentFrame) {
+      render: function(ctx, currentFrame, publish) {
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        if (!publish) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+          ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        ctx.strokeStyle = '#ff0';
-        ctx.lineWidth = 4;
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 2;
 
-        var div = 4;
-        for (var i = 1; i < div; i += 1) {
+          var div = 4;
+          for (var i = 1; i < div; i += 1) {
 
-          ctx.beginPath();
-          ctx.moveTo(0, i * this.height / div);
-          ctx.lineTo(this.width, i * this.height / div);
-          ctx.stroke();
-
-          ctx.beginPath();
-          ctx.moveTo(i * this.width / div, 0);
-          ctx.lineTo(i * this.width / div, this.height);
-          ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, i * this.height / div);
+            ctx.lineTo(this.width, i * this.height / div);
+            ctx.stroke();
+  
+            ctx.beginPath();
+            ctx.moveTo(i * this.width / div, 0);
+            ctx.lineTo(i * this.width / div, this.height);
+            ctx.stroke();
+          }
         }
 
         var clips = this.clips;
         var maxClips = this.maxClips;
-//        var grpIndex = ~~( (currentFrame + maxClips - 1) / maxClips) + 1;
 
         var y = 700;
         var width = 200;
@@ -66,7 +75,7 @@
             var text = clips[clipFrame];
 
             if (clipFrame == currentFrame) {
-              ctx.fillStyle = 'rgba(255,255,255,0.5)';
+              ctx.fillStyle = 'rgba(255,255,255,0.2)';
               ctx.fillRect(x, y, width, height);
             }
   
@@ -81,13 +90,8 @@
             ctx.fillText(text, x + width / 2, y + height / 2);
           }
         }
-
-
-
       },
       download_clickHandler: function() {
-
-        console.log('download');
 
         var ctx = document.createElement('canvas').getContext('2d');
         ctx.canvas.width = this.width;
@@ -97,15 +101,15 @@
         var zip = new JSZip();
 
         var putFile = function() {
-          currentFrame += 1;
           if (currentFrame < this.numFrames) {
-            this.render(ctx, currentFrame);
+            this.render(ctx, currentFrame, true);
             ctx.canvas.toBlob(function(data) {
-              var seq = '' + currentFrame;
+              var seq = '' + (currentFrame + 1);
               while (seq.length < 3) {
                 seq = '0' + seq;
               }
               zip.file('img' + seq + '.png', data);
+              currentFrame += 1;
               putFile();
             });
           } else {
