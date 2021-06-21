@@ -20,7 +20,8 @@ BODY {
       <div style="color:#fff;">
       <span>{{+currentFrame + 1}}</span>
       <br/>
-      <input type="range" min="0" :max="numFrames - 1" v-model="currentFrame" />
+      <input type="range" min="0" :max="numFrames - 1" v-model="currentFrame"
+        style="width:500px;" />
       <button @click="download_clickHandler" > download </button>
       </div>
       <div ref="canvasHolder" class="canvasHolder" >

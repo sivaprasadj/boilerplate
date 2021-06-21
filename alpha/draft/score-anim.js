@@ -20,8 +20,7 @@
         'G C G G A7 D7 G  G7 ' +
         'C C G G D7 D7 G G7 ' +
         'C C G G D7 D7 G G '
-      ).replace(/^\s+|\s+$/g, '').split(/\s+/g),
-      maxClips: 4
+      ).replace(/^\s+|\s+$/g, '').split(/\s+/g)
     },
     watch: {
       currentFrame: function(currentFrame) {
@@ -30,77 +29,106 @@
     },
     computed: {
       numFrames: function() {
-        return this.clips.length;
+        return this.clips.length * 16;
       }
     },
     methods: {
-      render: function(ctx, currentFrame, publish) {
+      drawDebugFrames: function(ctx) {
 
-        currentFrame = +currentFrame;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+
+        var div = 4;
+        for (var i = 1; i < div; i += 1) {
+
+          ctx.beginPath();
+          ctx.moveTo(0, i * this.height / div);
+          ctx.lineTo(this.width, i * this.height / div);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(i * this.width / div, 0);
+          ctx.lineTo(i * this.width / div, this.height);
+          ctx.stroke();
+        }
+      },
+      render: function(ctx, currentFrame, publish) {
 
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         if (!publish) {
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-          ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-          ctx.strokeStyle = '#fff';
-          ctx.lineWidth = 2;
-
-          var div = 4;
-          for (var i = 1; i < div; i += 1) {
-
-            ctx.beginPath();
-            ctx.moveTo(0, i * this.height / div);
-            ctx.lineTo(this.width, i * this.height / div);
-            ctx.stroke();
-  
-            ctx.beginPath();
-            ctx.moveTo(i * this.width / div, 0);
-            ctx.lineTo(i * this.width / div, this.height);
-            ctx.stroke();
-          }
+          this.drawDebugFrames(ctx);
         }
 
         var clips = this.clips;
-        var maxClips = this.maxClips;
-
+        var clipPos = currentFrame / this.numFrames * clips.length;
+        var clipIndex = ~~clipPos;
+        var clipRatio = clipPos - clipIndex;
         var fontFamily = 'sans-serif';
 
-        ctx.textAlign = 'center';
-        ctx.textBaseline  = 'middle';
-        ctx.font = 'bold 200px ' + fontFamily;
-        ctx.fillStyle = '#fff';
-        ctx.fillText(clips[currentFrame],
-          this.width / 2, this.height / 2);
+        var width = 400;
+        var height = 220;
+        var hGap = 20;
+        var y = this.height / 2 - height - hGap / 2;
 
-        var y = 720;
-        var width = 200;
-        var height = 100;
+        var drawCell = function(text, x, y, current) {
 
-        for (var i = 0; i < maxClips; i += 1) {
-          var clipFrame = ~~(currentFrame / maxClips) * maxClips + i;
-          if (clipFrame < clips.length) {
+          ctx.textAlign = 'center';
+          ctx.textBaseline  = 'middle';
+          ctx.font = 'bold 200px ' + fontFamily;
 
-            var x = this.width / 2 + i * width - ~~(maxClips * width / 2);
-            var text = clips[clipFrame];
-
-            if (clipFrame == currentFrame) {
-              ctx.fillStyle = 'rgba(255,255,255,0.2)';
-              ctx.fillRect(x, y, width, height);
-            }
-  
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(x, y, width, height);
-  
-            ctx.textAlign = 'center';
-            ctx.textBaseline  = 'middle';
-            ctx.font = 'bold 60px ' + fontFamily;
+          if (current) {
             ctx.fillStyle = '#fff';
             ctx.fillText(text, x + width / 2, y + height / 2);
+          } else {
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#fff';
+            ctx.strokeText(text, x + width / 2, y + height / 2);
+          }
+        };
+
+        var drawTranCell = function(text1, text2, x, y, ratio) {
+
+          ctx.textAlign = 'center';
+          ctx.textBaseline  = 'middle';
+          ctx.font = 'bold 200px ' + fontFamily;
+
+          ctx.fillStyle = 'rgba(255,255,255,' + (1 - ratio) + ')';
+          ctx.fillText(text1, x + width / 2, y + height / 2);
+          ctx.lineWidth = 4;
+          ctx.strokeStyle = 'rgba(255,255,255,' + ratio + ')';
+          ctx.strokeText(text2, x + width / 2, y + height / 2);
+        };
+
+        var threshold = 0.25;
+        var cellClipIndex = ~~(clipIndex / 2) * 2;
+        if (clipIndex < clips.length) {
+          var x = this.width / 2 - ~~(width / 2);
+          var text = clips[cellClipIndex];
+          if (cellClipIndex != clipIndex && cellClipIndex + 2 < clips.length) {
+            drawTranCell(text, clips[cellClipIndex + 2], x, y,
+              clipRatio > threshold? 1 : clipRatio / threshold);
+          } else {
+            drawCell(text, x, y, cellClipIndex == clipIndex);
           }
         }
+
+        cellClipIndex += 1;
+        if (cellClipIndex < clips.length) {
+          var x = this.width / 2 - ~~(width / 2);
+          var text = clips[cellClipIndex];
+          if (cellClipIndex != clipIndex && cellClipIndex - 2 > 0) {
+            drawCell(text, x, y + height + 20, cellClipIndex == clipIndex);
+            drawTranCell(clips[cellClipIndex - 2], text, x, y + height + 20,
+              clipRatio > threshold? 1 : clipRatio / threshold);
+          } else {
+            drawCell(text, x, y + height + hGap, cellClipIndex == clipIndex);
+          }
+        }
+
       },
       download_clickHandler: function() {
 
@@ -116,7 +144,7 @@
             this.render(ctx, currentFrame, true);
             ctx.canvas.toBlob(function(data) {
               var seq = '' + (currentFrame + 1);
-              while (seq.length < 3) {
+              while (seq.length < 6) {
                 seq = '0' + seq;
               }
               zip.file('img' + seq + '.png', data);
