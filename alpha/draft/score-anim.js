@@ -74,6 +74,14 @@
         var hGap = 20;
         var y = this.height / 2 - height - hGap / 2;
 
+        var drawText = function(text, x, y, fillStyle, strokeStyle) {
+            ctx.fillStyle = fillStyle;
+            ctx.fillText(text, x, y);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = strokeStyle;
+            ctx.strokeText(text, x, y);
+        };
+
         var drawCell = function(text, x, y, current) {
 
           ctx.textAlign = 'center';
@@ -81,12 +89,9 @@
           ctx.font = 'bold 200px ' + fontFamily;
 
           if (current) {
-            ctx.fillStyle = '#fff';
-            ctx.fillText(text, x + width / 2, y + height / 2);
+            drawText(text, x + width / 2, y + height / 2, '#f00', '#fff');
           } else {
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = '#fff';
-            ctx.strokeText(text, x + width / 2, y + height / 2);
+            drawText(text, x + width / 2, y + height / 2, '#fff', '#000');
           }
         };
 
@@ -96,11 +101,12 @@
           ctx.textBaseline  = 'middle';
           ctx.font = 'bold 200px ' + fontFamily;
 
-          ctx.fillStyle = 'rgba(255,255,255,' + (1 - ratio) + ')';
-          ctx.fillText(text1, x + width / 2, y + height / 2);
-          ctx.lineWidth = 4;
-          ctx.strokeStyle = 'rgba(255,255,255,' + ratio + ')';
-          ctx.strokeText(text2, x + width / 2, y + height / 2);
+          drawText(text2, x + width / 2, y + height / 2,
+            'rgba(255,255,255,' + ratio + ')',
+            'rgba(0,0,0,' + ratio + ')');
+          drawText(text1, x + width / 2, y + height / 2,
+            'rgba(255,0,0,' + (1 - ratio) + ')',
+            'rgba(255,255,255,' + (1 - ratio) + ')');
         };
 
         var threshold = 0.25;
