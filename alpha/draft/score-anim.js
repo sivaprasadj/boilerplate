@@ -10,17 +10,19 @@
       width: 1920,
       height: 1080,
       currentFrame: 0,
-      /*
+/*      
       clips: [
-        'A', 'B', 'C', 'D', 'E', 'F'
+        'A', 'B', 'C', 'D', 'E'
       ],
-      */
+      
+*/
       clips: (
         'G C G G D7 D7 D7 D7 ' +
         'G C G G A7 D7 G  G7 ' +
         'C C G G D7 D7 G G7 ' +
         'C C G G D7 D7 G G '
       ).replace(/^\s+|\s+$/g, '').split(/\s+/g)
+
     },
     watch: {
       currentFrame: function(currentFrame) {
@@ -29,7 +31,7 @@
     },
     computed: {
       numFrames: function() {
-        return this.clips.length * 16;
+        return this.clips.length * 54;
       }
     },
     methods: {
@@ -111,29 +113,37 @@
 
         var threshold = 0.25;
         var cellClipIndex = ~~(clipIndex / 2) * 2;
-        if (clipIndex < clips.length) {
+
+        !function() {
           var x = this.width / 2 - ~~(width / 2);
-          var text = clips[cellClipIndex];
-          if (cellClipIndex != clipIndex && cellClipIndex + 2 < clips.length) {
-            drawTranCell(text, clips[cellClipIndex + 2], x, y,
+          var currText = cellClipIndex < clips.length?
+            clips[cellClipIndex] : '';
+          var nextText = cellClipIndex + 2 < clips.length?
+            clips[cellClipIndex + 2] : '';
+          if (cellClipIndex != clipIndex) {
+            drawTranCell(currText, nextText, x, y,
               clipRatio > threshold? 1 : clipRatio / threshold);
           } else {
-            drawCell(text, x, y, cellClipIndex == clipIndex);
+            drawCell(currText, x, y, cellClipIndex == clipIndex);
           }
-        }
+        }.bind(this)();
 
         cellClipIndex += 1;
-        if (cellClipIndex < clips.length) {
+
+        !function() {
           var x = this.width / 2 - ~~(width / 2);
-          var text = clips[cellClipIndex];
-          if (cellClipIndex != clipIndex && cellClipIndex - 2 > 0) {
-            drawCell(text, x, y + height + 20, cellClipIndex == clipIndex);
-            drawTranCell(clips[cellClipIndex - 2], text, x, y + height + 20,
+          var currText = cellClipIndex < clips.length?
+            clips[cellClipIndex] : '';
+          var prevText = cellClipIndex - 2 >= 0?
+            clips[cellClipIndex - 2] : '';
+          if (cellClipIndex != clipIndex) {
+            drawTranCell(prevText, currText, x, y + height + 20,
               clipRatio > threshold? 1 : clipRatio / threshold);
           } else {
-            drawCell(text, x, y + height + hGap, cellClipIndex == clipIndex);
+            drawCell(currText,
+              x, y + height + hGap, cellClipIndex == clipIndex);
           }
-        }
+        }.bind(this)();
 
       },
       download_clickHandler: function() {
@@ -153,8 +163,12 @@
               while (seq.length < 6) {
                 seq = '0' + seq;
               }
-              zip.file('img' + seq + '.png', data);
+              var filename = 'img' + seq + '.png';
+              zip.file(filename, data);
               currentFrame += 1;
+              if (currentFrame % 10 == 0) {
+                console.log(filename + ' created');
+              }
               putFile();
             });
           } else {
